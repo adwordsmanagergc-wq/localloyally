@@ -38,6 +38,7 @@ New businesses start from a template: cafe, matcha/tea bar, restaurant, barber/s
 3. **Vercel:** import the repo. Add the environment variables from `.env.example`:
    - `DATABASE_URL`, `SESSION_SECRET` (run `openssl rand -hex 32`), `PLATFORM_ADMIN_PASSWORD`, `APP_URL`, `CRON_SECRET`
    - `WHATSAPP_PROVIDER` (see below)
+   - `PLATFORM_NAME`, `CONTACT_WHATSAPP` (your number, digits with country code): the home page's "Start free trial" button opens a WhatsApp chat with you. `CONTACT_EMAIL` is used instead if no number is set.
 4. **Create tables:** on your computer, put the same values in `.env.local`, then `npm install` and `npm run migrate`.
 5. **Domain:** add e.g. `rewards.metatap...` or `loyalty.yourdomain.com` in Vercel > Domains.
 6. Go to `/platform`, log in, add **Roasted** (link name `roasted`, template Cafe), then log in at `/roasted/staff` with the manager PIN and open Settings.

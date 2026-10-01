@@ -9,7 +9,7 @@ import SettingsTab from './SettingsTab';
 
 export type BizInfo = {
   slug: string; name: string; rewards: { stamps: number; label: string }[]; maxPerVisit: number;
-  itemWord: string; itemWordPlural: string; social: boolean; stampIcon: string;
+  itemWord: string; itemWordPlural: string; social: boolean; stampIcon: string; stampImageUrl?: string;
 };
 export type Toast = (msg: string) => void;
 

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { api, fmtDate, fmtDateTime } from '@/lib/client';
-import StampIcon from '../StampIcon';
+import Stamp from '../Stamp';
 import type { BizInfo, Toast } from './StaffConsole';
 
 const LABEL: Record<string, string> = {
@@ -104,8 +104,8 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
         </div>
         <div className="stamps" style={{ ['--cols' as any]: maxTier <= 6 ? maxTier : maxTier <= 10 ? 5 : 6 }}>
           {Array.from({ length: maxTier }, (_, i) => (
-            <div key={i} className={`slot ${i < bal ? 'on' : ''} ${biz.rewards.some((r) => r.stamps === i + 1) ? 'tier' : ''}`}>
-              <StampIcon icon={biz.stampIcon} size={20} />
+            <div key={i} className={`slot ${biz.stampImageUrl ? 'img' : ''} ${i < bal ? 'on' : ''} ${biz.rewards.some((r) => r.stamps === i + 1) ? 'tier' : ''}`}>
+              <Stamp icon={biz.stampIcon} image={biz.stampImageUrl} size={20} />
             </div>
           ))}
         </div>

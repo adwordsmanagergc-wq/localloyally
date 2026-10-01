@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/client';
 import { FONTS, STAMP_ICONS, TEXTURES } from '@/lib/options';
 import StampIcon from '../StampIcon';
+import Stamp from '../Stamp';
 import type { Toast } from './StaffConsole';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -47,10 +48,11 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
   return (
     <div className="stack-lg" style={{ maxWidth: 760 }}>
       {/* Preview */}
-      <div className={`card tx-${s.texture}`} style={{
+      <div className={`card ${s.bgImageUrl ? 'has-photo' : `tx-${s.texture}`}`} style={{
+        ...(s.bgImageUrl ? { backgroundImage: `linear-gradient(rgba(18,12,8,.38), rgba(18,12,8,.5)), url("${s.bgImageUrl}")` } : {}),
         ['--bg' as any]: s.colors.bg, ['--surface' as any]: s.colors.surface, ['--ink' as any]: s.colors.ink,
         ['--muted' as any]: s.colors.muted, ['--accent' as any]: s.colors.accent, ['--accent-ink' as any]: s.colors.accentInk,
-        background: s.colors.bg, color: s.colors.ink,
+        backgroundColor: s.colors.bg, color: s.colors.ink,
       }}>
         <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=${(FONTS as any)[s.font]?.google}&display=swap`} />
         <div className="stack" style={{ fontFamily: (FONTS as any)[s.font]?.body }}>
@@ -65,7 +67,7 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
           </div>
           <div className="card flat" style={{ background: s.colors.surface }}>
             <div className="stamps" style={{ ['--cols' as any]: 6 }}>
-              {Array.from({ length: 6 }, (_, i) => <div key={i} className={`slot ${i < 3 ? 'on' : ''}`}><StampIcon icon={s.stampIcon} size={20} /></div>)}
+              {Array.from({ length: 6 }, (_, i) => <div key={i} className={`slot ${s.stampImageUrl ? 'img' : ''} ${i < 3 ? 'on' : ''}`}><Stamp icon={s.stampIcon} image={s.stampImageUrl} size={20} /></div>)}
             </div>
           </div>
           <span className="btn" style={{ alignSelf: 'start' }}>Spin</span>
@@ -79,6 +81,8 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
           <label>Tagline<input value={s.tagline} onChange={(e) => set('tagline', e.target.value)} maxLength={80} /></label>
         </div>
         <label>Logo image link (https, square PNG works best)<input value={s.logoUrl} onChange={(e) => set('logoUrl', e.target.value)} placeholder="https://…/logo.png" /></label>
+        <label>Background photo link (optional, replaces the texture)<input value={s.bgImageUrl} onChange={(e) => set('bgImageUrl', e.target.value)} placeholder="https://…/background.jpg" /></label>
+        <label>Custom stamp image link (optional, e.g. your logo as a transparent PNG)<input value={s.stampImageUrl} onChange={(e) => set('stampImageUrl', e.target.value)} placeholder="https://…/stamp.png" /></label>
         <div className="grid3">
           {COLORS.map(([k, l]) => (
             <label key={k}>{l}<input type="color" value={s.colors[k]} onChange={(e) => set(`colors.${k}`, e.target.value)} /></label>
@@ -215,6 +219,19 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
         <legend>WhatsApp reminders</legend>
         <Check path="nudges.enabled" label="Message opted-in members when they're 1 stamp from a reward, and before vouchers expire" />
         {s.nudges.enabled && <label style={{ maxWidth: 260 }}>Only if no visit for (days)<input type="number" min={1} max={30} value={s.nudges.afterDays} onChange={num('nudges.afterDays')} /></label>}
+      </fieldset>
+
+      <fieldset>
+        <legend>Google reviews</legend>
+        <p className="small muted">More 5-star reviews help you rank higher on Google Maps and get recommended by AI search. We ask regulars for a review on WhatsApp and on their card. Reviews are never rewarded with stamps, because Google's rules ban paying for reviews.</p>
+        <Check path="reviews.enabled" label="Ask regulars for a Google review" />
+        {s.reviews.enabled && (
+          <div className="grid2">
+            <label>Your Google review link<input value={s.reviews.googleUrl} onChange={(e) => set('reviews.googleUrl', e.target.value)} placeholder="https://g.page/r/…/review" /></label>
+            <label>Ask after this many visits<input type="number" min={1} max={20} value={s.reviews.afterVisits} onChange={num('reviews.afterVisits')} /></label>
+          </div>
+        )}
+        {s.reviews.enabled && <p className="tiny muted">Find your link in Google Business Profile: Ask for reviews, then copy the link.</p>}
       </fieldset>
 
       {err && <div className="banner bad">{err}</div>}

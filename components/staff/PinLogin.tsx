@@ -15,15 +15,16 @@ export default function PinLogin({ slug }: { slug: string }) {
     catch (e: any) { setErr(e.message); setPin(''); setBusy(false); }
   }
   return (
-    <form className="card stack" onSubmit={submit}>
-      <h2>Staff login</h2>
+    <form className="auth-card stack" onSubmit={submit}>
+      <span className="sticker" style={{ justifySelf: 'start' }}>Staff and managers</span>
+      <h2 className="auth-title">Staff login</h2>
       <label>
         Your PIN
         <input type="password" inputMode="numeric" autoComplete="off" maxLength={8} value={pin} autoFocus
           onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))} style={{ fontSize: '1.6rem', letterSpacing: '0.4em', textAlign: 'center' }} />
       </label>
       {err && <div className="banner bad small">{err}</div>}
-      <button className="btn block" disabled={busy || pin.length < 4}>{busy ? 'Checking…' : 'Log in'}</button>
+      <button className="btn block auth-btn" disabled={busy || pin.length < 4}>{busy ? 'Checking…' : 'Log in'}</button>
     </form>
   );
 }

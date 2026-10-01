@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getBusiness } from '@/lib/business';
-import { fontHref, themeVars } from '@/lib/theme';
+import { fontHref, themeClass, themeVars } from '@/lib/theme';
 
 type P = { params: Promise<{ slug: string }> };
 
@@ -22,9 +22,10 @@ export default async function BizLayout({ children, params }: P & { children: Re
   const biz = await getBusiness((await params).slug);
   if (!biz) notFound();
   return (
-    <div className={`theme tx-${biz.settings.texture}`} style={themeVars(biz.settings)}>
+    <div className={themeClass(biz.settings)} style={themeVars(biz.settings)}>
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       <link rel="stylesheet" href={fontHref(biz.settings)} />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" />
       {children}
     </div>
   );

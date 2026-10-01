@@ -106,3 +106,16 @@ create table if not exists rate_limits (
   count int not null,
   window_start timestamptz not null
 );
+
+create table if not exists trial_requests (
+  id bigserial primary key,
+  business_name text not null,
+  business_type text,
+  contact_name text not null,
+  whatsapp text not null,
+  email text,
+  city text,
+  message text,
+  status text not null default 'new',
+  created_at timestamptz not null default now()
+);

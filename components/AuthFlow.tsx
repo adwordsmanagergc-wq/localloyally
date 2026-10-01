@@ -4,101 +4,131 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/client';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+type Mode = 'join' | 'login' | 'forgot' | 'reset';
 
-export default function AuthFlow({ slug, refCode }: { slug: string; refCode?: string }) {
+export default function AuthFlow({ slug, refCode, businessName }: { slug: string; refCode?: string; businessName: string }) {
   const router = useRouter();
-  const [step, setStep] = useState<'phone' | 'code'>('phone');
+  const [mode, setMode] = useState<Mode>(refCode ? 'join' : 'login');
   const [phone, setPhone] = useState('');
-  const [isNew, setIsNew] = useState(false);
-  const [code, setCode] = useState('');
+  const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [code, setCode] = useState('');
   const [bm, setBm] = useState('');
   const [bd, setBd] = useState('');
   const [optIn, setOptIn] = useState(true);
+  const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
+  const [info, setInfo] = useState('');
 
-  async function start(e?: React.FormEvent) {
-    e?.preventDefault();
+  const go = (m: Mode) => { setMode(m); setErr(''); setInfo(''); };
+  const done = () => { router.replace(`/${slug}/card`); router.refresh(); };
+
+  async function run(fn: () => Promise<void>) {
     setBusy(true); setErr('');
-    try {
-      const r = await api(`/api/b/${slug}/auth/start`, { phone });
-      setIsNew(r.isNew); setStep('code');
-    } catch (e: any) { setErr(e.message); } finally { setBusy(false); }
+    try { await fn(); } catch (e: any) {
+      setErr(e.message);
+      if (e.data?.exists) setMode('login');
+      setBusy(false);
+    }
   }
 
-  async function verify(e: React.FormEvent) {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    setBusy(true); setErr('');
-    try {
-      await api(`/api/b/${slug}/auth/verify`, {
-        phone, code, name, optIn, ref: refCode,
-        birthdayMonth: bm ? Number(bm) : undefined, birthdayDay: bd ? Number(bd) : undefined,
+    if (mode === 'login') return run(async () => { await api(`/api/b/${slug}/auth/login`, { phone, password }); done(); });
+    if (mode === 'join')
+      return run(async () => {
+        await api(`/api/b/${slug}/auth/register`, {
+          name, phone, password, optIn, ref: refCode,
+          birthdayMonth: bm ? Number(bm) : undefined, birthdayDay: bd ? Number(bd) : undefined,
+        });
+        done();
       });
-      router.replace(`/${slug}/card`);
-      router.refresh();
-    } catch (e: any) { setErr(e.message); setBusy(false); }
-  }
+    if (mode === 'forgot')
+      return run(async () => {
+        await api(`/api/b/${slug}/auth/start`, { phone });
+        setMode('reset'); setInfo('We sent a 6-digit code to your WhatsApp.'); setBusy(false);
+      });
+    return run(async () => { await api(`/api/b/${slug}/auth/reset`, { phone, code, password }); done(); });
+  };
 
-  if (step === 'phone')
-    return (
-      <form className="card stack" onSubmit={start}>
-        <h2>Join or log in</h2>
-        {refCode && <div className="banner small">A friend invited you. You'll both get a bonus stamp after your first visit.</div>}
-        <label>
-          WhatsApp number
-          <input inputMode="tel" autoComplete="tel" placeholder="0812 3456 7890" value={phone}
-            onChange={(e) => setPhone(e.target.value)} required />
-          <span className="tiny muted" style={{ fontWeight: 400 }}>Visiting from overseas? Start with + and your country code.</span>
-        </label>
-        {err && <div className="banner bad small">{err}</div>}
-        <button className="btn block" disabled={busy || phone.replace(/\D/g, '').length < 8}>
-          {busy ? 'Sending…' : 'Send me a code on WhatsApp'}
-        </button>
-      </form>
-    );
+  const pw = (
+    <label>
+      {mode === 'login' ? 'Password' : mode === 'reset' ? 'New password' : 'Create a password'}
+      <div className="pw-wrap">
+        <input type={show ? 'text' : 'password'} name="password" value={password} onChange={(e) => setPassword(e.target.value)}
+          autoComplete={mode === 'login' ? 'current-password' : 'new-password'} minLength={mode === 'login' ? 1 : 6} required />
+        <button type="button" className="pw-toggle" onClick={() => setShow((v) => !v)} aria-label={show ? 'Hide password' : 'Show password'}>{show ? 'Hide' : 'Show'}</button>
+      </div>
+      {mode !== 'login' && <span className="tiny muted" style={{ fontWeight: 400 }}>At least 6 characters. Your phone can save it for next time.</span>}
+    </label>
+  );
 
   return (
-    <form className="card stack" onSubmit={verify}>
-      <h2>{isNew ? 'Create your card' : 'Welcome back'}</h2>
-      <p className="small muted">We sent a 6-digit code to your WhatsApp.</p>
-      <label>
-        Code
-        <input inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="123456" value={code}
-          onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} required autoFocus
-          style={{ letterSpacing: '0.4em', fontSize: '1.4rem', textAlign: 'center' }} />
-      </label>
-      {isNew && (
-        <>
-          <label>
-            Your name
-            <input autoComplete="given-name" value={name} onChange={(e) => setName(e.target.value)} required minLength={2} maxLength={60} />
-          </label>
-          <div className="stack" style={{ gap: 6 }}>
-            <span className="small" style={{ fontWeight: 600 }}>Birthday (optional, for a treat)</span>
-            <div className="row">
-              <select value={bd} onChange={(e) => setBd(e.target.value)} aria-label="Birthday day">
-                <option value="">Day</option>
-                {Array.from({ length: 31 }, (_, i) => <option key={i} value={i + 1}>{i + 1}</option>)}
-              </select>
-              <select value={bm} onChange={(e) => setBm(e.target.value)} aria-label="Birthday month">
-                <option value="">Month</option>
-                {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-              </select>
-            </div>
-          </div>
-          <label className="check">
-            <input type="checkbox" checked={optIn} onChange={(e) => setOptIn(e.target.checked)} />
-            <span>Send me WhatsApp messages about my rewards and offers. You can stop anytime.</span>
-          </label>
-        </>
+    <div className="auth">
+      {(mode === 'join' || mode === 'login') && (
+        <div className="auth-tabs" role="tablist">
+          <button type="button" role="tab" aria-selected={mode === 'login'} onClick={() => go('login')}>Log in</button>
+          <button type="button" role="tab" aria-selected={mode === 'join'} onClick={() => go('join')}>Join free</button>
+        </div>
       )}
-      {err && <div className="banner bad small">{err}</div>}
-      <button className="btn block" disabled={busy || code.length !== 6}>{busy ? 'Checking…' : isNew ? 'Create my card' : 'Log in'}</button>
-      <div className="row between small">
-        <button type="button" className="linkbtn" onClick={() => { setStep('phone'); setCode(''); setErr(''); }}>Change number</button>
-        <button type="button" className="linkbtn" onClick={() => start()} disabled={busy}>Resend code</button>
-      </div>
-    </form>
+      <form className="auth-card stack" onSubmit={submit} autoComplete="on">
+        <h2 className="auth-title">
+          {mode === 'login' ? 'Welcome back' : mode === 'join' ? `Get your ${businessName} card` : 'Reset your password'}
+        </h2>
+        {mode === 'join' && refCode && <div className="banner small">A friend invited you. You&apos;ll both get a bonus stamp after your first visit.</div>}
+        {info && <div className="banner good small">{info}</div>}
+
+        {mode === 'join' && (
+          <label>Your name<input name="name" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} required minLength={2} maxLength={60} /></label>
+        )}
+        <label>
+          WhatsApp number
+          <input name="username" autoComplete="username" inputMode="tel" placeholder="0812 3456 7890" value={phone}
+            onChange={(e) => setPhone(e.target.value)} required readOnly={mode === 'reset'} />
+          {mode !== 'reset' && <span className="tiny muted" style={{ fontWeight: 400 }}>This is your username. Visiting from overseas? Start with + and your country code.</span>}
+        </label>
+        {mode === 'reset' && (
+          <label>Code from WhatsApp
+            <input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} required
+              style={{ letterSpacing: '0.4em', textAlign: 'center', fontSize: '1.3rem' }} />
+          </label>
+        )}
+        {mode !== 'forgot' && pw}
+
+        {mode === 'join' && (
+          <>
+            <div className="stack" style={{ gap: 6 }}>
+              <span className="small" style={{ fontWeight: 600 }}>Birthday (optional, for a treat)</span>
+              <div className="row">
+                <select value={bd} onChange={(e) => setBd(e.target.value)} aria-label="Birthday day">
+                  <option value="">Day</option>
+                  {Array.from({ length: 31 }, (_, i) => <option key={i} value={i + 1}>{i + 1}</option>)}
+                </select>
+                <select value={bm} onChange={(e) => setBm(e.target.value)} aria-label="Birthday month">
+                  <option value="">Month</option>
+                  {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
+                </select>
+              </div>
+            </div>
+            <label className="check">
+              <input type="checkbox" checked={optIn} onChange={(e) => setOptIn(e.target.checked)} />
+              <span>Send me WhatsApp messages about my rewards and offers. You can stop anytime.</span>
+            </label>
+          </>
+        )}
+
+        {err && <div className="banner bad small">{err}</div>}
+        <button className="btn block auth-btn" disabled={busy}>
+          {busy ? 'One moment…' : mode === 'login' ? 'Log in' : mode === 'join' ? 'Create my card →' : mode === 'forgot' ? 'Send me a code' : 'Save and log in'}
+        </button>
+
+        <div className="row between small">
+          {mode === 'login' && <button type="button" className="linkbtn" onClick={() => go('forgot')}>Forgot password?</button>}
+          {(mode === 'forgot' || mode === 'reset') && <button type="button" className="linkbtn" onClick={() => go('login')}>Back to log in</button>}
+          {mode === 'reset' && <button type="button" className="linkbtn" onClick={() => go('forgot')}>Resend code</button>}
+        </div>
+      </form>
+    </div>
   );
 }

@@ -3,7 +3,7 @@ import type { Business } from '@/lib/business';
 
 export default function Brand({ biz, right }: { biz: Business; right?: React.ReactNode }) {
   return (
-    <header className="brand">
+    <header className="brand on-bg">
       {biz.settings.logoUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={biz.settings.logoUrl} alt="" />

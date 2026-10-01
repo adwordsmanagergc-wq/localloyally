@@ -3,7 +3,7 @@ import { getBusiness } from '@/lib/business';
 import { getCustomerId } from '@/lib/auth';
 import { customerSummary, grantPassive, REASON_LABEL } from '@/lib/loyalty';
 import Brand from '@/components/Brand';
-import StampIcon from '@/components/StampIcon';
+import Stamp from '@/components/Stamp';
 import { CardQr, LogoutButton, ShareReferral, SocialForm } from '@/components/CardParts';
 import SpinWheel from '@/components/SpinWheel';
 
@@ -47,8 +47,8 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
             const n = i + 1;
             const tier = tierAt.get(n);
             return (
-              <div key={n} className={`slot ${n <= balance ? 'on' : ''} ${tier ? 'tier' : ''}`} title={tier}>
-                <StampIcon icon={s.stampIcon} size={22} />
+              <div key={n} className={`slot ${s.stampImageUrl ? 'img' : ''} ${n <= balance ? 'on' : ''} ${tier ? 'tier' : ''}`} title={tier}>
+                <Stamp icon={s.stampIcon} image={s.stampImageUrl} size={22} />
                 {tier && s.rewards.length > 1 && <span className="tierlabel">{n}</span>}
               </div>
             );
@@ -86,7 +86,7 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
 
       {sum.vouchers.length > 0 && (
         <section className="stack">
-          <h2>Your vouchers</h2>
+          <h2 className="on-bg">Your vouchers</h2>
           {sum.vouchers.map((v: any) => (
             <div key={v.id} className="voucher">
               <div>
@@ -100,7 +100,7 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
       )}
 
       <section className="stack">
-        <h2>Earn more stamps</h2>
+        <h2 className="on-bg">Earn more stamps</h2>
         {s.social.enabled && (
           <div className="card flat stack">
             <div className="row between">
@@ -130,6 +130,14 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
           {s.birthday.enabled && <p>🎂 <strong>{s.birthday.label}</strong> around your birthday.</p>}
         </div>
       </section>
+
+      {s.reviews.enabled && s.reviews.googleUrl && sum.visits >= 1 && (
+        <section className="card flat stack center">
+          <h3>Enjoying {biz.name}?</h3>
+          <p className="small muted">A quick Google review helps other people find us. It means a lot to a small business.</p>
+          <a className="btn block" href={s.reviews.googleUrl} target="_blank" rel="noopener noreferrer">★ Leave a Google review</a>
+        </section>
+      )}
 
       {sum.history.length > 0 && (
         <section className="card flat stack">

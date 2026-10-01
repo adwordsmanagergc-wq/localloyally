@@ -12,7 +12,9 @@ export async function GET() {
       (select count(*) from customers c where c.business_id = b.id)::int members,
       (select coalesce(sum(delta), 0) from stamps s where s.business_id = b.id and reason = 'purchase' and created_at > now() - interval '30 days')::int stamps30
     from businesses b order by b.created_at`;
-  return json({ items: rows, presets: Object.entries(PRESETS).map(([k, v]) => ({ key: k, label: v.label })) });
+  const trials = await sql`select id, business_name, business_type, contact_name, whatsapp, email, city, message, created_at
+    from trial_requests order by created_at desc limit 50`;
+  return json({ items: rows, trials, presets: Object.entries(PRESETS).map(([k, v]) => ({ key: k, label: v.label })) });
 }
 
 export async function POST(req: Request) {

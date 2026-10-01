@@ -68,6 +68,29 @@ export default function PlatformConsole({ loggedIn, appUrl }: { loggedIn: boolea
         </table>
       </div>
 
+      <div className="card flat stack">
+        <h2>Free trial requests</h2>
+        {data?.trials?.length ? (
+          <div className="scroll-x">
+            <table className="table">
+              <thead><tr><th>Business</th><th>Contact</th><th>WhatsApp</th><th>City</th><th>Note</th><th>When</th></tr></thead>
+              <tbody>
+                {data.trials.map((t: any) => (
+                  <tr key={t.id}>
+                    <td><strong>{t.business_name}</strong><div className="tiny muted">{t.business_type}</div></td>
+                    <td>{t.contact_name}{t.email && <div className="tiny muted">{t.email}</div>}</td>
+                    <td><a href={`https://wa.me/${String(t.whatsapp).replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">{t.whatsapp}</a></td>
+                    <td>{t.city || '-'}</td>
+                    <td className="small" style={{ maxWidth: 260 }}>{t.message || '-'}</td>
+                    <td>{fmtDate(t.created_at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : <p className="muted small">No trial requests yet. They appear here when someone fills in the form on the home page.</p>}
+      </div>
+
       <form className="card stack" onSubmit={create} style={{ maxWidth: 720 }}>
         <h2>Add a business</h2>
         <div className="grid2">

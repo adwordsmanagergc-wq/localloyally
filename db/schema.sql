@@ -119,3 +119,6 @@ create table if not exists trial_requests (
   status text not null default 'new',
   created_at timestamptz not null default now()
 );
+
+alter table customers add column if not exists review_asked_at timestamptz;
+alter table customers add column if not exists password_hash text;

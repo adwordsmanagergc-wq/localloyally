@@ -199,11 +199,11 @@ export async function customerSummary(biz: Business, customerId: string) {
         and redeemed_at is null and expires_at > now() order by expires_at`,
     sql`select delta, reason, note, created_at from stamps where customer_id = ${customerId} order by created_at desc, id desc limit 10`,
     sql`select status, created_at from social_submissions where customer_id = ${customerId} order by created_at desc limit 1`,
-    sql`select max(created_at) as at from stamps where customer_id = ${customerId} and reason = 'purchase'`,
+    sql`select max(created_at) as at, count(*)::int as visits from stamps where customer_id = ${customerId} and reason = 'purchase'`,
   ]);
   return {
     customer: c, balance, spins: biz.settings.spin.enabled ? (spins.n as number) : 0, vouchers, history,
-    lastSocial: social ?? null, lastVisit: lastVisit?.at ?? null, doubleHourNow: isDoubleHour(biz.settings),
+    lastSocial: social ?? null, lastVisit: lastVisit?.at ?? null, visits: (lastVisit?.visits as number) ?? 0, doubleHourNow: isDoubleHour(biz.settings),
     maxTier: maxTier(biz.settings),
   };
 }

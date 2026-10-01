@@ -11,6 +11,8 @@ export const DEFAULT_SETTINGS = {
   // Look
   tagline: 'Collect stamps, get rewarded',
   logoUrl: '',
+  bgImageUrl: '', // photo background, e.g. pebbles. Overrides texture
+  stampImageUrl: '', // custom stamp, e.g. the business logo. Overrides stampIcon
   colors: { bg: '#e9e6e1', surface: '#f6f4f0', ink: '#1f1c19', muted: '#6f6a63', accent: '#6b4a2f', accentInk: '#ffffff' },
   font: 'classic' as keyof typeof FONTS,
   texture: 'pebble' as (typeof TEXTURES)[number],
@@ -41,6 +43,8 @@ export const DEFAULT_SETTINGS = {
   },
   birthday: { enabled: true, windowDays: 3, label: 'Birthday treat' },
   nudges: { enabled: true, afterDays: 3 },
+  // Asks happy regulars for a Google review. Never rewarded (Google bans incentivised reviews).
+  reviews: { enabled: true, googleUrl: '', afterVisits: 3 },
 };
 export type Settings = typeof DEFAULT_SETTINGS;
 export type Business = { id: string; slug: string; name: string; active: boolean; settings: Settings };
@@ -124,6 +128,7 @@ export function mergeSettings(saved: any): Settings {
     spin: { ...d.spin, ...(s.spin ?? {}), prizes: s.spin?.prizes?.length ? s.spin.prizes : d.spin.prizes },
     birthday: { ...d.birthday, ...(s.birthday ?? {}) },
     nudges: { ...d.nudges, ...(s.nudges ?? {}) },
+    reviews: { ...d.reviews, ...(s.reviews ?? {}) },
     rewards: s.rewards?.length ? s.rewards : d.rewards,
   };
 }
@@ -175,12 +180,17 @@ export function validateSettings(input: any): Settings {
 
   let tz = str(input.timezone, 60, d.timezone);
   try { new Intl.DateTimeFormat('en', { timeZone: tz }); } catch { tz = d.timezone; }
-  let logoUrl = str(input.logoUrl, 500);
-  if (logoUrl && !/^https:\/\//.test(logoUrl)) logoUrl = '';
+  const img = (v: any) => {
+    const u = str(v, 500);
+    return u && (/^https:\/\//.test(u) || /^\/brands\/[\w./-]+$/.test(u)) ? u : '';
+  };
+  const logoUrl = img(input.logoUrl);
 
   return {
     tagline: str(input.tagline, 80, d.tagline),
     logoUrl,
+    bgImageUrl: img(input.bgImageUrl),
+    stampImageUrl: img(input.stampImageUrl),
     colors: {
       bg: color(input.colors?.bg, d.colors.bg), surface: color(input.colors?.surface, d.colors.surface),
       ink: color(input.colors?.ink, d.colors.ink), muted: color(input.colors?.muted, d.colors.muted),
@@ -216,6 +226,17 @@ export function validateSettings(input: any): Settings {
     },
     birthday: { enabled: bool(input.birthday?.enabled), windowDays: int(input.birthday?.windowDays, 0, 14, 3), label: str(input.birthday?.label, 40, d.birthday.label) || d.birthday.label },
     nudges: { enabled: bool(input.nudges?.enabled), afterDays: int(input.nudges?.afterDays, 1, 30, 3) },
+    reviews: {
+      enabled: bool(input.reviews?.enabled),
+      googleUrl: (() => {
+        const u = str(input.reviews?.googleUrl, 500);
+        if (!u) return '';
+        if (!/^https:\/\/(g\.page|maps\.app\.goo\.gl|search\.google\.com|www\.google\.[a-z.]+|maps\.google\.[a-z.]+|goo\.gl)\//.test(u))
+          throw new Error("That doesn't look like a Google review link. Copy it from Google Business Profile > Ask for reviews.");
+        return u;
+      })(),
+      afterVisits: int(input.reviews?.afterVisits, 1, 20, 3),
+    },
   };
 }
 

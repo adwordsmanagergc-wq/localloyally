@@ -202,3 +202,47 @@
 .lp-result { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 16px; border: 2px solid var(--ink); border-radius: 16px; background: var(--cream); font-weight: 700; }
 .lp-result:hover { background: var(--lime); }
 .lp-result small { color: var(--soft); font-weight: 500; }
+
+/* Reviews section */
+.lp-reviews { background: #fff3d6; border-block: 2px solid var(--ink); }
+.lp-reviews .lp-checks li::before { background-color: var(--orange); }
+.lp-review-stack { display: grid; gap: 16px; max-width: 440px; margin: 0 auto; width: 100%; }
+.lp-wa { background: #efe7dc; border: 2px solid var(--ink); border-radius: 22px; padding: 14px; box-shadow: 5px 5px 0 var(--ink); transform: rotate(-1.5deg); }
+.lp-wa-head { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.9rem; margin-bottom: 10px; }
+.lp-wa-dot { width: 26px; height: 26px; border-radius: 50%; background: var(--espresso); display: inline-block; }
+.lp-wa-bubble { background: #fff; border-radius: 4px 16px 16px 16px; padding: 10px 12px 18px; font-size: 0.9rem; position: relative; }
+.lp-wa-link { display: block; color: #1a73e8; margin-top: 6px; font-weight: 600; }
+.lp-wa-time { position: absolute; right: 10px; bottom: 4px; font-size: 0.7rem; color: #8a8a8a; }
+.lp-gcard { background: #fff; border: 2px solid var(--ink); border-radius: 22px; padding: 16px 18px; box-shadow: 5px 5px 0 var(--ink); transform: rotate(1deg); }
+.lp-g-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 1.05rem; }
+.lp-g-pill { background: var(--lime); border: 1.5px solid var(--ink); border-radius: 999px; padding: 3px 10px; font-size: 0.75rem; font-weight: 800; }
+.lp-g-stars { color: #f4a300; font-size: 1.2rem; letter-spacing: 2px; margin-top: 4px; }
+.lp-g-stars span { color: var(--soft); font-size: 0.85rem; letter-spacing: 0; margin-left: 6px; }
+.lp-g-review { margin-top: 10px; font-size: 0.95rem; }
+.lp-g-meta { color: var(--soft); font-size: 0.8rem; margin-top: 4px; }
+.lp-ai { background: var(--ink); color: var(--cream); border-radius: 22px; padding: 16px 18px; box-shadow: 5px 5px 0 var(--orange); transform: rotate(-1deg); }
+.lp-ai-q { background: #2d2420; border-radius: 999px; padding: 8px 14px; font-size: 0.85rem; display: inline-block; margin-bottom: 10px; }
+.lp-ai-a { font-size: 0.92rem; line-height: 1.5; }
+
+/* Example cards with their own art */
+.lp-mini .m-name { display: flex; align-items: center; gap: 8px; text-shadow: 0 1px 3px rgba(0,0,0,.4); }
+.lp-mini .m-name img { border-radius: 50%; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5)); }
+.lp-mini-fade .m-name { margin-top: 10px; letter-spacing: .02em; }
+.lp-mini .m-dot { border: 0; opacity: 1; padding: 0; }
+.lp-mini .m-dot img, .lp-mini .m-dot svg { width: 100%; height: 100%; object-fit: contain; display: block; }
+.lp-mini .m-dot:not(.on) { filter: grayscale(1); opacity: .25; }
+.lp-mini .m-dot.m-img.on { background: #fffaf3; border-radius: 50%; box-shadow: 0 0 0 1.5px #9a5a32; }
+.lp-mini .m-dot.m-img.on img { transform: rotate(-8deg); }
+.lp-mini .m-dot.m-pulse.on { filter: drop-shadow(0 0 5px rgba(198,244,50,.7)); }
+.lp-mini .m-dot.m-fade.on { filter: drop-shadow(0 1px 2px rgba(0,0,0,.6)); }
+.lp-mini-pulse { border-color: rgba(198,244,50,.4) !important; box-shadow: 0 0 30px -8px rgba(198,244,50,.45); }
+
+/* Hero phone in Roasted style */
+.lp-screen-roasted { background: linear-gradient(rgba(18,12,8,.25), rgba(18,12,8,.4)), url(/brands/roasted/pebbles.jpg) center/cover; }
+.lp-screen-roasted .s-brand { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+.lp-screen-roasted .s-brand img { border-radius: 50%; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5)); }
+.lp-screen .s-dot.img { border: 0; padding: 1px; }
+.lp-screen .s-dot.img img { width: 100%; height: 100%; object-fit: contain; display: block; filter: grayscale(1); opacity: .25; }
+.lp-screen .s-dot.img.on { background: #fffaf3; box-shadow: 0 0 0 1.5px #9a5a32; }
+.lp-screen .s-dot.img.on img { filter: none; opacity: 1; transform: rotate(-8deg); }
+.lp-screen-roasted .s-btn { background: #9a5a32; }

@@ -156,3 +156,50 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 fieldset { border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin: 0; display: grid; gap: 12px; }
 legend { font-family: var(--font-head); font-weight: 700; padding: 0 6px; font-size: 1.05rem; }
 hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
+
+/* Photo backgrounds (e.g. pebbles) */
+.theme.has-photo { background-color: var(--bg); background-size: cover; background-position: center; background-attachment: fixed; }
+@supports (-webkit-touch-callout: none) { .theme.has-photo { background-attachment: scroll; } }
+.has-photo .on-bg { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.55), 0 0 18px rgba(0,0,0,.35); }
+.has-photo .on-bg .muted, .has-photo .on-bg.muted { color: rgba(255,255,255,.85); }
+.has-photo .brand .mark { background: var(--surface); color: var(--ink); }
+.has-photo .card { box-shadow: 0 18px 40px -16px rgba(0,0,0,.6); }
+.has-photo .card.flat { background: color-mix(in srgb, var(--surface) 94%, transparent); }
+.has-photo .linkbtn { color: #fff; }
+.brand img { width: 52px; height: 52px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
+
+/* Image stamps (e.g. the business logo) */
+.stamp-img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; user-select: none; }
+.slot.img { padding: 3px; overflow: hidden; }
+.slot.img .stamp-img { filter: grayscale(1); opacity: .22; }
+.slot.img.on { background: #fffaf3; border: 2px solid var(--accent); padding: 2px; box-shadow: 0 3px 8px -3px rgba(0,0,0,.45); }
+.slot.img.on .stamp-img { filter: none; opacity: 1; transform: rotate(-8deg); }
+.slot.img.on:nth-child(even) .stamp-img { transform: rotate(6deg); }
+.has-photo .card input, .has-photo .card select, .has-photo .card textarea { background: color-mix(in srgb, var(--ink) 5%, var(--surface)); }
+.has-photo .slot.img:not(.on) { background: rgba(255, 250, 243, .6); }
+
+/* Login / join: same look as the Loyalty Rewards home page */
+.theme { --lp-ink: #1c1511; --lp-head: 'Bricolage Grotesque', var(--font-head); --lp-lime: #d4f56b; --lp-lilac: #c8b8ff; }
+.join-title { font-family: var(--lp-head); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(2.1rem, 9vw, 2.9rem); line-height: 1.05; }
+.sticker {
+  display: inline-flex; align-items: center; gap: 6px; background: var(--lp-lilac); color: var(--lp-ink); border: 2px solid var(--lp-ink);
+  border-radius: 999px; padding: 6px 13px; font-weight: 800; font-size: 0.8rem; transform: rotate(-2deg); box-shadow: 3px 3px 0 var(--lp-ink);
+  justify-self: start; width: max-content; text-shadow: none;
+}
+.perk-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.perk { background: var(--surface); color: var(--ink); border: 2px solid var(--lp-ink); border-radius: 999px; padding: 6px 12px; font-size: 0.85rem; font-weight: 600; box-shadow: 2px 2px 0 var(--lp-ink); }
+.perk:nth-child(3n+1) { background: var(--lp-lime); color: var(--lp-ink); }
+.auth { display: grid; gap: 14px; }
+.auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 5px; background: var(--surface); border: 2px solid var(--lp-ink); border-radius: 999px; box-shadow: 4px 4px 0 var(--lp-ink); }
+.auth-tabs button { font: 700 0.95rem var(--font-body); border: 0; border-radius: 999px; padding: 11px; cursor: pointer; background: transparent; color: var(--ink); }
+.auth-tabs button[aria-selected='true'] { background: var(--lp-ink); color: #fff; }
+.auth-card { background: var(--surface); color: var(--ink); border: 2px solid var(--lp-ink); border-radius: 24px; padding: 22px; box-shadow: 7px 7px 0 var(--lp-ink); }
+.auth-title { font-family: var(--lp-head); font-weight: 800; letter-spacing: -0.02em; font-size: 1.6rem; }
+.auth-card input, .auth-card select { border: 2px solid color-mix(in srgb, var(--lp-ink) 18%, transparent); background: color-mix(in srgb, var(--ink) 4%, var(--surface)); }
+.auth-card input:focus, .auth-card select:focus { border-color: var(--lp-ink); outline: none; }
+.auth-btn { border: 2px solid var(--lp-ink); min-height: 52px; font-size: 1.02rem; transition: transform .15s ease, box-shadow .15s ease; }
+.auth-btn:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--lp-ink); }
+.pw-wrap { position: relative; }
+.pw-wrap input { padding-right: 70px; }
+.pw-toggle { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: 0; background: transparent; font: 700 0.8rem var(--font-body); color: var(--muted); cursor: pointer; padding: 8px; }
+.has-photo .auth-card .linkbtn { color: var(--muted); }

@@ -10,14 +10,30 @@ export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret || req.headers.get('authorization') !== `Bearer ${secret}`) return json({ error: 'Unauthorized' }, 401);
   const base = (process.env.APP_URL || '').replace(/\/$/, '');
-  let nudges = 0, reminders = 0;
+  let nudges = 0, reminders = 0, reviewAsks = 0;
 
   const businesses = await sql`select id, slug, name, settings from businesses where active`;
   for (const b of businesses) {
     const s = mergeSettings(b.settings);
+    const link = `${base}/${b.slug}/card`;
+
+    // Review requests: once per customer, the day after their Nth visit. Never tied to a reward.
+    if (s.reviews.enabled && s.reviews.googleUrl) {
+      const ready = await sql`
+        select c.id, c.name, c.phone from customers c
+        where c.business_id = ${b.id} and c.marketing_opt_in and c.review_asked_at is null
+          and (select count(*) from stamps s where s.customer_id = c.id and s.reason = 'purchase') >= ${s.reviews.afterVisits}
+          and (select max(created_at) from stamps s where s.customer_id = c.id and s.reason = 'purchase') < now() - interval '20 hours'
+        limit 200`;
+      for (const c of ready) {
+        const ok = await sendWhatsApp(c.phone, `Hi ${c.name}, thanks for being a regular at ${b.name}! Would you mind leaving us a quick Google review? It really helps a small business get found.\n${s.reviews.googleUrl}`,
+          { name: process.env.META_REVIEW_TEMPLATE || 'review_request', params: [c.name, b.name, s.reviews.googleUrl] });
+        if (ok) { reviewAsks++; await sql`update customers set review_asked_at = now() where id = ${c.id}`; }
+      }
+    }
+
     if (!s.nudges.enabled) continue;
     const tiers = s.rewards.map((r) => r.stamps);
-    const link = `${base}/${b.slug}/card`;
 
     const oneAway = await sql`
       select c.id, c.name, c.phone, x.balance from customers c
@@ -45,5 +61,5 @@ export async function GET(req: Request) {
       if (ok) { reminders++; await sql`update vouchers set reminded_at = now() where id = ${v.id}`; }
     }
   }
-  return json({ ok: true, nudges, reminders });
+  return json({ ok: true, nudges, reminders, reviewAsks });
 }

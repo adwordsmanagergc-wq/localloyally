@@ -22,7 +22,7 @@ export default async function StaffPage({ params }: { params: Promise<{ slug: st
     <main className="wrap wide">
       <StaffConsole
         biz={{ slug: biz.slug, name: biz.name, rewards: s.rewards, maxPerVisit: s.maxPerVisit, itemWord: s.itemWord,
-          itemWordPlural: s.itemWordPlural, social: s.social.enabled, stampIcon: s.stampIcon }}
+          itemWordPlural: s.itemWordPlural, social: s.social.enabled, stampIcon: s.stampIcon, stampImageUrl: s.stampImageUrl }}
         staff={staff}
       />
     </main>

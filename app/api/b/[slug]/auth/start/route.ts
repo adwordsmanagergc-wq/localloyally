@@ -12,6 +12,8 @@ export const POST = bizRoute(async (req, biz) => {
   if (!(await rateLimit(`otp:${biz.id}:${phone}`, 3, 900)) || !(await rateLimit(`otp-ip:${clientIp(req)}`, 20, 3600)))
     return json({ error: 'Too many codes requested. Try again in 15 minutes.' }, 429);
 
+  const [member] = await sql`select 1 from customers where business_id = ${biz.id} and phone = ${phone}`;
+  if (!member) return json({ error: 'No card with that number. Tap Join to create one.' }, 404);
   const code = String(randomInt(100000, 1000000));
   await sql`insert into otp_codes (business_id, phone, code_hash, expires_at)
             values (${biz.id}, ${phone}, ${hashOtp(biz.id, phone, code)}, now() + interval '10 minutes')
@@ -19,6 +21,5 @@ export const POST = bizRoute(async (req, biz) => {
               expires_at = excluded.expires_at, created_at = now()`;
   const sent = await sendOtp(phone, code, biz.name);
   if (!sent) return json({ error: "Couldn't send the WhatsApp code. Check the number and try again." }, 502);
-  const [existing] = await sql`select 1 from customers where business_id = ${biz.id} and phone = ${phone}`;
-  return json({ ok: true, isNew: !existing, phone });
+  return json({ ok: true, phone });
 });

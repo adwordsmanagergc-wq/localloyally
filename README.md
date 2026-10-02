@@ -1,4 +1,4 @@
-# Rewards platform
+# Loyal Locally
 
 Digital stamp cards for any business: cafes, restaurants, barbers, salons, gyms, bakeries. One app hosts many businesses, each with its own link, branding and loyalty rules. Roasted is business #1.
 
@@ -45,7 +45,7 @@ New businesses start from a template: cafe, matcha/tea bar, restaurant, barber/s
    - `DATABASE_URL`, `SESSION_SECRET` (run `openssl rand -hex 32`), `PLATFORM_ADMIN_PASSWORD`, `APP_URL`, `CRON_SECRET`
    - `WHATSAPP_PROVIDER` (see below)
 4. **Create tables:** on your computer, put the same values in `.env.local`, then `npm install` and `npm run migrate`.
-5. **Domain:** add e.g. `rewards.metatap...` or `loyalty.yourdomain.com` in Vercel > Domains.
+5. **Domain:** add `loyallocally.com` in Vercel > Domains and set `APP_URL=https://loyallocally.com`.
 6. Go to `/platform`, log in, add **Roasted** (link name `roasted`, template Cafe), then log in at `/roasted/staff` with the manager PIN and open Settings.
 7. Put a "Rewards" button on the Roasted website linking to `https://your-domain/roasted`, and print a QR code of that link for the counter.
 
@@ -69,7 +69,7 @@ One WhatsApp sender serves all businesses; the business name is included in ever
 Members get an "Add to Apple Wallet" or "Add to Google Wallet" button on their card. The wallet card shows their stamps, updates by itself after every scan, and offers you send appear on their lock screen for free. The buttons only appear once the keys below are set; everything else works without them.
 
 **Apple** (needs an Apple Developer account, USD 99 a year):
-1. developer.apple.com > Certificates, Identifiers & Profiles > Identifiers > **+** > Pass Type IDs, e.g. `pass.com.yourdomain.rewards`.
+1. developer.apple.com > Certificates, Identifiers & Profiles > Identifiers > **+** > Pass Type IDs, e.g. `pass.com.loyallocally.rewards`.
 2. Create a Pass Type ID certificate for it (upload a CSR made with Keychain Access or `openssl req -new -newkey rsa:2048 -nodes -keyout pass.key -out pass.csr`), download the `.cer`, then `openssl x509 -inform der -in pass.cer -out pass.pem`.
 3. Download Apple's WWDR G4 certificate from apple.com/certificateauthority and convert it the same way.
 4. Set `APPLE_PASS_TYPE_ID`, `APPLE_TEAM_ID` (top right of the developer site), `APPLE_PASS_CERT` (pass.pem), `APPLE_PASS_KEY` (pass.key), `APPLE_WWDR_CERT`, and `APPLE_PASS_KEY_PASSPHRASE` if your key has one. Paste the PEM text; `\n` in place of line breaks is fine.

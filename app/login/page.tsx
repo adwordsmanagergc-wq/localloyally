@@ -4,7 +4,7 @@ import StampIcon from '@/components/StampIcon';
 import FindBusiness from '@/components/landing/FindBusiness';
 import { getMemberPhone } from '@/lib/auth';
 
-export const metadata: Metadata = { title: 'Log in | Loyalty Rewards' };
+export const metadata: Metadata = { title: 'Log in | Loyal Locally' };
 
 export default async function Login({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
   const { as } = await searchParams;
@@ -14,7 +14,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" />
       <header className="lp-nav">
         <div className="lp-container">
-          <a href="/" className="lp-logo"><span className="lp-logo-mark"><StampIcon icon="star" size={18} /></span>Loyalty Rewards</a>
+          <a href="/" className="lp-logo"><span className="lp-logo-mark"><StampIcon icon="star" size={18} /></span>Loyal Locally</a>
           <div className="lp-nav-cta"><a className="lp-btn small" href="/#trial">Free trial</a></div>
         </div>
       </header>

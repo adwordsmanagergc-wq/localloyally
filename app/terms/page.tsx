@@ -2,7 +2,7 @@ import '../landing.css';
 import type { Metadata } from 'next';
 import StampIcon from '@/components/StampIcon';
 
-export const metadata: Metadata = { title: 'Terms and conditions | Loyalty Rewards' };
+export const metadata: Metadata = { title: 'Terms and conditions | Loyal Locally' };
 
 const UPDATED = '2 October 2026';
 
@@ -13,7 +13,7 @@ export default function Terms() {
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" />
       <header className="lp-nav">
         <div className="lp-container">
-          <a href="/" className="lp-logo"><span className="lp-logo-mark"><StampIcon icon="star" size={18} /></span>Loyalty Rewards</a>
+          <a href="/" className="lp-logo"><span className="lp-logo-mark"><StampIcon icon="star" size={18} /></span>Loyal Locally</a>
         </div>
       </header>
       <main className="lp-login lp-terms">
@@ -21,7 +21,7 @@ export default function Terms() {
         <p className="lp-terms-meta">For rewards cards. Last updated {UPDATED}.</p>
 
         <h2>1. Who runs your card</h2>
-        <p>Each rewards card belongs to the business you signed up with (for example, a cafe). That business sets its own rewards, prizes and rules and is responsible for honouring them. Loyalty Rewards provides the app the business uses.</p>
+        <p>Each rewards card belongs to the business you signed up with (for example, a cafe). That business sets its own rewards, prizes and rules and is responsible for honouring them. Loyal Locally provides the app the business uses.</p>
 
         <h2>2. Your account</h2>
         <ul>

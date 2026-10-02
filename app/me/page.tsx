@@ -8,7 +8,7 @@ import { memberCards } from '@/lib/members';
 import { FindPlaces, MemberLogout } from '@/components/member/FindPlaces';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'My cards | Loyalty Rewards', robots: { index: false } };
+export const metadata: Metadata = { title: 'My cards | Loyal Locally', robots: { index: false } };
 
 /** A member's home: all their cards, and a search to collect stamps at more places. */
 export default async function MyCards() {
@@ -23,7 +23,7 @@ export default async function MyCards() {
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" />
       <header className="lp-nav">
         <div className="lp-container">
-          <a href="/" className="lp-logo"><span className="lp-logo-mark"><StampIcon icon="star" size={18} /></span>Loyalty Rewards</a>
+          <a href="/" className="lp-logo"><span className="lp-logo-mark"><StampIcon icon="star" size={18} /></span>Loyal Locally</a>
           <div className="lp-nav-cta"><MemberLogout /></div>
         </div>
       </header>
@@ -46,7 +46,7 @@ export default async function MyCards() {
         </div>
 
         <h2>Collect at more places</h2>
-        <p className="lp-me-sub">Find another cafe, salon or shop using Loyalty Rewards and join with one tap. Same username and password.</p>
+        <p className="lp-me-sub">Find another cafe, salon or shop using Loyal Locally and join with one tap. Same username and password.</p>
         <FindPlaces mine={cards.map((c: any) => c.slug)} />
       </main>
     </div>

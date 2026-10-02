@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { savePassword } from '@/lib/client';
 
 type Item = { name: string; slug: string };
 const linkStyle = { background: 'none', border: 0, padding: 0, font: 'inherit', textDecoration: 'underline', cursor: 'pointer', color: 'inherit' } as const;
@@ -18,6 +19,7 @@ function MemberLogin({ onForgot, onSignup }: { onForgot: () => void; onSignup: (
       const r = await fetch('/api/member/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ login, password }) });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) { setErr(d.error || 'Something went wrong'); setBusy(false); return; }
+      await savePassword(login.trim(), password);
       // One card: open it. Several: their My cards page.
       window.location.href = d.cards.length === 1 ? `/${d.cards[0].slug}/card` : '/me';
     } catch { setErr('Something went wrong, please try again'); setBusy(false); }
@@ -27,13 +29,13 @@ function MemberLogin({ onForgot, onSignup }: { onForgot: () => void; onSignup: (
     <form className="lp-form" onSubmit={submit}>
       <label>
         Username
-        <input autoFocus autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} value={login} onChange={(e) => setLogin(e.target.value)} required />
+        <input autoFocus name="username" autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} value={login} onChange={(e) => setLogin(e.target.value)} required />
         <span style={{ fontWeight: 400, color: '#5f544b' }}>Joined before usernames? Use your WhatsApp number.</span>
       </label>
       <label>
         Password
         <div style={{ position: 'relative' }}>
-          <input type={show ? 'text' : 'password'} autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ width: '100%', paddingRight: 64 }} />
+          <input type={show ? 'text' : 'password'} name="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ width: '100%', paddingRight: 64 }} />
           <button type="button" onClick={() => setShow((v) => !v)} aria-label={show ? 'Hide password' : 'Show password'}
             style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 0, font: 'inherit', fontWeight: 700, cursor: 'pointer', color: '#5f544b' }}>
             {show ? 'Hide' : 'Show'}
@@ -42,6 +44,7 @@ function MemberLogin({ onForgot, onSignup }: { onForgot: () => void; onSignup: (
       </label>
       {err && <p role="alert" style={{ color: '#b3261e', fontWeight: 600 }}>{err}</p>}
       <button className="lp-btn orange" disabled={busy}>{busy ? 'One moment…' : 'Log in'}</button>
+      <p style={{ fontSize: '0.85rem', color: '#5f544b', margin: 0 }}>You&apos;ll stay logged in on this phone, and it can save your password.</p>
       <p style={{ fontSize: '0.85rem', color: '#5f544b' }}>
         <button type="button" onClick={onForgot} style={linkStyle}>Forgot password?</button>
       </p>

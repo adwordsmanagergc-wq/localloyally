@@ -32,7 +32,7 @@ export default function TrialForm() {
       </div>
       <div className="row2">
         <label>Your name<input value={f.contactName} onChange={set('contactName')} required maxLength={60} autoComplete="name" /></label>
-        <label>WhatsApp number<input value={f.whatsapp} onChange={set('whatsapp')} required inputMode="tel" autoComplete="tel" placeholder="+62 812 3456 7890" /></label>
+        <label>WhatsApp number<input value={f.whatsapp} onChange={set('whatsapp')} required inputMode="tel" autoComplete="tel" placeholder="+61 412 345 678" /></label>
       </div>
       <div className="row2">
         <label>Email (optional)<input type="email" value={f.email} onChange={set('email')} maxLength={120} autoComplete="email" /></label>

@@ -20,3 +20,16 @@ export const fmtDateTime = (d: string | Date) =>
 
 /** Pauses background refreshes while something animates (e.g. the spin wheel). */
 export const uiLock = { busy: false };
+
+/**
+ * Asks the phone's password manager to save the login (Chrome / Android show "Save password?").
+ * iPhones offer it from the form itself; this is a harmless no-op there.
+ */
+export async function savePassword(username: string, password: string) {
+  try {
+    const PC = (window as any).PasswordCredential;
+    if (PC && navigator.credentials && username && password)
+      // Never hold up logging in for more than a moment
+      await Promise.race([navigator.credentials.store(new PC({ id: username, password, name: username })), new Promise((r) => setTimeout(r, 1500))]);
+  } catch { /* the user said no, or the browser doesn't support it */ }
+}

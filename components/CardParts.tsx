@@ -117,3 +117,19 @@ export function CodeForm({ slug }: { slug: string }) {
     </form>
   );
 }
+
+/** Lets a customer stop (or restart) WhatsApp offers from this business. */
+export function OptInToggle({ slug, initial, business }: { slug: string; initial: boolean; business: string }) {
+  const [on, setOn] = useState(initial);
+  const [busy, setBusy] = useState(false);
+  async function toggle() {
+    setBusy(true);
+    try { setOn((await api(`/api/b/${slug}/card/optin`, { optIn: !on })).optIn); } catch { /* keep as is */ } finally { setBusy(false); }
+  }
+  return (
+    <label className="check">
+      <input type="checkbox" checked={on} disabled={busy} onChange={toggle} />
+      <span>WhatsApp messages about rewards and offers from {business}</span>
+    </label>
+  );
+}

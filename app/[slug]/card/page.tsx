@@ -6,7 +6,7 @@ import { getCustomerId } from '@/lib/auth';
 import { customerSummary, grantPassive, REASON_LABEL } from '@/lib/loyalty';
 import Brand from '@/components/Brand';
 import Stamp from '@/components/Stamp';
-import { CardQr, CodeForm, LogoutButton, ShareReferral, SocialForm } from '@/components/CardParts';
+import { CardQr, CodeForm, LogoutButton, OptInToggle, ShareReferral, SocialForm } from '@/components/CardParts';
 import SpinWheel from '@/components/SpinWheel';
 import { latestOffer } from '@/lib/campaigns';
 import { siteUrl } from '@/lib/site';
@@ -181,6 +181,10 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
           </div>
         </section>
       )}
+      <section className="card flat stack small">
+        <OptInToggle slug={biz.slug} initial={!!sum.customer.marketing_opt_in} business={biz.name} />
+      </section>
+
       <a className="card flat row between more-places" href="/me">
         <span><strong>Collect stamps at more places</strong><br /><span className="small muted">See all your cards and join other businesses with one tap.</span></span>
         <span aria-hidden="true">→</span>

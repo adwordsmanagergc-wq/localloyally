@@ -135,7 +135,7 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
           <label>
             Or find by WhatsApp number or username
             <div className="row">
-              <input className="grow" autoCapitalize="none" placeholder="0812… or username" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              <input className="grow" autoCapitalize="none" placeholder="Username or +61 4…" value={phone} onChange={(e) => setPhone(e.target.value)} />
               <button className="btn" disabled={busy || phone.trim().length < 2}>Find</button>
             </div>
           </label>

@@ -8,6 +8,7 @@ import { DashboardTab, MembersTab, TeamTab } from './AdminTabs';
 import SettingsTab from './SettingsTab';
 import GiftsTab from './GiftsTab';
 import OffersTab from './OffersTab';
+import MarketingTab from './MarketingTab';
 
 export type BizInfo = {
   slug: string; name: string; rewards: { stamps: number; label: string }[]; maxPerVisit: number;
@@ -34,7 +35,7 @@ export default function StaffConsole({ biz, staff }: { biz: BizInfo; staff: { id
     ['scan', 'Scan'],
     ...(biz.social ? [['approvals', `Posts${pending ? ` (${pending})` : ''}`]] : []),
     ...(biz.giftsEnabled ? [['gifts', 'Gifts']] : []),
-    ...(manager ? [['dashboard', 'Dashboard'], ['offers', 'Offers'], ['members', 'Members'], ['settings', 'Settings'], ['team', 'Team']] : []),
+    ...(manager ? [['dashboard', 'Dashboard'], ['offers', 'Offers'], ['marketing', 'Marketing'], ['members', 'Members'], ['settings', 'Settings'], ['team', 'Team']] : []),
   ];
 
   return (
@@ -58,6 +59,7 @@ export default function StaffConsole({ biz, staff }: { biz: BizInfo; staff: { id
       {tab === 'gifts' && <GiftsTab biz={biz} toast={show} manager={manager} />}
       {tab === 'dashboard' && <DashboardTab slug={biz.slug} />}
       {tab === 'offers' && <OffersTab slug={biz.slug} toast={show} />}
+      {tab === 'marketing' && <MarketingTab slug={biz.slug} toast={show} />}
       {tab === 'members' && <MembersTab slug={biz.slug} toast={show} />}
       {tab === 'settings' && <SettingsTab slug={biz.slug} toast={show} />}
       {tab === 'team' && <TeamTab slug={biz.slug} toast={show} me={staff.id} />}

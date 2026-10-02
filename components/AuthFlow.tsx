@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/client';
+import { api, savePassword } from '@/lib/client';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 type Mode = 'join' | 'login' | 'forgot' | 'reset';
@@ -36,13 +36,14 @@ export default function AuthFlow({ slug, refCode, businessName, start }: { slug:
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (mode === 'login') return run(async () => { await api(`/api/b/${slug}/auth/login`, { login: username, password }); done(); });
+    if (mode === 'login') return run(async () => { await api(`/api/b/${slug}/auth/login`, { login: username, password }); await savePassword(username, password); done(); });
     if (mode === 'join')
       return run(async () => {
         await api(`/api/b/${slug}/auth/register`, {
           username, phone, password, optIn, terms, ref: refCode,
           birthdayMonth: bm ? Number(bm) : undefined, birthdayDay: bd ? Number(bd) : undefined,
         });
+        await savePassword(username.trim().toLowerCase(), password);
         done();
       });
     if (mode === 'forgot')
@@ -94,10 +95,10 @@ export default function AuthFlow({ slug, refCode, businessName, start }: { slug:
         {mode !== 'login' && (
           <label>
             WhatsApp number
-            <input name="phone" autoComplete="tel" inputMode="tel" placeholder="0812 3456 7890" value={phone}
+            <input name="phone" autoComplete="tel" inputMode="tel" placeholder="+61 412 345 678" value={phone}
               onChange={(e) => setPhone(e.target.value)} required readOnly={mode === 'reset'} />
             {mode !== 'reset' && <span className="tiny muted" style={{ fontWeight: 400 }}>
-              {mode === 'join' ? 'For password reset codes and your rewards. ' : ''}Visiting from overseas? Start with + and your country code.</span>}
+              Start with + and your country code, e.g. +61 Australia, +62 Indonesia.{mode === 'join' ? ' Used for password reset codes and your rewards.' : ''}</span>}
           </label>
         )}
         {mode === 'reset' && (
@@ -135,6 +136,7 @@ export default function AuthFlow({ slug, refCode, businessName, start }: { slug:
         )}
 
         {err && <div className="banner bad small">{err}</div>}
+        {(mode === 'login' || mode === 'join') && <p className="tiny muted">You&apos;ll stay logged in on this phone, and it can save your password.</p>}
         <button className="btn block auth-btn" disabled={busy}>
           {busy ? 'One moment…' : mode === 'login' ? 'Log in' : mode === 'join' ? 'Create my card →' : mode === 'forgot' ? 'Send me a code' : 'Save and log in'}
         </button>

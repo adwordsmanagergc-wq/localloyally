@@ -14,7 +14,7 @@ export const POST = bizRoute(async (req, biz) => {
   if (!username) return json({ error: 'Usernames are 3 to 20 letters or numbers (dots and _ are fine), with at least one letter' }, 400);
   // Shown on the card and to staff. Customers can't set a separate name, so the username is it.
   const name = String(b.name || '').trim().slice(0, 60) || username;
-  if (!phone) return json({ error: 'Enter your WhatsApp number, e.g. 0812 3456 7890 or +44 7700 900123' }, 400);
+  if (!phone) return json({ error: 'Enter your WhatsApp number with + and country code, e.g. +61 412 345 678' }, 400);
   if (password.length < 6) return json({ error: 'Password needs at least 6 characters' }, 400);
   if (b.terms !== true) return json({ error: 'Please agree to the terms and conditions' }, 400);
   if (await usernameTakenByOther(username, phone)) return json({ error: 'That username is taken. Try another.' }, 409);

@@ -8,7 +8,7 @@ import { sendOtp } from '@/lib/whatsapp';
 export const POST = bizRoute(async (req, biz) => {
   const { phone: raw } = await body(req);
   const phone = normalizePhone(raw, biz.settings.defaultCountryCode);
-  if (!phone) return json({ error: 'Enter your WhatsApp number with country code, e.g. +62 812 3456 7890' }, 400);
+  if (!phone) return json({ error: 'Enter your WhatsApp number with country code, e.g. +61 412 345 678' }, 400);
   if (!(await rateLimit(`otp:${biz.id}:${phone}`, 3, 900)) || !(await rateLimit(`otp-ip:${clientIp(req)}`, 20, 3600)))
     return json({ error: 'Too many codes requested. Try again in 15 minutes.' }, 429);
 

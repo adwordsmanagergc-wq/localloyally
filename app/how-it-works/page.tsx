@@ -45,7 +45,7 @@ export default async function HowItWorks() {
           </nav>
           <div className="lp-nav-cta">
             <a className="lp-btn small ghost" href="/login?as=business">Business login</a>
-            <a className="lp-btn small" href="/#trial">Get started</a>
+            <a className="lp-btn small" href="/#setup">Get started</a>
           </div>
         </div>
       </header>
@@ -58,7 +58,7 @@ export default async function HowItWorks() {
               <h1 className="lp-title" style={{ fontSize: 'clamp(2.4rem, 6vw, 4rem)' }}>The loyalty card your customers keep. The marketing that brings them back.</h1>
               <p className="lp-lead">Here&apos;s the whole thing, screen by screen, using a real café set-up: <strong>Roasted</strong> in Canggu. Customers get a branded card on their phone. Your staff add stamps in seconds. You get the numbers and the tools to fill quiet days.</p>
               <div className="lp-hero-ctas" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 22 }}>
-                <a className="lp-btn orange" href="/#trial">Get started →</a>
+                <a className="lp-btn orange" href="/#setup">Get started →</a>
                 <a className="lp-btn ghost" href="#steps">Show me how</a>
               </div>
             </div>
@@ -255,7 +255,7 @@ export default async function HowItWorks() {
                 <div key={p.country} className="lp-plan">
                   <div className="lp-plan-country"><span aria-hidden="true">{p.flag}</span> {p.country}</div>
                   <div className="lp-plan-price">{p.price}<span>/ month</span></div>
-                  <a className="lp-btn small orange" href="/#trial">Get started</a>
+                  <a className="lp-btn small orange" href="/#setup">Get started</a>
                 </div>
               ))}
             </div>
@@ -267,7 +267,7 @@ export default async function HowItWorks() {
         <div className="lp-container">
           <a href="/" className="lp-footer-logo" aria-label="Loyal Locally home"><img src="/brand/loyal-locally-logo.png" width={88} height={120} alt="Loyal Locally" /></a>
           <nav aria-label="Footer">
-            <a href="/">Home</a><a href="/login?as=member">Member login</a><a href="/login?as=business">Business login</a><a href="/#trial">Get started</a>
+            <a href="/">Home</a><a href="/login?as=member">Member login</a><a href="/login?as=business">Business login</a><a href="/#setup">Get started</a>
           </nav>
           <span>© {new Date().getFullYear()} Loyal Locally by Metatap Digital</span>
         </div>

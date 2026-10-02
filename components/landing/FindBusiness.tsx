@@ -105,7 +105,7 @@ export default function FindBusiness({ initial }: { initial: 'member' | 'busines
         </div>
         {mode === 'business' && (
           <p style={{ fontSize: '0.85rem', color: '#5f544b' }}>
-            New here? <a href="/#trial" style={{ textDecoration: 'underline' }}>Get started</a>.
+            New here? <a href="/#setup" style={{ textDecoration: 'underline' }}>Get started</a>.
           </p>
         )}
         {mode === 'member' && (

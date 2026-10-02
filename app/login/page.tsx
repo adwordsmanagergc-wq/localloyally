@@ -14,7 +14,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
       <header className="lp-nav">
         <div className="lp-container">
           <a href="/" className="lp-logo" aria-label="Loyal Locally home"><img className="lp-logo-img" src="/brand/loyal-locally-icon.png" width={38} height={38} alt="" /><span className="lp-logo-text">Loyal <span className="lp-logo-pill">Locally</span></span></a>
-          <div className="lp-nav-cta"><a className="lp-btn small" href="/#trial">Get started</a></div>
+          <div className="lp-nav-cta"><a className="lp-btn small" href="/#setup">Get started</a></div>
         </div>
       </header>
       <main className="lp-login">

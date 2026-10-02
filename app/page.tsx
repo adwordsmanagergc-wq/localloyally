@@ -170,7 +170,7 @@ export default async function Home() {
                 Digital stamp cards with spin to win, social media bonus stamps, WhatsApp reminders and automatic Google review requests that help you rank higher on Google Maps. Branded to your business, set up in minutes, no app to download.
               </p>
               <div className="lp-hero-cta">
-                <a className="lp-btn orange" href="#trial">Get started →</a>
+                <a className="lp-btn orange" href="#setup">Get started →</a>
                 <a className="lp-btn ghost" href="/how-it-works">See how it works</a>
               </div>
               <div className="lp-ticks">
@@ -258,7 +258,7 @@ export default async function Home() {
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginTop: 30 }}>
               <a className="lp-btn orange" href="/how-it-works">Take the full tour →</a>
-              <a className="lp-btn ghost" href="#trial">Get started</a>
+              <a className="lp-btn ghost" href="#setup">Get started</a>
             </div>
           </div>
         </section>
@@ -381,14 +381,16 @@ export default async function Home() {
                 <div key={p.country} className="lp-plan">
                   <div className="lp-plan-country"><span aria-hidden="true">{p.flag}</span> {p.country}</div>
                   <div className="lp-plan-price">{p.price}<span>/ month</span></div>
-                  <a className="lp-btn small orange" href="#trial">Get started</a>
+                  <a className="lp-btn small orange" href="#setup">Get started</a>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="lp-section" id="trial" style={{ background: '#fffaf1', borderBlock: '2px solid #1c1511' }}>
+        <section className="lp-section" id="setup" style={{ background: '#fffaf1', borderBlock: '2px solid #1c1511' }}>
+          {/* Old links to /#trial still land here */}
+          <span id="trial" aria-hidden="true" />
           <div className="lp-container">
             <div className="lp-eyebrow">✺ Get started</div>
             <h2 className="lp-title">Let&apos;s set up your card.</h2>
@@ -427,7 +429,7 @@ export default async function Home() {
               <h2>Turn first visits into regulars.</h2>
               <p className="lp-lead" style={{ margin: '14px auto 0', color: '#1c1511' }}>Tell us about your business and we&apos;ll help you set it up.</p>
               <div className="lp-hero-cta" style={{ justifyContent: 'center' }}>
-                <a className="lp-btn" href="#trial">Get started →</a>
+                <a className="lp-btn" href="#setup">Get started →</a>
                 <a className="lp-btn ghost" href="/login?as=business">Business login</a>
               </div>
             </div>
@@ -444,7 +446,7 @@ export default async function Home() {
             <a href="/login?as=member">Member login</a>
             <a href="/login?as=business">Business login</a>
             <a href="/how-it-works">How it works</a>
-            <a href="#trial">Get started</a>
+            <a href="#setup">Get started</a>
             <a href="/platform">Admin</a>
           </nav>
           <span>© {new Date().getFullYear()} Loyal Locally by Metatap Digital</span>

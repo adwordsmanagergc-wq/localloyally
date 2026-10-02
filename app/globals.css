@@ -207,3 +207,6 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
 /* Gift certificates */
 .gift-value { font-family: var(--font-head); font-size: 2.4rem; font-weight: 800; line-height: 1.1; color: var(--accent); }
 .gift-msg { margin: 0; font-style: italic; color: var(--muted); }
+.banner.offer { background: var(--surface); border: 2px solid var(--accent); white-space: pre-line; }
+.progress { height: 10px; border-radius: 999px; background: var(--soft); overflow: hidden; }
+.progress > div { height: 100%; background: var(--accent); transition: width .3s; }

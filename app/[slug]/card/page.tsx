@@ -6,6 +6,7 @@ import Brand from '@/components/Brand';
 import Stamp from '@/components/Stamp';
 import { CardQr, LogoutButton, ShareReferral, SocialForm } from '@/components/CardParts';
 import SpinWheel from '@/components/SpinWheel';
+import { latestOffer } from '@/lib/campaigns';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,7 +17,7 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
   const id = await getCustomerId(biz.id);
   if (!id) redirect(`/${biz.slug}`);
   await grantPassive(biz, id);
-  const sum = (await customerSummary(biz, id))!;
+  const [sum, offer] = await Promise.all([customerSummary(biz, id).then((x) => x!), latestOffer(id)]);
   const s = biz.settings;
   const { balance, maxTier } = sum;
   const earned = s.rewards.filter((r) => balance >= r.stamps);
@@ -30,6 +31,8 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
   return (
     <main className="wrap stack-lg">
       <Brand biz={biz} right={<LogoutButton slug={biz.slug} />} />
+
+      {offer && <div className="banner offer">📣 {offer}</div>}
 
       <section className="card stack">
         <div className="row between">

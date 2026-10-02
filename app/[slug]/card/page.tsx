@@ -25,7 +25,11 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
   const id = await getCustomerId(biz.id);
   if (!id) redirect(`/${biz.slug}`);
   await grantPassive(biz, id);
-  const [sum, offer, gifts] = await Promise.all([customerSummary(biz, id).then((x) => x!), latestOffer(id), memberGifts(id)]);
+  // Extras (offer banner, gift cards) must never take the whole card down
+  const safe = <T,>(p: Promise<T>, fallback: T) => p.catch((e) => { console.error('Card extra failed', e); return fallback; });
+  const [sum, offer, gifts] = await Promise.all([
+    customerSummary(biz, id).then((x) => x!), safe(latestOffer(id), null), safe(memberGifts(id) as Promise<any[]>, [] as any[]),
+  ]);
   const s = biz.settings;
   const { balance, maxTier } = sum;
   const earned = s.rewards.filter((r) => balance >= r.stamps);

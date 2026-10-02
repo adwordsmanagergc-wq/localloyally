@@ -12,7 +12,7 @@ import OffersTab from './OffersTab';
 export type BizInfo = {
   slug: string; name: string; rewards: { stamps: number; label: string }[]; maxPerVisit: number;
   itemWord: string; itemWordPlural: string; social: boolean; stampIcon: string; stampImageUrl?: string;
-  currency: string; giftsEnabled: boolean;
+  currency: string; giftsEnabled: boolean; counterCodes: boolean;
 };
 export type Toast = (msg: string) => void;
 

@@ -11,13 +11,14 @@ export async function getBalance(tx: Tx, customerId: string): Promise<number> {
 
 export const REASON_LABEL: Record<string, string> = {
   purchase: 'Visit', double_hour: 'Double stamp hour', welcome: 'Welcome stamp', social: 'Social post',
-  referral: 'Friend referral', streak: 'Streak bonus', redeem: 'Reward redeemed', adjust: 'Adjustment',
+  referral: 'Friend referral', streak: 'Streak bonus', redeem: 'Reward redeemed', adjust: 'Adjustment', bonus: 'Bonus stamp',
 };
 
 type StampEvent = { reason: string; delta: number };
 
 /** Staff taps "+ stamp". qty = number of items in this order. */
-export async function addPurchase(biz: Business, customerId: string, staffId: string, qty: number, force: boolean) {
+/** staffId is null when the customer typed a counter code; note says so in the history. */
+export async function addPurchase(biz: Business, customerId: string, staffId: string | null, qty: number, force: boolean, note: string | null = null) {
   const s = biz.settings;
   qty = Math.min(s.maxPerVisit, Math.max(1, Math.round(qty) || 1));
   return sql.begin(async (tx) => {
@@ -38,7 +39,7 @@ export async function addPurchase(biz: Business, customerId: string, staffId: st
       if (cid === customerId) events.push({ reason, delta });
     };
 
-    await add(customerId, qty, 'purchase');
+    await add(customerId, qty, 'purchase', note);
     if (isDoubleHour(s)) await add(customerId, qty, 'double_hour');
 
     let referrerId: string | null = null;

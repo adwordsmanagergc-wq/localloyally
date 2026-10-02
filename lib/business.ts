@@ -49,6 +49,8 @@ export const DEFAULT_SETTINGS = {
   gifts: { enabled: true, validDays: 180 },
   // Shop position: wallet cards pop up on the lock screen nearby
   location: { lat: null as number | null, lng: null as number | null },
+  // Customers can type a code from the staff screen instead of being scanned
+  counterCodes: true,
 };
 export type Settings = typeof DEFAULT_SETTINGS;
 export type Business = { id: string; slug: string; name: string; active: boolean; settings: Settings };
@@ -245,6 +247,7 @@ export function validateSettings(input: any): Settings {
     },
     currency: str(input.currency, 6, d.currency) || d.currency,
     gifts: { enabled: bool(input.gifts?.enabled), validDays: int(input.gifts?.validDays, 7, 730, d.gifts.validDays) },
+    counterCodes: bool(input.counterCodes),
     location: (() => {
       const lat = Number(input.location?.lat), lng = Number(input.location?.lng);
       const ok = input.location?.lat !== null && input.location?.lat !== '' && Number.isFinite(lat) && Number.isFinite(lng)

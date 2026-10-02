@@ -90,3 +90,30 @@ export function LogoutButton({ slug }: { slug: string }) {
     }}>Log out</button>
   );
 }
+
+/** Type a code from staff (or one sent on WhatsApp) to get a stamp without being scanned. */
+export function CodeForm({ slug }: { slug: string }) {
+  const router = useRouter();
+  const [code, setCode] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true); setMsg(null);
+    try {
+      const r = await api(`/api/b/${slug}/card/code`, { code });
+      setMsg({ ok: true, text: `Done! +${r.added} stamp${r.added === 1 ? '' : 's'}${r.kind === 'bonus' ? ' (bonus)' : ''}.` });
+      setCode(''); router.refresh();
+    } catch (e: any) { setMsg({ ok: false, text: e.message }); } finally { setBusy(false); }
+  }
+  return (
+    <form className="stack" onSubmit={submit}>
+      <div className="row">
+        <input className="grow code-input" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="123 456"
+          autoComplete="one-time-code" autoCapitalize="characters" maxLength={9} aria-label="Code" required />
+        <button className="btn" disabled={busy || code.replace(/[^A-Z0-9]/gi, '').length !== 6}>Add</button>
+      </div>
+      {msg && <div className={`banner small ${msg.ok ? 'good' : 'bad'}`}>{msg.text}</div>}
+    </form>
+  );
+}

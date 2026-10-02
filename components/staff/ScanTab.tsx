@@ -7,7 +7,7 @@ import { GiftPanel } from './GiftsTab';
 
 const LABEL: Record<string, string> = {
   purchase: 'Visit', double_hour: 'Double hour', welcome: 'Welcome', social: 'Social post',
-  referral: 'Referral', streak: 'Streak', redeem: 'Redeemed', adjust: 'Adjustment',
+  referral: 'Referral', streak: 'Streak', redeem: 'Redeemed', adjust: 'Adjustment', bonus: 'Bonus',
 };
 
 function Scanner({ onScan }: { onScan: (text: string) => void }) {
@@ -35,6 +35,40 @@ function Scanner({ onScan }: { onScan: (text: string) => void }) {
     <div className="stack">
       <div id="reader" style={{ width: '100%', maxWidth: 420, margin: '0 auto' }} />
       {err && <div className="banner bad small">{err}</div>}
+    </div>
+  );
+}
+
+/** The two codes customers can type instead of being scanned. They change every 2 minutes. */
+function CounterCodes({ slug }: { slug: string }) {
+  const [c, setC] = useState<{ stamp: string; bonus: string; secondsLeft: number } | null>(null);
+  const [left, setLeft] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    let timer: ReturnType<typeof setTimeout>;
+    const load = async () => {
+      try {
+        const r = await api(`/api/b/${slug}/staff/codes`);
+        if (!alive) return;
+        setC(r); setLeft(r.secondsLeft);
+        timer = setTimeout(load, r.secondsLeft * 1000 + 300);
+      } catch { if (alive) timer = setTimeout(load, 15000); }
+    };
+    load();
+    const tick = setInterval(() => setLeft((s) => Math.max(0, s - 1)), 1000);
+    return () => { alive = false; clearTimeout(timer); clearInterval(tick); };
+  }, [slug]);
+  if (!c) return null;
+  const fmt = (x: string) => `${x.slice(0, 3)} ${x.slice(3)}`;
+  return (
+    <div className="card flat stack">
+      <div className="row between"><h3>Counter codes</h3><span className="tiny muted">New codes in {Math.floor(left / 60)}:{String(left % 60).padStart(2, '0')}</span></div>
+      <p className="small muted">Instead of scanning, tell the customer a code to type on their card. Each works once per customer per day.</p>
+      <div className="grid2">
+        <div className="code-box"><div className="tiny muted">Stamp code</div><div className="code-n">{fmt(c.stamp)}</div></div>
+        <div className="code-box"><div className="tiny muted">Bonus stamp code (staff only)</div><div className="code-n">{fmt(c.bonus)}</div></div>
+      </div>
+      <div className="progress"><div style={{ width: `${(left / 120) * 100}%`, transition: 'width 1s linear' }} /></div>
     </div>
   );
 }
@@ -90,6 +124,7 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
         ) : (
           <button className="btn huge block" onClick={() => { setErr(''); setScanning(true); }}>Scan member or gift QR</button>
         )}
+        {biz.counterCodes && <CounterCodes slug={biz.slug} />}
         <form className="card flat stack" onSubmit={(e) => { e.preventDefault(); lookup({ phone }); }}>
           <label>
             Or find by WhatsApp number or username

@@ -90,6 +90,15 @@ export function MembersTab({ slug, toast }: { slug: string; toast: Toast }) {
     try { await api(`/api/b/${slug}/admin/customers`, { customerId: c.id, delta: Number(v), note }); toast('Adjusted'); load(); }
     catch (e: any) { toast(e.message); }
   }
+  async function sendCode(c: any) {
+    const n = window.prompt(`How many bonus stamps should the code give ${c.name}? (1 to 20)`, '1');
+    if (!n) return;
+    const note = window.prompt('What is it for? (optional, e.g. "Instagram post")') || '';
+    try {
+      const r = await api(`/api/b/${slug}/admin/codes`, { customerId: c.id, stamps: Number(n), note });
+      if (window.confirm(`Code ${r.code} gives ${r.stamps} stamp${r.stamps > 1 ? 's' : ''} to ${c.name} only. Open WhatsApp to send it?`)) window.open(r.whatsapp, '_blank');
+    } catch (e: any) { toast(e.message); }
+  }
   return (
     <div className="stack">
       <div className="row wrap-row">
@@ -107,7 +116,7 @@ export function MembersTab({ slug, toast }: { slug: string; toast: Toast }) {
               <tr key={c.id}>
                 <td>{c.name}</td><td>{c.username ?? '-'}</td><td>+{c.phone}</td><td><strong>{c.balance}</strong></td><td>{c.visits}</td>
                 <td>{c.last_visit ? fmtDate(c.last_visit) : '-'}</td><td>{c.marketing_opt_in ? 'Yes' : 'No'}</td>
-                <td><button className="btn ghost small" onClick={() => adjust(c)}>Adjust</button></td>
+                <td className="row" style={{ gap: 6 }}><button className="btn ghost small" onClick={() => sendCode(c)}>Send code</button><button className="btn ghost small" onClick={() => adjust(c)}>Adjust</button></td>
               </tr>
             ))}
             {!items.length && <tr><td colSpan={8} className="muted">No members found</td></tr>}

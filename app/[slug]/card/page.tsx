@@ -6,7 +6,7 @@ import { getCustomerId } from '@/lib/auth';
 import { customerSummary, grantPassive, REASON_LABEL } from '@/lib/loyalty';
 import Brand from '@/components/Brand';
 import Stamp from '@/components/Stamp';
-import { CardQr, LogoutButton, ShareReferral, SocialForm } from '@/components/CardParts';
+import { CardQr, CodeForm, LogoutButton, ShareReferral, SocialForm } from '@/components/CardParts';
 import SpinWheel from '@/components/SpinWheel';
 import { latestOffer } from '@/lib/campaigns';
 
@@ -95,6 +95,12 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
             </div>
           </div>
         )}
+      </section>
+
+      <section className="card stack">
+        <h3>Got a code?</h3>
+        <p className="small muted">{s.counterCodes ? 'Type the code staff give you at the counter, or one we sent you.' : 'Type a code we sent you.'}</p>
+        <CodeForm slug={biz.slug} />
       </section>
 
       {sum.spins > 0 && (

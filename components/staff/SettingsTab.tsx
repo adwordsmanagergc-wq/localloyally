@@ -217,6 +217,11 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
       </fieldset>
 
       <fieldset>
+        <legend>Counter codes</legend>
+        <Check path="counterCodes" label="Let customers type a code from the staff screen instead of being scanned (codes change every 2 minutes)" />
+      </fieldset>
+
+      <fieldset>
         <legend>Gift certificates</legend>
         <Check path="gifts.enabled" label="Sell gift certificates (staff create them in the Gifts tab)" />
         <div className="grid2">

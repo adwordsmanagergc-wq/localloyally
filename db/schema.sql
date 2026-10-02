@@ -194,3 +194,27 @@ create table if not exists apple_registrations (
 alter table customers add column if not exists username text;
 alter table customers add column if not exists terms_accepted_at timestamptz;
 create unique index if not exists customers_username_idx on customers (business_id, lower(username)) where username is not null;
+
+-- Stamp codes: customers type a code from staff instead of being scanned
+alter table stamps drop constraint if exists stamps_reason_check;
+alter table stamps add constraint stamps_reason_check check (reason in ('purchase','double_hour','welcome','social','referral','streak','redeem','adjust','bonus'));
+create table if not exists code_uses (       -- counter codes: once per customer per day per kind
+  customer_id uuid not null references customers(id) on delete cascade,
+  kind text not null check (kind in ('stamp','bonus')),
+  day date not null,
+  created_at timestamptz not null default now(),
+  primary key (customer_id, kind, day)
+);
+create table if not exists personal_codes (  -- one-off codes a manager sends to one customer
+  id bigserial primary key,
+  business_id uuid not null references businesses(id) on delete cascade,
+  customer_id uuid not null references customers(id) on delete cascade,
+  code text not null,
+  stamps int not null check (stamps between 1 and 20),
+  note text,
+  created_by uuid references staff(id),
+  expires_at timestamptz not null,
+  used_at timestamptz,
+  created_at timestamptz not null default now(),
+  unique (customer_id, code)
+);

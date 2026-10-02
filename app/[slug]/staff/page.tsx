@@ -25,7 +25,7 @@ export default async function StaffPage({ params }: { params: Promise<{ slug: st
       <StaffConsole
         biz={{ slug: biz.slug, name: biz.name, rewards: s.rewards, maxPerVisit: s.maxPerVisit, itemWord: s.itemWord,
           itemWordPlural: s.itemWordPlural, social: s.social.enabled, stampIcon: s.stampIcon, stampImageUrl: s.stampImageUrl,
-          currency: s.currency, giftsEnabled: s.gifts.enabled }}
+          currency: s.currency, giftsEnabled: s.gifts.enabled, counterCodes: s.counterCodes }}
         staff={staff}
       />
     </main>

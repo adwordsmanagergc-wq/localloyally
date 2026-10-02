@@ -25,6 +25,7 @@ Digital stamp cards for any business: cafes, restaurants, barbers, salons, gyms,
 - Streak bonus, refer a friend, birthday treat
 - Spin to win: halfway through the card, on redeem and/or weekly, prizes, % off, chances, voucher expiry
 - Gift certificates on/off, how long they last, currency symbol
+- Counter codes on/off (customers type a stamp or bonus code shown on the staff screen instead of being scanned)
 - Shop location (wallet cards remind members when they're nearby)
 - WhatsApp reminders (1 stamp away, voucher expiring)
 
@@ -33,6 +34,8 @@ New businesses start from a template: cafe, matcha/tea bar, restaurant, barber/s
 ### Anti-cheat built in
 - Customer QR code expires every 10 minutes (screenshots stop working) and only works for that business
 - Staff get a warning if they stamp the same person twice within 3 minutes
+- Counter codes (typed by the customer instead of a scan) change every 2 minutes, work once per customer per day, and allow 8 tries per 15 minutes, so a shared or guessed code is useless
+- Personal codes a manager sends only work on that one customer's card, once
 - Spin results are decided on the server, not in the browser
 - Social posts need staff approval, one pending at a time, cooldown between posts, same link can't be used twice
 - PIN and code attempts are rate limited; every stamp is logged with the staff member who gave it

@@ -10,6 +10,7 @@ import { CardRefresh, CodeForm, LogoutButton, OptInToggle, ShareReferral, Social
 import SpinWheel from '@/components/SpinWheel';
 import { latestOffer } from '@/lib/campaigns';
 import { siteUrl } from '@/lib/site';
+import PoweredBy from '@/components/PoweredBy';
 
 export const dynamic = 'force-dynamic';
 
@@ -188,6 +189,7 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
         <span><strong>Collect stamps at more places</strong><br /><span className="small muted">See all your cards and join other businesses with one tap.</span></span>
         <span aria-hidden="true">→</span>
       </a>
+      <PoweredBy />
     </main>
   );
 }

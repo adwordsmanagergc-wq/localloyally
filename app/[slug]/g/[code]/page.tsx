@@ -5,6 +5,7 @@ import { findGift, giftUrl } from '@/lib/gifts';
 import { fmtGiftCode, money } from '@/lib/money';
 import Brand from '@/components/Brand';
 import { ShareReferral } from '@/components/CardParts';
+import PoweredBy from '@/components/PoweredBy';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { robots: { index: false } };
@@ -46,6 +47,7 @@ export default async function GiftPage({ params }: { params: Promise<{ slug: str
         )}
       </section>
       {!status && <ShareReferral link={url} text={`A gift for you from ${biz.name}`} />}
+      <PoweredBy />
     </main>
   );
 }

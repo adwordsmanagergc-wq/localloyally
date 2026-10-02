@@ -4,6 +4,7 @@ import { getCustomerId } from '@/lib/auth';
 import Brand from '@/components/Brand';
 import AuthFlow from '@/components/AuthFlow';
 import Stamp from '@/components/Stamp';
+import PoweredBy from '@/components/PoweredBy';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,6 +44,7 @@ export default async function Join({ params, searchParams }: {
       <p className="tiny muted center on-bg">
         We only message you on WhatsApp about your rewards if you agree.
       </p>
+      <PoweredBy />
     </main>
   );
 }

@@ -217,6 +217,15 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
       </fieldset>
 
       <fieldset>
+        <legend>Gift certificates</legend>
+        <Check path="gifts.enabled" label="Sell gift certificates (staff create them in the Gifts tab)" />
+        <div className="grid2">
+          {s.gifts.enabled && <label>Valid for (days)<input type="number" min={7} max={730} value={s.gifts.validDays} onChange={num('gifts.validDays')} /></label>}
+          <label>Currency symbol<input value={s.currency} onChange={(e) => set('currency', e.target.value)} maxLength={6} placeholder="Rp" /></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
         <legend>WhatsApp reminders</legend>
         <Check path="nudges.enabled" label="Message opted-in members when they're 1 stamp from a reward, and before vouchers expire" />
         {s.nudges.enabled && <label style={{ maxWidth: 260 }}>Only if no visit for (days)<input type="number" min={1} max={30} value={s.nudges.afterDays} onChange={num('nudges.afterDays')} /></label>}

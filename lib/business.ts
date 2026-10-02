@@ -45,6 +45,8 @@ export const DEFAULT_SETTINGS = {
   nudges: { enabled: true, afterDays: 3 },
   // Asks happy regulars for a Google review. Never rewarded (Google bans incentivised reviews).
   reviews: { enabled: true, googleUrl: '', afterVisits: 3 },
+  currency: 'Rp',
+  gifts: { enabled: true, validDays: 180 },
 };
 export type Settings = typeof DEFAULT_SETTINGS;
 export type Business = { id: string; slug: string; name: string; active: boolean; settings: Settings };
@@ -129,6 +131,7 @@ export function mergeSettings(saved: any): Settings {
     birthday: { ...d.birthday, ...(s.birthday ?? {}) },
     nudges: { ...d.nudges, ...(s.nudges ?? {}) },
     reviews: { ...d.reviews, ...(s.reviews ?? {}) },
+    gifts: { ...d.gifts, ...(s.gifts ?? {}) },
     rewards: s.rewards?.length ? s.rewards : d.rewards,
   };
 }
@@ -237,6 +240,8 @@ export function validateSettings(input: any): Settings {
       })(),
       afterVisits: int(input.reviews?.afterVisits, 1, 20, 3),
     },
+    currency: str(input.currency, 6, d.currency) || d.currency,
+    gifts: { enabled: bool(input.gifts?.enabled), validDays: int(input.gifts?.validDays, 7, 730, d.gifts.validDays) },
   };
 }
 

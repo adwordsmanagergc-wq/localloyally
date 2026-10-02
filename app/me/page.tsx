@@ -1,7 +1,6 @@
 import '../landing.css';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import StampIcon from '@/components/StampIcon';
 import { getMemberPhone } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { memberCards } from '@/lib/members';
@@ -20,10 +19,10 @@ export default async function MyCards() {
 
   return (
     <div className="lp">
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&family=Nunito:wght@900&display=swap" />
       <header className="lp-nav">
         <div className="lp-container">
-          <a href="/" className="lp-logo"><span className="lp-logo-mark"><StampIcon icon="star" size={18} /></span>Loyal Locally</a>
+          <a href="/" className="lp-logo" aria-label="Loyal Locally home"><img className="lp-logo-img" src="/brand/loyal-locally-icon.png" width={38} height={38} alt="" /><span className="lp-logo-text">Loyal <span className="lp-logo-pill">Locally</span></span></a>
           <div className="lp-nav-cta"><MemberLogout /></div>
         </div>
       </header>

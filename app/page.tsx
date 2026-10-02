@@ -1,6 +1,5 @@
 import './landing.css';
 import type { Metadata } from 'next';
-import StampIcon from '@/components/StampIcon';
 import TrialForm from '@/components/landing/TrialForm';
 import { walletEnabled } from '@/lib/wallet/config';
 
@@ -102,13 +101,13 @@ export default function Home() {
     <div className="lp">
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&family=Nunito:wght@900&display=swap" />
 
       <header className="lp-nav">
         <div className="lp-container">
           <a href="/" className="lp-logo" aria-label="Loyal Locally home">
-            <span className="lp-logo-mark"><StampIcon icon="star" size={18} /></span>
-            <span className="lp-logo-text">Loyal Locally</span>
+            <img className="lp-logo-img" src="/brand/loyal-locally-icon.png" width={38} height={38} alt="" />
+            <span className="lp-logo-text">Loyal <span className="lp-logo-pill">Locally</span></span>
           </a>
           <nav className="lp-links" aria-label="Main">
             <a href="#features">Features</a>
@@ -390,9 +389,9 @@ export default function Home() {
 
       <footer className="lp-footer">
         <div className="lp-container">
-          <div className="lp-logo" style={{ color: '#1c1511' }}>
-            <span className="lp-logo-mark"><StampIcon icon="star" size={18} /></span> Loyal Locally
-          </div>
+          <a href="/" className="lp-footer-logo" aria-label="Loyal Locally home">
+            <img src="/brand/loyal-locally-logo.png" width={88} height={120} alt="Loyal Locally" />
+          </a>
           <nav aria-label="Footer">
             <a href="/login?as=member">Member login</a>
             <a href="/login?as=business">Business login</a>

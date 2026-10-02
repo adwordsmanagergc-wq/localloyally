@@ -82,11 +82,17 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
   const [err, setErr] = useState('');
   const [confirm, setConfirm] = useState(false);
   const [gift, setGift] = useState('');
+  const [matches, setMatches] = useState<any[] | null>(null);
   const maxTier = Math.max(...biz.rewards.map((r) => r.stamps));
 
   async function lookup(q: Record<string, string>) {
     setErr(''); setBusy(true);
-    try { setData(await api(`/api/b/${biz.slug}/staff/lookup`, q)); setQty(1); setConfirm(false); }
+    setMatches(null);
+    try {
+      const r = await api(`/api/b/${biz.slug}/staff/lookup`, q);
+      if (r.matches) { setMatches(r.matches); setData(null); }
+      else { setData(r); setQty(1); setConfirm(false); }
+    }
     catch (e: any) { setErr(e.message); setData(null); }
     finally { setBusy(false); setScanning(false); }
   }
@@ -130,10 +136,23 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
             Or find by WhatsApp number or username
             <div className="row">
               <input className="grow" autoCapitalize="none" placeholder="0812… or username" value={phone} onChange={(e) => setPhone(e.target.value)} />
-              <button className="btn" disabled={busy || phone.trim().length < 3}>Find</button>
+              <button className="btn" disabled={busy || phone.trim().length < 2}>Find</button>
             </div>
           </label>
         </form>
+        {matches && (
+          <div className="card flat stack">
+            <h3>Pick the customer</h3>
+            <div className="list">
+              {matches.map((m) => (
+                <button key={m.id} type="button" className="btn ghost block match-btn" onClick={() => lookup({ customerId: m.id })}>
+                  <span><strong>{m.username ?? m.name}</strong>{m.username && m.name !== m.username ? ` · ${m.name}` : ''}</span>
+                  <span className="muted small">{m.phone.startsWith('+') ? m.phone : '+' + m.phone}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         {busy && <p className="muted">Looking up…</p>}
         {err && <div className="banner bad">{err}</div>}
       </div>

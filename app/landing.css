@@ -88,7 +88,7 @@
 @keyframes lp-pop { from { transform: scale(.4); opacity: 0 } to { transform: scale(1); opacity: 1 } }
 .lp-float {
   position: absolute; background: var(--paper); border: 2px solid var(--ink); border-radius: 16px; padding: 10px 14px; font-weight: 700; font-size: 0.85rem;
-  box-shadow: 4px 4px 0 var(--ink); display: flex; align-items: center; gap: 8px; animation: lp-bob 4s ease-in-out infinite; z-index: 2;
+  box-shadow: 4px 4px 0 var(--ink); display: flex; align-items: center; gap: 8px; animation: lp-bob 4s ease-in-out infinite; z-index: 2; max-width: 220px; line-height: 1.3;
 }
 .lp-float.f1 { top: -1%; left: -4%; background: var(--lime); }
 .lp-float.f2 { top: 46%; right: -6%; background: var(--pink); animation-delay: -1.3s; }

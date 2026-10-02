@@ -146,9 +146,9 @@ export default function Home() {
             </div>
 
             <div className="lp-phone-wrap" aria-hidden="true">
-              <div className="lp-float f1">+2 stamps for your post 📸</div>
-              <div className="lp-float f2">You won 15% off! 🎡</div>
-              <div className="lp-float f3">Double stamps 2 to 4pm ⏱</div>
+              <div className="lp-float f1">Post on your social for a stamp! 📸</div>
+              <div className="lp-float f2">Spin to win reward unlocked after 4 stamps! 🎡</div>
+              <div className="lp-float f3">Refer a friend for a stamp! 🤝</div>
               <div className="lp-phone">
                 <div className="lp-screen lp-screen-roasted">
                   <div className="s-brand"><img src="/brands/roasted/logo.png" alt="" width={34} height={34} /> Roasted</div>

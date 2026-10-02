@@ -10,7 +10,7 @@ const WALLET = walletEnabled().apple || walletEnabled().google;
 export const metadata: Metadata = {
   title: 'Loyal Locally | Digital stamp cards for your business',
   description:
-    `Digital loyalty stamp cards for cafes, restaurants, barbers, salons and gyms. Customers join with WhatsApp${WALLET ? ' and can save the card to Apple or Google Wallet' : ', staff scan a QR code'}. Spin to win, offers, gift certificates and your own branding. Free for 7 days.`,
+    `Digital loyalty stamp cards for cafes, restaurants, barbers, salons and gyms. Customers join with WhatsApp${WALLET ? ' and can save the card to Apple or Google Wallet' : ', staff find them by username'}. Spin to win, offers, gift certificates and your own branding. Free for 7 days.`,
 };
 
 const Icon = ({ d, bg }: { d: string; bg: string }) => (
@@ -54,6 +54,29 @@ const PulseStamp = () => (
   </svg>
 );
 
+/** The spin wheel in the homepage example phone. */
+const WHEEL = ['10% off', 'Pastry', '5% off', 'Coffee', 'Matcha', '15% off'];
+const MiniWheel = () => {
+  const seg = (2 * Math.PI) / WHEEL.length;
+  const pt = (a: number, r: number) => [50 + r * Math.sin(a), 50 - r * Math.cos(a)];
+  return (
+    <svg viewBox="0 0 100 100" width="118" height="118" aria-hidden="true" className="s-wheel-svg">
+      {WHEEL.map((label, i) => {
+        const [x0, y0] = pt(i * seg, 48), [x1, y1] = pt((i + 1) * seg, 48);
+        const mid = (i + 0.5) * seg; const [tx, ty] = pt(mid, 31);
+        return (
+          <g key={label}>
+            <path d={`M50,50 L${x0},${y0} A48,48 0 0 1 ${x1},${y1} Z`} fill={i % 2 ? '#fffaf3' : '#9a5a32'} stroke="#1c1511" strokeOpacity=".2" />
+            <text x={tx} y={ty} fontSize="7" fontWeight="800" fill={i % 2 ? '#1c1511' : '#fff'} textAnchor="middle" dominantBaseline="middle"
+              transform={`rotate(${(mid * 180) / Math.PI} ${tx} ${ty})`}>{label}</text>
+          </g>
+        );
+      })}
+      <circle cx="50" cy="50" r="7" fill="#1c1511" />
+    </svg>
+  );
+};
+
 const MINIS = [
   {
     name: 'Roasted', ink: '#fff', surface: 'rgba(251,246,239,.94)', accent: '#9a5a32', accentInk: '#fff',
@@ -76,7 +99,7 @@ const MINIS = [
 const COMPARE: [string, string, string, string][] = [
   ['Customers can\'t lose their card', 'no', 'yes', 'yes'],
   ['No app download for customers', 'yes', 'no', 'yes'],
-  ['Stops fake stamps and screenshots', 'no', 'meh', 'yes'],
+  ['Stops fake and duplicate stamps', 'no', 'meh', 'yes'],
   ['Bonus stamps for social media posts', 'no', 'meh', 'yes'],
   ['Spin to win prizes', 'no', 'meh', 'yes'],
   ['WhatsApp reminders', 'no', 'no', 'yes'],
@@ -94,7 +117,7 @@ const TRIAL = [
   { e: '🎡', t: 'Spin to win', p: 'Halfway to their reward, they spin for a prize on their next visit. You set the odds.' },
   { e: '📸', t: 'Stamps for posts', p: 'Customers post about you on Instagram or TikTok and earn bonus stamps. Free marketing.' },
   { e: '🤝', t: 'Refer a friend', p: 'Every member gets a share link and earns a stamp when their friend visits.' },
-  { e: '🔢', t: 'Scan or code', p: 'Scan their QR, or read out a 6-digit counter code that changes every 2 minutes.' },
+  { e: '🔎', t: 'No scanning needed', p: 'Staff type the customer\'s username, or read out a 6-digit counter code that changes every 2 minutes.' },
   { e: '🎁', t: 'Gift certificates', p: 'Sell gift cards at the counter, shared by link, used over several visits.' },
   { e: '📣', t: 'Send offers', p: 'Message regulars, people close to a reward or lost customers, with a voucher if you like.' },
   { e: '💬', t: 'WhatsApp nudges', p: 'Automatic reminders when they are 1 stamp away or a voucher is about to expire.' },
@@ -121,13 +144,16 @@ async function pricesForVisitor() {
 }
 
 const FAQ = [
-  ['Do my customers need to download an app?', `No. They open your rewards page in their phone browser, join with their WhatsApp number and can save the card to ${WALLET ? 'Apple Wallet, Google Wallet or ' : ''}their home screen.`],
-  ['How do staff add stamps?', 'Staff open your staff page on any phone or tablet, log in with their own PIN and scan the customer\'s QR code. It takes about two seconds.'],
-  ['Can people cheat the system?', 'The customer QR code changes every few minutes, so screenshots stop working. Every stamp is logged with the staff member who gave it, spin results are decided on our server, and social posts need staff approval.'],
-  ['Can I make it look like my brand?', 'Yes. Upload your logo, pick your colours, font, background texture and stamp icon, and change the wording to suit you, like "coffee", "cut" or "class".'],
+  ['Do my customers need to download an app?', `No. They open your rewards page in their phone browser and sign up in 30 seconds with a username, password and WhatsApp number. Their phone keeps them logged in and can save the password, and they can add the card to ${WALLET ? 'Apple Wallet, Google Wallet or ' : ''}their home screen.`],
+  ['How do staff add stamps?', 'The customer tells staff their username, which is shown big on their card. Staff type it (or just part of it) on your staff page on any phone or tablet and tap Add stamp. Or staff read out the counter code on their screen and the customer types it on their card. Either way it takes a few seconds, with no scanning.'],
+  ['Can people cheat the system?', 'Counter codes change every 2 minutes and each works once per customer per day, so sharing one is pointless. Every staff member logs in with their own PIN and every stamp is logged with who gave it. Staff are warned about double stamps, spin results are decided on our server and social posts need staff approval.'],
+  ['When do customers spin to win?', 'Halfway to their top reward, for example at 4 stamps on an 8-stamp card, they unlock one spin per card. Prizes are vouchers for their next visit, so they come back. You choose the prizes and the odds.'],
+  ['How do referrals work?', 'Every member gets a share link on their card. When a friend joins with it and makes their first visit, the member who invited them gets a bonus stamp. The friend gets your normal welcome stamp.'],
+  ['Can I message my customers?', 'Yes. Send an offer, with a voucher if you like, to groups such as regulars, people close to a reward or customers you have not seen in a while. You also get a list of everyone who agreed to WhatsApp messages to download any time, and customers can switch messages off from their card.'],
+  ['Can I make it look like my brand?', 'Yes. Upload your logo, pick your colours, font, background photo or texture and stamp design, and change the wording to suit you, like "coffee", "cut" or "class".'],
   ['How does it help with Google Maps and AI search?', 'Google ranks local businesses partly on how many reviews you have, how good they are and how recent they are. AI assistants like ChatGPT and Google AI Overviews also read reviews when they recommend places. Loyal Locally asks your regulars, the people most likely to leave 5 stars, for a review at the right moment, so a steady stream keeps coming in.'],
   ['Do customers get stamps for reviews?', 'No, and that is on purpose. Google\'s rules ban rewarding customers for reviews, and businesses that do it can have reviews removed. We simply ask happy regulars, which keeps your profile safe.'],
-  ['Does it work outside Indonesia?', 'Yes. Customers can join with any international WhatsApp number, and you set your own country and timezone.'],
+  ['Does it work outside Indonesia?', 'Yes. Customers join with any international WhatsApp number by starting with + and their country code, and you set your own country and timezone. It runs in Indonesia, Australia and the UK today.'],
 ];
 
 export default async function Home() {
@@ -195,28 +221,24 @@ export default async function Home() {
                   <div className="s-brand"><img src="/brands/roasted/logo.png" alt="" width={34} height={34} /> Roasted</div>
                   <div className="s-card">
                     <div style={{ color: '#7a7067' }}>Hi Sarah</div>
-                    <div className="s-count">5 <span style={{ fontSize: '0.8rem', fontWeight: 500 }}>stamps</span></div>
+                    <div className="s-count">4 <span style={{ fontSize: '0.8rem', fontWeight: 500 }}>stamps</span></div>
                     <div className="s-grid">
                       {Array.from({ length: 8 }, (_, i) => (
-                        <div key={i} className={`s-dot img ${i < 5 ? 'on' : ''}`}>
+                        <div key={i} className={`s-dot img ${i < 4 ? 'on' : ''}`}>
                           <img src="/brands/roasted/stamp.png" alt="" />
                         </div>
                       ))}
                     </div>
-                    <div style={{ marginTop: 10, fontWeight: 700 }}>3 more to a free coffee</div>
+                    <div style={{ marginTop: 10, fontWeight: 700 }}>1 more to a free pastry</div>
                   </div>
-                  <div className="s-qr">
-                    <svg width="110" height="110" viewBox="0 0 21 21" shapeRendering="crispEdges">
-                      {Array.from({ length: 21 * 21 }, (_, k) => {
-                        const x = k % 21, y = Math.floor(k / 21);
-                        const finder = (a: number, b: number) => x >= a && x < a + 7 && y >= b && y < b + 7 && (x === a || x === a + 6 || y === b || y === b + 6 || (x >= a + 2 && x <= a + 4 && y >= b + 2 && y <= b + 4));
-                        const inFinderZone = (x < 8 && y < 8) || (x > 12 && y < 8) || (x < 8 && y > 12);
-                        const on = inFinderZone ? finder(0, 0) || finder(14, 0) || finder(0, 14) : (x * 7 + y * 13 + x * y) % 5 < 2;
-                        return on ? <rect key={k} x={x} y={y} width="1" height="1" fill="#1c1511" /> : null;
-                      })}
-                    </svg>
+                  <div className="s-spin">
+                    <div className="s-spin-title">🎉 You unlocked spin to win!</div>
+                    <div className="s-wheel">
+                      <span className="s-pointer" />
+                      <MiniWheel />
+                    </div>
                   </div>
-                  <div className="s-btn">Spin to win 🎡</div>
+                  <div className="s-btn">Spin now 🎡</div>
                 </div>
               </div>
             </div>
@@ -336,13 +358,13 @@ export default async function Home() {
               </div>
               <div className="lp-step">
                 <div className="n">02</div>
-                <h3>Put up your QR code</h3>
+                <h3>Put up your join QR code</h3>
                 <p>Print your join QR for the counter, add a link to your website and Instagram bio. Customers join in 20 seconds.</p>
               </div>
               <div className="lp-step">
                 <div className="n">03</div>
-                <h3>Scan and reward</h3>
-                <p>Staff scan the customer&apos;s card on any phone. Stamps, rewards, spins and reminders take care of themselves.</p>
+                <h3>Find and reward</h3>
+                <p>Staff type the customer&apos;s username on any phone and tap Add stamp. Stamps, rewards, spins and reminders take care of themselves.</p>
               </div>
             </div>
             <div className="lp-who">
@@ -352,7 +374,7 @@ export default async function Home() {
               </div>
               <div style={{ background: '#c8b8ff' }}>
                 <h3>For staff</h3>
-                <ul><li>Own PIN, no training needed</li><li>Scan, tap, done</li><li>Warns about accidental double stamps</li></ul>
+                <ul><li>Own PIN, no training needed</li><li>Search, tap, done</li><li>Warns about accidental double stamps</li></ul>
               </div>
               <div style={{ background: '#ffb8cb' }}>
                 <h3>For customers</h3>

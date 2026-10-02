@@ -1,5 +1,4 @@
 import { sql } from '@/lib/db';
-import { readCardToken } from '@/lib/auth';
 import { customerSummary } from '@/lib/loyalty';
 import { staffRoute, body } from '@/lib/route';
 import { json, maskPhone, normalizePhone } from '@/lib/util';
@@ -13,8 +12,7 @@ export const POST = staffRoute(async (req, biz, staff) => {
     id = await customerByWalletCode(biz.id, String(b.token));
     if (!id) return json({ error: 'Wallet card not recognised. Ask them to show the card in the app instead.' }, 400);
   } else if (b.token) {
-    id = await readCardToken(biz.id, String(b.token));
-    if (!id) return json({ error: 'QR code expired or from another business. Ask them to refresh their card.' }, 400);
+    return json({ error: 'That QR code is not a Loyal Locally card. Search by username instead.' }, 400);
   } else if (b.phone) {
     // The search box takes a WhatsApp number or a username
     const q = String(b.phone).trim().slice(0, 40);

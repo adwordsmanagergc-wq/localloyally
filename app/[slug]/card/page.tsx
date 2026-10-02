@@ -6,7 +6,7 @@ import { getCustomerId } from '@/lib/auth';
 import { customerSummary, grantPassive, REASON_LABEL } from '@/lib/loyalty';
 import Brand from '@/components/Brand';
 import Stamp from '@/components/Stamp';
-import { CardQr, CodeForm, LogoutButton, OptInToggle, ShareReferral, SocialForm } from '@/components/CardParts';
+import { CardRefresh, CodeForm, LogoutButton, OptInToggle, ShareReferral, SocialForm } from '@/components/CardParts';
 import SpinWheel from '@/components/SpinWheel';
 import { latestOffer } from '@/lib/campaigns';
 import { siteUrl } from '@/lib/site';
@@ -69,7 +69,7 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
         {balance > maxTier && <p className="small muted">+{balance - maxTier} extra stamps saved</p>}
         {earned.length > 0 ? (
           <div className="banner good">
-            You've earned: {earned.map((r) => r.label).join(' or ')}. Show your QR code at the counter to claim it.
+            You've earned: {earned.map((r) => r.label).join(' or ')}. Tell staff your username at the counter to claim it.
           </div>
         ) : next ? (
           <p className="small">
@@ -84,9 +84,14 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
       </section>
 
       <section className="card stack center">
-        <h2>Show this at the counter</h2>
-        <p className="small muted">Staff scan it to add your stamps. It refreshes itself, so screenshots won't work.</p>
-        <CardQr slug={biz.slug} />
+        <h2>At the counter</h2>
+        <p className="small muted">Tell staff your username and they&apos;ll add your stamps.</p>
+        <div className="username-big">@{sum.customer.username ?? sum.customer.name}</div>
+        <CardRefresh slug={biz.slug} />
+        <div className="stack" style={{ textAlign: 'left', marginTop: 6 }}>
+          <p className="small muted">{s.counterCodes ? 'Or type the code staff give you, or one we sent you:' : 'Got a code we sent you? Type it here:'}</p>
+          <CodeForm slug={biz.slug} />
+        </div>
         {(showApple || showGoogle) && (
           <div className="stack" style={{ marginTop: 6 }}>
             <p className="small muted">Keep your card in your phone&apos;s wallet. It updates by itself and is one tap away at the counter.</p>
@@ -96,12 +101,6 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
             </div>
           </div>
         )}
-      </section>
-
-      <section className="card stack">
-        <h3>Got a code?</h3>
-        <p className="small muted">{s.counterCodes ? 'Type the code staff give you at the counter, or one we sent you.' : 'Type a code we sent you.'}</p>
-        <CodeForm slug={biz.slug} />
       </section>
 
       {sum.spins > 0 && (
@@ -119,7 +118,7 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
             <div key={v.id} className="voucher">
               <div>
                 <div className="v-label">{v.label}</div>
-                <div className="tiny muted">Use by {d(v.expires_at)} · show your QR code to claim</div>
+                <div className="tiny muted">Use by {d(v.expires_at)} · tell staff your username to claim</div>
               </div>
               <span className="pill">{v.source === 'birthday' ? 'Birthday' : 'Won'}</span>
             </div>

@@ -63,7 +63,7 @@ function CounterCodes({ slug }: { slug: string }) {
   return (
     <div className="card flat stack">
       <div className="row between"><h3>Counter codes</h3><span className="tiny muted">New codes in {Math.floor(left / 60)}:{String(left % 60).padStart(2, '0')}</span></div>
-      <p className="small muted">Instead of scanning, tell the customer a code to type on their card. Each works once per customer per day.</p>
+      <p className="small muted">Or tell the customer a code to type on their card. Each works once per customer per day.</p>
       <div className="grid2">
         <div className="code-box"><div className="tiny muted">Stamp code</div><div className="code-n">{fmt(c.stamp)}</div></div>
         <div className="code-box"><div className="tiny muted">Bonus stamp code (staff only)</div><div className="code-n">{fmt(c.bonus)}</div></div>
@@ -112,30 +112,19 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
     return (
       <div className="stack-lg" style={{ maxWidth: 520 }}>
         <GiftPanel biz={biz} code={gift} toast={toast} />
-        <button className="btn dark huge block" onClick={() => { setGift(''); setScanning(true); }}>Next customer</button>
+        <button className="btn dark huge block" onClick={() => { setGift(''); setScanning(false); }}>Next customer</button>
       </div>
     );
 
   if (!data)
     return (
       <div className="stack-lg" style={{ maxWidth: 520 }}>
-        {scanning ? (
-          <div className="stack">
-            <Scanner onScan={(t) => {
-              const g = t.match(/\/g\/([A-Z0-9]{10})(?:[/?#]|$)/);
-              if (g) { setScanning(false); setGift(g[1]); } else lookup({ token: t });
-            }} />
-            <button className="btn ghost block" onClick={() => setScanning(false)}>Cancel</button>
-          </div>
-        ) : (
-          <button className="btn huge block" onClick={() => { setErr(''); setScanning(true); }}>Scan member or gift QR</button>
-        )}
-        {biz.counterCodes && <CounterCodes slug={biz.slug} />}
-        <form className="card flat stack" onSubmit={(e) => { e.preventDefault(); lookup({ phone }); }}>
+        <form className="card stack" onSubmit={(e) => { e.preventDefault(); lookup({ phone }); }}>
           <label>
-            Or find by WhatsApp number or username
+            <span style={{ fontSize: '1.15rem' }}>Find the customer</span>
+            <span className="tiny muted" style={{ fontWeight: 400 }}>Type their username (they can see it on their card), part of it, or their WhatsApp number.</span>
             <div className="row">
-              <input className="grow" autoCapitalize="none" placeholder="Username or +61 4…" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              <input className="grow" autoFocus autoCapitalize="none" autoCorrect="off" spellCheck={false} placeholder="e.g. ketut.d" value={phone} onChange={(e) => setPhone(e.target.value)} />
               <button className="btn" disabled={busy || phone.trim().length < 2}>Find</button>
             </div>
           </label>
@@ -155,6 +144,18 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
         )}
         {busy && <p className="muted">Looking up…</p>}
         {err && <div className="banner bad">{err}</div>}
+        {biz.counterCodes && <CounterCodes slug={biz.slug} />}
+        {scanning ? (
+          <div className="stack">
+            <Scanner onScan={(t) => {
+              const g = t.match(/\/g\/([A-Z0-9]{10})(?:[/?#]|$)/);
+              if (g) { setScanning(false); setGift(g[1]); } else lookup({ token: t });
+            }} />
+            <button className="btn ghost block" onClick={() => setScanning(false)}>Cancel</button>
+          </div>
+        ) : (
+          <button className="btn ghost block" style={{ background: 'var(--surface)' }} onClick={() => { setErr(''); setScanning(true); }}>🎁 Scan a gift certificate</button>
+        )}
       </div>
     );
 
@@ -253,7 +254,7 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
         </div>
       </div>
 
-      <button className="btn dark huge block" onClick={() => { setData(null); setPhone(''); setErr(''); setScanning(true); }}>Next customer</button>
+      <button className="btn dark huge block" onClick={() => { setData(null); setPhone(''); setErr(''); setMatches(null); setScanning(false); }}>Next customer</button>
     </div>
   );
 

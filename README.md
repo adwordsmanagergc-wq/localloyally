@@ -10,9 +10,9 @@ Digital stamp cards for any business: cafes, restaurants, barbers, salons, gyms,
 | `/login` | Customers | Log in with username + password from the main site; "Sign up" finds the business first |
 | `/me` | Customers | My cards: every card they have, plus search to join other businesses with one tap (same username and password) |
 | `/terms` | Everyone | Terms and conditions customers agree to at sign-up |
-| `/{slug}/card` | Customers | Stamp card, rotating QR code, spin to win, vouchers, social post stamps, refer-a-friend link, latest offer. Can be added to the home screen, or to Apple / Google Wallet |
+| `/{slug}/card` | Customers | Stamp card with their username for staff, a box for counter or personal codes, spin to win, vouchers, social post stamps, refer-a-friend link, latest offer. Can be added to the home screen, or to Apple / Google Wallet |
 | `/{slug}/g/{code}` | Anyone with the link | A gift certificate with its QR code and balance |
-| `/{slug}/staff` | Staff (PIN) | Scan member, wallet or gift QR, or search phone; add stamps, redeem rewards and vouchers, approve social posts, sell and use gift certificates |
+| `/{slug}/staff` | Staff (PIN) | Find customers by username (or part of it) or number, show counter codes, scan gift certificates; add stamps, redeem rewards and vouchers, approve social posts, sell and use gift certificates |
 | `/{slug}/staff` | Manager (PIN) | Also: dashboard (repeat visits, customer groups, per-staff results), offers to customer groups, members list + CSV export, stamp adjustments, team PINs, **all settings** |
 | `/platform` | You | Add businesses, pause them, reset manager PINs, see members and activity per client |
 
@@ -32,7 +32,6 @@ Digital stamp cards for any business: cafes, restaurants, barbers, salons, gyms,
 New businesses start from a template: cafe, matcha/tea bar, restaurant, barber/salon, beauty/spa, gym/studio, bakery.
 
 ### Anti-cheat built in
-- Customer QR code expires every 10 minutes (screenshots stop working) and only works for that business
 - Staff get a warning if they stamp the same person twice within 3 minutes
 - Counter codes (typed by the customer instead of a scan) change every 2 minutes, work once per customer per day, and allow 8 tries per 15 minutes, so a shared or guessed code is useless
 - Personal codes a manager sends only work on that one customer's card, once

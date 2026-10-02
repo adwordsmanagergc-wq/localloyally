@@ -3,39 +3,16 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api, uiLock } from '@/lib/client';
 
-export function CardQr({ slug }: { slug: string }) {
+/** Keeps the card up to date: refreshes when they come back to the page and every 20 seconds, so new stamps appear. */
+export function CardRefresh({ slug }: { slug: string }) {
   const router = useRouter();
-  const [svg, setSvg] = useState('');
-  const [err, setErr] = useState('');
-
   useEffect(() => {
-    let alive = true;
-    const load = async () => {
-      try {
-        const r = await api(`/api/b/${slug}/card/qr`);
-        if (alive) { setSvg(r.svg); setErr(''); }
-      } catch (e: any) {
-        if (e.status === 401) router.replace(`/${slug}`);
-        else if (alive) setErr('Offline? Pull down to refresh.');
-      }
-    };
-    load();
-    const t = setInterval(load, 4 * 60 * 1000);
-    // Refresh stamps when they come back to the app after being scanned
-    const onVis = () => { if (document.visibilityState === 'visible') { load(); if (!uiLock.busy) router.refresh(); } };
+    const onVis = () => { if (document.visibilityState === 'visible' && !uiLock.busy) router.refresh(); };
     document.addEventListener('visibilitychange', onVis);
     const poll = setInterval(() => { if (!uiLock.busy && document.visibilityState === 'visible') router.refresh(); }, 20000);
-    return () => { alive = false; clearInterval(t); clearInterval(poll); document.removeEventListener('visibilitychange', onVis); };
+    return () => { clearInterval(poll); document.removeEventListener('visibilitychange', onVis); };
   }, [slug, router]);
-
-  return (
-    <div className="stack">
-      <div className="qrbox" aria-label="Your member QR code">
-        {svg ? <div dangerouslySetInnerHTML={{ __html: svg }} /> : <div style={{ aspectRatio: '1' }} />}
-      </div>
-      {err && <p className="small muted">{err}</p>}
-    </div>
-  );
+  return null;
 }
 
 export function SocialForm({ slug }: { slug: string }) {

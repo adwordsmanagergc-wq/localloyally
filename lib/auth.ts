@@ -98,15 +98,6 @@ export function checkPlatformPassword(pw: string) {
   return timingSafeEqual(a, b);
 }
 
-/** Short-lived token shown as the customer's QR code. */
-export async function cardToken(bizId: string, customerId: string) {
-  return signToken({ sub: customerId, biz: bizId, typ: 'card' }, '10m');
-}
-export async function readCardToken(bizId: string, token: string) {
-  const p = await verifyToken(token);
-  return p?.typ === 'card' && p.biz === bizId ? (p.sub as string) : null;
-}
-
 export function hashOtp(bizId: string, phone: string, code: string) {
   return createHmac('sha256', secret()).update(`${bizId}:${phone}:${code}`).digest('hex');
 }

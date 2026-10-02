@@ -47,6 +47,8 @@ export const DEFAULT_SETTINGS = {
   reviews: { enabled: true, googleUrl: '', afterVisits: 3 },
   currency: 'Rp',
   gifts: { enabled: true, validDays: 180 },
+  // Shop position: wallet cards pop up on the lock screen nearby
+  location: { lat: null as number | null, lng: null as number | null },
 };
 export type Settings = typeof DEFAULT_SETTINGS;
 export type Business = { id: string; slug: string; name: string; active: boolean; settings: Settings };
@@ -132,6 +134,7 @@ export function mergeSettings(saved: any): Settings {
     nudges: { ...d.nudges, ...(s.nudges ?? {}) },
     reviews: { ...d.reviews, ...(s.reviews ?? {}) },
     gifts: { ...d.gifts, ...(s.gifts ?? {}) },
+    location: { ...d.location, ...(s.location ?? {}) },
     rewards: s.rewards?.length ? s.rewards : d.rewards,
   };
 }
@@ -242,6 +245,12 @@ export function validateSettings(input: any): Settings {
     },
     currency: str(input.currency, 6, d.currency) || d.currency,
     gifts: { enabled: bool(input.gifts?.enabled), validDays: int(input.gifts?.validDays, 7, 730, d.gifts.validDays) },
+    location: (() => {
+      const lat = Number(input.location?.lat), lng = Number(input.location?.lng);
+      const ok = input.location?.lat !== null && input.location?.lat !== '' && Number.isFinite(lat) && Number.isFinite(lng)
+        && Math.abs(lat) <= 90 && Math.abs(lng) <= 180 && !(lat === 0 && lng === 0);
+      return ok ? { lat, lng } : { lat: null, lng: null };
+    })(),
   };
 }
 

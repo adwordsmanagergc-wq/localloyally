@@ -3,11 +3,15 @@ import { readCardToken } from '@/lib/auth';
 import { customerSummary } from '@/lib/loyalty';
 import { staffRoute, body } from '@/lib/route';
 import { json, maskPhone, normalizePhone } from '@/lib/util';
+import { customerByWalletCode, WALLET_PREFIX } from '@/lib/wallet/data';
 
 export const POST = staffRoute(async (req, biz, staff) => {
   const b = await body(req);
   let id: string | null = null;
-  if (b.token) {
+  if (String(b.token || '').startsWith(WALLET_PREFIX)) {
+    id = await customerByWalletCode(biz.id, String(b.token));
+    if (!id) return json({ error: 'Wallet card not recognised. Ask them to show the card in the app instead.' }, 400);
+  } else if (b.token) {
     id = await readCardToken(biz.id, String(b.token));
     if (!id) return json({ error: 'QR code expired or from another business. Ask them to refresh their card.' }, 400);
   } else if (b.phone) {

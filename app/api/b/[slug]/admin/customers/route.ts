@@ -1,6 +1,7 @@
 import { sql } from '@/lib/db';
 import { managerRoute, body } from '@/lib/route';
 import { json } from '@/lib/util';
+import { walletChanged } from '@/lib/wallet';
 
 export const dynamic = 'force-dynamic';
 export const GET = managerRoute(async (req, biz) => {
@@ -26,5 +27,6 @@ export const POST = managerRoute(async (req, biz, staff) => {
   if (!c) return json({ error: 'Member not found' }, 404);
   await sql`insert into stamps (business_id, customer_id, delta, reason, staff_id, note)
             values (${biz.id}, ${c.id}, ${delta}, 'adjust', ${staff.id}, ${String(b.note || '').slice(0, 100) || null})`;
+  walletChanged(biz, c.id);
   return json({ ok: true });
 });

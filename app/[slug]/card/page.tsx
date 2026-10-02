@@ -1,4 +1,6 @@
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
+import { walletEnabled } from '@/lib/wallet/config';
 import { getBusiness, halfwayAt } from '@/lib/business';
 import { getCustomerId } from '@/lib/auth';
 import { customerSummary, grantPassive, REASON_LABEL } from '@/lib/loyalty';
@@ -27,6 +29,11 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
   const base = (process.env.APP_URL || '').replace(/\/$/, '');
   const refLink = `${base}/${biz.slug}/r/${sum.customer.ref_code}`;
   const socialPending = sum.lastSocial?.status === 'pending';
+  // Show the wallet that matches the phone; both on a computer.
+  const ua = (await headers()).get('user-agent') || '';
+  const wallets = walletEnabled();
+  const showApple = wallets.apple && !/Android/i.test(ua);
+  const showGoogle = wallets.google && !/iPhone|iPad|iPod/i.test(ua);
 
   return (
     <main className="wrap stack-lg">
@@ -78,6 +85,15 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
         <h2>Show this at the counter</h2>
         <p className="small muted">Staff scan it to add your stamps. It refreshes itself, so screenshots won't work.</p>
         <CardQr slug={biz.slug} />
+        {(showApple || showGoogle) && (
+          <div className="stack" style={{ marginTop: 6 }}>
+            <p className="small muted">Keep your card in your phone&apos;s wallet. It updates by itself and is one tap away at the counter.</p>
+            <div className="row wrap-row" style={{ justifyContent: 'center' }}>
+              {showApple && <a className="btn wallet-btn" href={`/api/b/${biz.slug}/card/wallet/apple`}>Add to Apple Wallet</a>}
+              {showGoogle && <a className="btn wallet-btn" href={`/api/b/${biz.slug}/card/wallet/google`}>Add to Google Wallet</a>}
+            </div>
+          </div>
+        )}
       </section>
 
       {sum.spins > 0 && (

@@ -226,6 +226,15 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
       </fieldset>
 
       <fieldset>
+        <legend>Shop location</legend>
+        <p className="small muted">Members with the wallet card get a reminder on their lock screen when they walk past. In Google Maps, press and hold on your shop, then copy the numbers that appear, e.g. -8.6705, 115.2126.</p>
+        <label style={{ maxWidth: 360 }}>Latitude, longitude
+          <input defaultValue={s.location.lat != null ? `${s.location.lat}, ${s.location.lng}` : ''} placeholder="-8.6705, 115.2126"
+            onChange={(e) => { const [lat, lng] = e.target.value.split(',').map((x) => x.trim()); set('location', { lat: lat || null, lng: lng || null }); }} />
+        </label>
+      </fieldset>
+
+      <fieldset>
         <legend>WhatsApp reminders</legend>
         <Check path="nudges.enabled" label="Message opted-in members when they're 1 stamp from a reward, and before vouchers expire" />
         {s.nudges.enabled && <label style={{ maxWidth: 260 }}>Only if no visit for (days)<input type="number" min={1} max={30} value={s.nudges.afterDays} onChange={num('nudges.afterDays')} /></label>}

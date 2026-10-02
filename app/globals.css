@@ -210,3 +210,4 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
 .banner.offer { background: var(--surface); border: 2px solid var(--accent); white-space: pre-line; }
 .progress { height: 10px; border-radius: 999px; background: var(--soft); overflow: hidden; }
 .progress > div { height: 100%; background: var(--accent); transition: width .3s; }
+.wallet-btn { background: #000; color: #fff; border-color: #000; }

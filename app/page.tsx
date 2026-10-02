@@ -6,7 +6,7 @@ import TrialForm from '@/components/landing/TrialForm';
 export const metadata: Metadata = {
   title: 'Loyalty Rewards | Digital stamp cards for your business',
   description:
-    'Digital loyalty stamp cards for cafes, restaurants, barbers, salons and gyms. Customers join with WhatsApp, staff scan a QR code. Spin to win, social stamps and your own branding. Free for 7 days.',
+    'Digital loyalty stamp cards for cafes, restaurants, barbers, salons and gyms. Customers join with WhatsApp and can save the card to Apple or Google Wallet. Spin to win, offers, gift certificates and your own branding. Free for 7 days.',
 };
 
 const Icon = ({ d, bg }: { d: string; bg: string }) => (
@@ -19,14 +19,16 @@ const Icon = ({ d, bg }: { d: string; bg: string }) => (
 
 const FEATURES = [
   { t: 'Digital stamp cards', p: 'Set any number of stamps and up to four reward tiers, like 5 for a pastry and 8 for a free coffee.', bg: '#d4f56b', d: 'M4 6h16v12H4zM8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01' },
-  { t: 'Spin to win', p: 'Customers spin a prize wheel when they claim a reward or visit weekly. You set the prizes and the odds.', bg: '#ffb8cb', d: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 3v9l6 6M12 12L5 16' },
+  { t: 'Spin to win', p: 'Customers spin a prize wheel halfway through their card, when they claim a reward or once a week. You set the prizes and the odds.', bg: '#ffb8cb', d: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 3v9l6 6M12 12L5 16' },
   { t: 'Stamps for social posts', p: 'Give bonus stamps when customers post about you on Instagram or TikTok. Staff approve each post in one tap.', bg: '#9fd8ff', d: 'M7 4h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM17 7h.01' },
-  { t: 'WhatsApp login', p: 'No passwords and no app to download. Customers join with their name and a code sent to WhatsApp.', bg: '#c8b8ff', d: 'M4 20l1.5-4A8 8 0 1 1 8 18.5L4 20zM9 10c.5 2 2 3.5 4 4' },
+  { t: 'Apple and Google Wallet', p: 'No app to download. Customers join with their WhatsApp number and a password, then save the card to their phone wallet. It updates after every visit.', bg: '#c8b8ff', d: 'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2' },
+  { t: 'Send offers to the right people', p: 'Message regulars, people close to a reward or customers you have not seen in a while, with an optional voucher. See who came back.', bg: '#9fd8ff', d: 'M3 11v2l13 5V6L3 11zM16 9a3 3 0 0 1 0 6M7 13l1 6h3l-1-5' },
+  { t: 'Gift certificates', p: 'Sell gift certificates at the counter. The buyer shares a link with a QR code, and staff scan it to use some or all of the value.', bg: '#ffb8cb', d: 'M3 8h18v4H3zM5 12v9h14v-9M12 8v13M12 8C10 4 6 4 6 7s4 1 6 1c2 0 6 2 6-1s-4-3-6 1' },
   { t: 'Refer a friend', p: 'Every member gets a share link. When a friend makes their first visit, both get a bonus stamp.', bg: '#ffd166', d: 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a7 7 0 0 1 14 0v1M19 8v6M16 11h6' },
   { t: 'Reminders that bring them back', p: 'Automatic WhatsApp nudges when someone is one stamp away, or a voucher is about to expire.', bg: '#d4f56b', d: 'M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21a2 2 0 0 0 4 0' },
   { t: 'Birthday treats, streaks and happy hours', p: 'Birthday rewards, streak bonuses and double stamps in your quiet hours, all switched on or off in settings.', bg: '#ffb8cb', d: 'M12 3v3M8 21h8M5 11h14v10H5zM5 15h14M12 6c-1.5 0-2 1-2 2s1 2 2 2 2-1 2-2-.5-2-2-2' },
   { t: 'More Google reviews', p: 'Automatically asks your regulars for a Google review on WhatsApp and on their card, so you climb Google Maps and get picked by AI search.', bg: '#ffd166', d: 'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7L12 3z' },
-  { t: 'Dashboard and customer list', p: 'See visits, rewards and your busiest days. Export your members to use in your own marketing.', bg: '#9fd8ff', d: 'M4 20V10M10 20V4M16 20v-7M22 20H2' },
+  { t: 'Dashboard and customer list', p: 'See how many customers come back, which groups are slipping away and what each staff member did. Export your members any time.', bg: '#9fd8ff', d: 'M4 20V10M10 20V4M16 20v-7M22 20H2' },
 ];
 
 /** Unique stamp art for the example businesses */
@@ -79,7 +81,7 @@ const COMPARE: [string, string, string, string][] = [
 const mark = (v: string) => (v === 'yes' ? <span className="yes">✓</span> : v === 'no' ? <span className="no">✕</span> : <span className="meh">Sometimes</span>);
 
 const FAQ = [
-  ['Do my customers need to download an app?', 'No. They open your rewards page in their phone browser, join with their WhatsApp number and can save it to their home screen like an app.'],
+  ['Do my customers need to download an app?', 'No. They open your rewards page in their phone browser, join with their WhatsApp number and can save the card to Apple Wallet, Google Wallet or their home screen.'],
   ['How do staff add stamps?', 'Staff open your staff page on any phone or tablet, log in with their own PIN and scan the customer\'s QR code. It takes about two seconds.'],
   ['Can people cheat the system?', 'The customer QR code changes every few minutes, so screenshots stop working. Every stamp is logged with the staff member who gave it, spin results are decided on our server, and social posts need staff approval.'],
   ['Can I make it look like my brand?', 'Yes. Upload your logo, pick your colours, font, background texture and stamp icon, and change the wording to suit you, like "coffee", "cut" or "class".'],

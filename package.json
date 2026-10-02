@@ -15,10 +15,12 @@
     "html5-qrcode": "^2.3.8",
     "jose": "^6.2.12",
     "next": "^15.5.26",
+    "passkit-generator": "^3.6.1",
     "postgres": "^3.4.9",
     "qrcode": "^1.5.4",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@types/node": "^26.6.3",

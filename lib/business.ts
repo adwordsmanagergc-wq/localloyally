@@ -31,7 +31,7 @@ export const DEFAULT_SETTINGS = {
   streak: { enabled: true, visits: 3, days: 7 },
   referral: { enabled: true, stamps: 1 },
   spin: {
-    enabled: true, weekly: true, onRedeem: true, voucherDays: 7,
+    enabled: true, weekly: true, onRedeem: true, halfway: false, voucherDays: 7,
     prizes: [
       { label: '5% off', kind: 'percent', value: 5, weight: 40 },
       { label: '10% off', kind: 'percent', value: 10, weight: 25 },
@@ -45,6 +45,10 @@ export const DEFAULT_SETTINGS = {
   nudges: { enabled: true, afterDays: 3 },
   // Asks happy regulars for a Google review. Never rewarded (Google bans incentivised reviews).
   reviews: { enabled: true, googleUrl: '', afterVisits: 3 },
+  currency: 'Rp',
+  gifts: { enabled: true, validDays: 180 },
+  // Shop position: wallet cards pop up on the lock screen nearby
+  location: { lat: null as number | null, lng: null as number | null },
 };
 export type Settings = typeof DEFAULT_SETTINGS;
 export type Business = { id: string; slug: string; name: string; active: boolean; settings: Settings };
@@ -112,7 +116,7 @@ export const PRESETS: Record<string, { label: string; settings: Partial<Settings
   },
 };
 
-const RESERVED = new Set(['api', 'platform', '_next', 'favicon.ico', 'robots.txt', 'sitemap.xml', 'admin', 'login', 'static']);
+const RESERVED = new Set(['api', 'platform', '_next', 'favicon.ico', 'robots.txt', 'sitemap.xml', 'admin', 'login', 'static', 'terms', 'member']);
 export const validSlug = (s: string) => /^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/.test(s) && !RESERVED.has(s);
 
 export function mergeSettings(saved: any): Settings {
@@ -129,6 +133,8 @@ export function mergeSettings(saved: any): Settings {
     birthday: { ...d.birthday, ...(s.birthday ?? {}) },
     nudges: { ...d.nudges, ...(s.nudges ?? {}) },
     reviews: { ...d.reviews, ...(s.reviews ?? {}) },
+    gifts: { ...d.gifts, ...(s.gifts ?? {}) },
+    location: { ...d.location, ...(s.location ?? {}) },
     rewards: s.rewards?.length ? s.rewards : d.rewards,
   };
 }
@@ -221,7 +227,7 @@ export function validateSettings(input: any): Settings {
     streak: { enabled: bool(input.streak?.enabled), visits: int(input.streak?.visits, 2, 10, 3), days: int(input.streak?.days, 2, 30, 7) },
     referral: { enabled: bool(input.referral?.enabled), stamps: int(input.referral?.stamps, 1, 5, 1) },
     spin: {
-      enabled: spinEnabled, weekly: bool(input.spin?.weekly), onRedeem: bool(input.spin?.onRedeem),
+      enabled: spinEnabled, weekly: bool(input.spin?.weekly), onRedeem: bool(input.spin?.onRedeem), halfway: bool(input.spin?.halfway),
       voucherDays: int(input.spin?.voucherDays, 1, 60, 7), prizes: prizes.length >= 2 ? prizes : d.spin.prizes,
     },
     birthday: { enabled: bool(input.birthday?.enabled), windowDays: int(input.birthday?.windowDays, 0, 14, 3), label: str(input.birthday?.label, 40, d.birthday.label) || d.birthday.label },
@@ -237,6 +243,14 @@ export function validateSettings(input: any): Settings {
       })(),
       afterVisits: int(input.reviews?.afterVisits, 1, 20, 3),
     },
+    currency: str(input.currency, 6, d.currency) || d.currency,
+    gifts: { enabled: bool(input.gifts?.enabled), validDays: int(input.gifts?.validDays, 7, 730, d.gifts.validDays) },
+    location: (() => {
+      const lat = Number(input.location?.lat), lng = Number(input.location?.lng);
+      const ok = input.location?.lat !== null && input.location?.lat !== '' && Number.isFinite(lat) && Number.isFinite(lng)
+        && Math.abs(lat) <= 90 && Math.abs(lng) <= 180 && !(lat === 0 && lng === 0);
+      return ok ? { lat, lng } : { lat: null, lng: null };
+    })(),
   };
 }
 
@@ -246,6 +260,8 @@ export async function saveSettings(businessId: string, name: string, s: Settings
 
 export const maxTier = (s: Settings) => Math.max(...s.rewards.map((r) => r.stamps));
 export const minTier = (s: Settings) => Math.min(...s.rewards.map((r) => r.stamps));
+/** Stamps needed for the halfway spin, e.g. 4 on an 8-stamp card. */
+export const halfwayAt = (s: Settings) => Math.ceil(maxTier(s) / 2);
 
 /** Local wall-clock parts in the business's timezone. */
 export function localNow(tz: string, now = new Date()) {

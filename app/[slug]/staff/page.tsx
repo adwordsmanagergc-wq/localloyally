@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import { getBusiness } from '@/lib/business';
 import { getStaff } from '@/lib/auth';
 import Brand from '@/components/Brand';
@@ -8,7 +9,8 @@ export const dynamic = 'force-dynamic';
 export const metadata = { robots: { index: false } };
 
 export default async function StaffPage({ params }: { params: Promise<{ slug: string }> }) {
-  const biz = (await getBusiness((await params).slug))!;
+  const biz = await getBusiness((await params).slug);
+  if (!biz) notFound();
   const staff = await getStaff(biz.id);
   if (!staff)
     return (
@@ -22,7 +24,8 @@ export default async function StaffPage({ params }: { params: Promise<{ slug: st
     <main className="wrap wide">
       <StaffConsole
         biz={{ slug: biz.slug, name: biz.name, rewards: s.rewards, maxPerVisit: s.maxPerVisit, itemWord: s.itemWord,
-          itemWordPlural: s.itemWordPlural, social: s.social.enabled, stampIcon: s.stampIcon, stampImageUrl: s.stampImageUrl }}
+          itemWordPlural: s.itemWordPlural, social: s.social.enabled, stampIcon: s.stampIcon, stampImageUrl: s.stampImageUrl,
+          currency: s.currency, giftsEnabled: s.gifts.enabled }}
         staff={staff}
       />
     </main>

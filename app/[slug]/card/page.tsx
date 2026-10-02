@@ -1,22 +1,26 @@
-import { redirect } from 'next/navigation';
-import { getBusiness } from '@/lib/business';
+import { redirect, notFound } from 'next/navigation';
+import { headers } from 'next/headers';
+import { walletEnabled } from '@/lib/wallet/config';
+import { getBusiness, halfwayAt } from '@/lib/business';
 import { getCustomerId } from '@/lib/auth';
 import { customerSummary, grantPassive, REASON_LABEL } from '@/lib/loyalty';
 import Brand from '@/components/Brand';
 import Stamp from '@/components/Stamp';
 import { CardQr, LogoutButton, ShareReferral, SocialForm } from '@/components/CardParts';
 import SpinWheel from '@/components/SpinWheel';
+import { latestOffer } from '@/lib/campaigns';
 
 export const dynamic = 'force-dynamic';
 
 const d = (x: Date) => new Date(x).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 
 export default async function CardPage({ params }: { params: Promise<{ slug: string }> }) {
-  const biz = (await getBusiness((await params).slug))!;
+  const biz = await getBusiness((await params).slug);
+  if (!biz) notFound();
   const id = await getCustomerId(biz.id);
   if (!id) redirect(`/${biz.slug}`);
   await grantPassive(biz, id);
-  const sum = (await customerSummary(biz, id))!;
+  const [sum, offer] = await Promise.all([customerSummary(biz, id).then((x) => x!), latestOffer(id)]);
   const s = biz.settings;
   const { balance, maxTier } = sum;
   const earned = s.rewards.filter((r) => balance >= r.stamps);
@@ -26,10 +30,17 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
   const base = (process.env.APP_URL || '').replace(/\/$/, '');
   const refLink = `${base}/${biz.slug}/r/${sum.customer.ref_code}`;
   const socialPending = sum.lastSocial?.status === 'pending';
+  // Show the wallet that matches the phone; both on a computer.
+  const ua = (await headers()).get('user-agent') || '';
+  const wallets = walletEnabled();
+  const showApple = wallets.apple && !/Android/i.test(ua);
+  const showGoogle = wallets.google && !/iPhone|iPad|iPod/i.test(ua);
 
   return (
     <main className="wrap stack-lg">
       <Brand biz={biz} right={<LogoutButton slug={biz.slug} />} />
+
+      {offer && <div className="banner offer">📣 {offer}</div>}
 
       <section className="card stack">
         <div className="row between">
@@ -75,11 +86,25 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
         <h2>Show this at the counter</h2>
         <p className="small muted">Staff scan it to add your stamps. It refreshes itself, so screenshots won't work.</p>
         <CardQr slug={biz.slug} />
+        {(showApple || showGoogle) && (
+          <div className="stack" style={{ marginTop: 6 }}>
+            <p className="small muted">Keep your card in your phone&apos;s wallet. It updates by itself and is one tap away at the counter.</p>
+            <div className="row wrap-row" style={{ justifyContent: 'center' }}>
+              {showApple && <a className="btn wallet-btn" href={`/api/b/${biz.slug}/card/wallet/apple`}>Add to Apple Wallet</a>}
+              {showGoogle && <a className="btn wallet-btn" href={`/api/b/${biz.slug}/card/wallet/google`}>Add to Google Wallet</a>}
+            </div>
+          </div>
+        )}
       </section>
 
       {sum.spins > 0 && (
         <section className="card stack center">
-          <h2>You have {sum.spins} spin{sum.spins > 1 ? 's' : ''}</h2>
+          {sum.halfwaySpin ? (
+            <>
+              <h2>You&apos;re halfway there!</h2>
+              <p className="small muted">Have a spin to see if you can win a prize for your next visit!</p>
+            </>
+          ) : <h2>You have {sum.spins} spin{sum.spins > 1 ? 's' : ''}</h2>}
           <SpinWheel slug={biz.slug} prizes={s.spin.prizes.map((p) => p.label)} voucherDays={s.spin.voucherDays} />
         </section>
       )}
@@ -126,7 +151,13 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
             <p>⏱ <strong>Double stamps</strong> {s.doubleHours.start} to {s.doubleHours.end}
               {s.doubleHours.days.length < 7 && ` on ${s.doubleHours.days.sort().map((x) => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][x]).join(', ')}`}.</p>
           )}
-          {s.spin.enabled && <p>🎡 <strong>Spin to win</strong>{s.spin.onRedeem ? ' every time you claim a reward' : ''}{s.spin.weekly ? `${s.spin.onRedeem ? ', plus' : ''} once a week when you visit` : ''}.</p>}
+          {s.spin.enabled && (s.spin.halfway || s.spin.onRedeem || s.spin.weekly) && (
+            <p>🎡 <strong>Spin to win</strong> {[
+              s.spin.halfway && `when you reach ${halfwayAt(s)} stamps`,
+              s.spin.onRedeem && 'every time you claim a reward',
+              s.spin.weekly && 'once a week when you visit',
+            ].filter(Boolean).join(', plus ')}.</p>
+          )}
           {s.birthday.enabled && <p>🎂 <strong>{s.birthday.label}</strong> around your birthday.</p>}
         </div>
       </section>

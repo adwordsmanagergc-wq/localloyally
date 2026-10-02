@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { api, fmtDate } from '@/lib/client';
+import { SEGMENTS } from '@/lib/segments-meta';
 import type { Toast } from './StaffConsole';
 
 export function DashboardTab({ slug }: { slug: string }) {
@@ -10,6 +11,9 @@ export function DashboardTab({ slug }: { slug: string }) {
   const max = Math.max(1, ...d.daily.map((x: any) => x.n));
   const Stat = ({ n, label }: { n: number; label: string }) => (
     <div className="card flat stat"><div className="n">{n}</div><div className="small muted">{label}</div></div>
+  );
+  const Pct = ({ n, of, label }: { n: number; of: number; label: string }) => (
+    <div className="stat"><div className="n">{of ? `${Math.round((n / of) * 100)}%` : '-'}</div><div className="small muted">{label}{of ? ` (${n} of ${of})` : ''}</div></div>
   );
   return (
     <div className="stack-lg">
@@ -23,6 +27,42 @@ export function DashboardTab({ slug }: { slug: string }) {
         <Stat n={d.vouchers.used30} label={`vouchers used of ${d.vouchers.issued30} (30d)`} />
         <Stat n={d.social.approved30} label="social posts (30d)" />
         <Stat n={d.members.optin} label="opted in to WhatsApp" />
+      </div>
+      <div className="card flat stack">
+        <h3>Are customers coming back?</h3>
+        <div className="grid3">
+          <Pct n={d.repeat.returned} of={d.repeat.visited} label="came back for a 2nd visit or more" />
+          <Pct n={d.retention.back} of={d.retention.base} label="of last month's customers came back this month" />
+          <div className="stat"><div className="n">{d.repeat.avg_visits}</div><div className="small muted">visits per customer on average</div></div>
+        </div>
+      </div>
+      <div className="card flat stack">
+        <h3>Customer groups</h3>
+        <p className="small muted">Send any group an offer from the Offers tab.</p>
+        <div className="list small">
+          {Object.entries(SEGMENTS).filter(([k]) => k !== 'all').map(([k, g]) => (
+            <div key={k} className="row between">
+              <span><strong>{g.label}</strong> <span className="muted">· {g.hint}</span></span>
+              <strong>{d.segments[k]?.total ?? 0}</strong>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="card flat stack">
+        <h3>Team, last 30 days</h3>
+        <div className="scroll-x">
+          <table className="table">
+            <thead><tr><th>Name</th><th>Visits</th><th>Stamps</th><th>Customers</th><th>Rewards</th><th>Vouchers</th><th>Posts</th><th>Gifts sold</th></tr></thead>
+            <tbody>
+              {d.staff.map((s: any) => (
+                <tr key={s.id}>
+                  <td>{s.name} {s.role === 'manager' && <span className="pill">manager</span>} {!s.active && <span className="pill">off</span>}</td>
+                  <td><strong>{s.visits}</strong></td><td>{s.stamps}</td><td>{s.customers}</td><td>{s.rewards}</td><td>{s.vouchers}</td><td>{s.posts}</td><td>{s.gifts_sold}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       <div className="card flat stack">
         <h3>Stamps per day, last 14 days</h3>
@@ -54,23 +94,23 @@ export function MembersTab({ slug, toast }: { slug: string; toast: Toast }) {
     <div className="stack">
       <div className="row wrap-row">
         <form className="row grow" onSubmit={(e) => { e.preventDefault(); load(); }}>
-          <input className="grow" placeholder="Search name or number" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input className="grow" placeholder="Search name, username or number" value={q} onChange={(e) => setQ(e.target.value)} />
           <button className="btn">Search</button>
         </form>
         <a className="btn ghost" href={`/api/b/${slug}/admin/export`}>Export CSV</a>
       </div>
       <div className="card flat scroll-x">
         <table className="table">
-          <thead><tr><th>Name</th><th>WhatsApp</th><th>Stamps</th><th>Visits</th><th>Last visit</th><th>Opt-in</th><th></th></tr></thead>
+          <thead><tr><th>Name</th><th>Username</th><th>WhatsApp</th><th>Stamps</th><th>Visits</th><th>Last visit</th><th>Opt-in</th><th></th></tr></thead>
           <tbody>
             {items.map((c) => (
               <tr key={c.id}>
-                <td>{c.name}</td><td>+{c.phone}</td><td><strong>{c.balance}</strong></td><td>{c.visits}</td>
+                <td>{c.name}</td><td>{c.username ?? '-'}</td><td>+{c.phone}</td><td><strong>{c.balance}</strong></td><td>{c.visits}</td>
                 <td>{c.last_visit ? fmtDate(c.last_visit) : '-'}</td><td>{c.marketing_opt_in ? 'Yes' : 'No'}</td>
                 <td><button className="btn ghost small" onClick={() => adjust(c)}>Adjust</button></td>
               </tr>
             ))}
-            {!items.length && <tr><td colSpan={7} className="muted">No members found</td></tr>}
+            {!items.length && <tr><td colSpan={8} className="muted">No members found</td></tr>}
           </tbody>
         </table>
       </div>

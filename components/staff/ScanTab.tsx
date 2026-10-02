@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { api, fmtDate, fmtDateTime } from '@/lib/client';
 import Stamp from '../Stamp';
 import type { BizInfo, Toast } from './StaffConsole';
+import { GiftPanel } from './GiftsTab';
 
 const LABEL: Record<string, string> = {
   purchase: 'Visit', double_hour: 'Double hour', welcome: 'Welcome', social: 'Social post',
@@ -46,6 +47,7 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const [confirm, setConfirm] = useState(false);
+  const [gift, setGift] = useState('');
   const maxTier = Math.max(...biz.rewards.map((r) => r.stamps));
 
   async function lookup(q: Record<string, string>) {
@@ -66,23 +68,34 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
     } catch (e: any) { setErr(e.message); setBusy(false); }
   }
 
+  if (gift)
+    return (
+      <div className="stack-lg" style={{ maxWidth: 520 }}>
+        <GiftPanel biz={biz} code={gift} toast={toast} />
+        <button className="btn dark huge block" onClick={() => { setGift(''); setScanning(true); }}>Next customer</button>
+      </div>
+    );
+
   if (!data)
     return (
       <div className="stack-lg" style={{ maxWidth: 520 }}>
         {scanning ? (
           <div className="stack">
-            <Scanner onScan={(t) => lookup({ token: t })} />
+            <Scanner onScan={(t) => {
+              const g = t.match(/\/g\/([A-Z0-9]{10})(?:[/?#]|$)/);
+              if (g) { setScanning(false); setGift(g[1]); } else lookup({ token: t });
+            }} />
             <button className="btn ghost block" onClick={() => setScanning(false)}>Cancel</button>
           </div>
         ) : (
-          <button className="btn huge block" onClick={() => { setErr(''); setScanning(true); }}>Scan member QR</button>
+          <button className="btn huge block" onClick={() => { setErr(''); setScanning(true); }}>Scan member or gift QR</button>
         )}
         <form className="card flat stack" onSubmit={(e) => { e.preventDefault(); lookup({ phone }); }}>
           <label>
-            Or find by WhatsApp number
+            Or find by WhatsApp number or username
             <div className="row">
-              <input className="grow" inputMode="tel" placeholder="0812…" value={phone} onChange={(e) => setPhone(e.target.value)} />
-              <button className="btn" disabled={busy || phone.length < 6}>Find</button>
+              <input className="grow" autoCapitalize="none" placeholder="0812… or username" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              <button className="btn" disabled={busy || phone.trim().length < 3}>Find</button>
             </div>
           </label>
         </form>
@@ -97,7 +110,7 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
       <div className="card stack">
         <div className="row between">
           <div>
-            <h2>{data.customer.name}</h2>
+            <h2>{data.customer.name}{data.customer.username && data.customer.username !== data.customer.name && <span className="muted small"> @{data.customer.username}</span>}</h2>
             <p className="small muted">{data.customer.phone.startsWith('+') ? data.customer.phone : '+' + data.customer.phone} · last visit {data.lastVisit ? fmtDate(data.lastVisit) : 'never'}</p>
           </div>
           <div className="center"><div className="bigcount">{bal}</div><div className="tiny muted">stamps</div></div>

@@ -2,6 +2,7 @@ import { sql } from '@/lib/db';
 import { reviewSocial } from '@/lib/loyalty';
 import { staffRoute, body } from '@/lib/route';
 import { json } from '@/lib/util';
+import { walletChanged } from '@/lib/wallet';
 
 export const dynamic = 'force-dynamic';
 export const GET = staffRoute(async (_req, biz) => {
@@ -12,6 +13,7 @@ export const GET = staffRoute(async (_req, biz) => {
 
 export const POST = staffRoute(async (req, biz, staff) => {
   const b = await body(req);
-  await reviewSocial(biz, Number(b.id), b.approve === true, staff.id);
+  const customerId = await reviewSocial(biz, Number(b.id), b.approve === true, staff.id);
+  if (b.approve === true) walletChanged(biz, customerId);
   return json({ ok: true });
 });

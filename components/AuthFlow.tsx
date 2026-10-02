@@ -6,12 +6,13 @@ import { api } from '@/lib/client';
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 type Mode = 'join' | 'login' | 'forgot' | 'reset';
 
-export default function AuthFlow({ slug, refCode, businessName }: { slug: string; refCode?: string; businessName: string }) {
+export default function AuthFlow({ slug, refCode, businessName, start }: { slug: string; refCode?: string; businessName: string; start?: 'join' | 'forgot' }) {
   const router = useRouter();
-  const [mode, setMode] = useState<Mode>(refCode ? 'join' : 'login');
+  const [mode, setMode] = useState<Mode>(refCode ? 'join' : start ?? 'login');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+  const [terms, setTerms] = useState(false);
   const [code, setCode] = useState('');
   const [bm, setBm] = useState('');
   const [bd, setBd] = useState('');
@@ -35,11 +36,11 @@ export default function AuthFlow({ slug, refCode, businessName }: { slug: string
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (mode === 'login') return run(async () => { await api(`/api/b/${slug}/auth/login`, { phone, password }); done(); });
+    if (mode === 'login') return run(async () => { await api(`/api/b/${slug}/auth/login`, { login: username, password }); done(); });
     if (mode === 'join')
       return run(async () => {
         await api(`/api/b/${slug}/auth/register`, {
-          name, phone, password, optIn, ref: refCode,
+          username, phone, password, optIn, terms, ref: refCode,
           birthdayMonth: bm ? Number(bm) : undefined, birthdayDay: bd ? Number(bd) : undefined,
         });
         done();
@@ -52,7 +53,7 @@ export default function AuthFlow({ slug, refCode, businessName }: { slug: string
     return run(async () => { await api(`/api/b/${slug}/auth/reset`, { phone, code, password }); done(); });
   };
 
-  const pw = (
+  const pwField = () => (
     <label>
       {mode === 'login' ? 'Password' : mode === 'reset' ? 'New password' : 'Create a password'}
       <div className="pw-wrap">
@@ -79,22 +80,33 @@ export default function AuthFlow({ slug, refCode, businessName }: { slug: string
         {mode === 'join' && refCode && <div className="banner small">A friend invited you. You&apos;ll both get a bonus stamp after your first visit.</div>}
         {info && <div className="banner good small">{info}</div>}
 
-        {mode === 'join' && (
-          <label>Your name<input name="name" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} required minLength={2} maxLength={60} /></label>
+        {(mode === 'join' || mode === 'login') && (
+          <label>
+            {mode === 'join' ? 'Choose a username' : 'Username'}
+            <input name="username" autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} value={username}
+              onChange={(e) => setUsername(e.target.value)} required minLength={3} maxLength={mode === 'join' ? 20 : 40} />
+            <span className="tiny muted" style={{ fontWeight: 400 }}>
+              {mode === 'join' ? '3 to 20 letters or numbers. You\'ll use it to log in.' : 'Joined before usernames? Use your WhatsApp number.'}
+            </span>
+          </label>
         )}
-        <label>
-          WhatsApp number
-          <input name="username" autoComplete="username" inputMode="tel" placeholder="0812 3456 7890" value={phone}
-            onChange={(e) => setPhone(e.target.value)} required readOnly={mode === 'reset'} />
-          {mode !== 'reset' && <span className="tiny muted" style={{ fontWeight: 400 }}>This is your username. Visiting from overseas? Start with + and your country code.</span>}
-        </label>
+        {mode === 'join' && pwField()}
+        {mode !== 'login' && (
+          <label>
+            WhatsApp number
+            <input name="phone" autoComplete="tel" inputMode="tel" placeholder="0812 3456 7890" value={phone}
+              onChange={(e) => setPhone(e.target.value)} required readOnly={mode === 'reset'} />
+            {mode !== 'reset' && <span className="tiny muted" style={{ fontWeight: 400 }}>
+              {mode === 'join' ? 'For password reset codes and your rewards. ' : ''}Visiting from overseas? Start with + and your country code.</span>}
+          </label>
+        )}
         {mode === 'reset' && (
           <label>Code from WhatsApp
             <input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} required
               style={{ letterSpacing: '0.4em', textAlign: 'center', fontSize: '1.3rem' }} />
           </label>
         )}
-        {mode !== 'forgot' && pw}
+        {(mode === 'login' || mode === 'reset') && pwField()}
 
         {mode === 'join' && (
           <>
@@ -114,6 +126,10 @@ export default function AuthFlow({ slug, refCode, businessName }: { slug: string
             <label className="check">
               <input type="checkbox" checked={optIn} onChange={(e) => setOptIn(e.target.checked)} />
               <span>Send me WhatsApp messages about my rewards and offers. You can stop anytime.</span>
+            </label>
+            <label className="check">
+              <input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} required />
+              <span>I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>terms and conditions</a></span>
             </label>
           </>
         )}

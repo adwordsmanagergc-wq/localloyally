@@ -63,7 +63,7 @@ create index if not exists stamps_business_idx on stamps(business_id, created_at
 create table if not exists spins (
   id bigserial primary key,
   customer_id uuid not null references customers(id) on delete cascade,
-  source text not null check (source in ('redeem','weekly','gift')),
+  source text not null check (source in ('redeem','weekly','gift','halfway')),
   period_key text,                       -- e.g. 2026-40 for weekly spins, stops doubles
   used_at timestamptz,
   voucher_id uuid,
@@ -122,3 +122,75 @@ create table if not exists trial_requests (
 
 alter table customers add column if not exists review_asked_at timestamptz;
 alter table customers add column if not exists password_hash text;
+alter table spins drop constraint if exists spins_source_check;
+alter table spins add constraint spins_source_check check (source in ('redeem','weekly','gift','halfway'));
+
+-- Gift certificates, sold at the counter. Shared by link; staff scan the QR to use them.
+create table if not exists gift_cards (
+  id uuid primary key default gen_random_uuid(),
+  business_id uuid not null references businesses(id) on delete cascade,
+  code text not null unique,
+  kind text not null check (kind in ('amount','item')),
+  label text not null,                    -- "Gift card" or the item, e.g. "Free coffee"
+  amount int not null,                    -- starting value (1 for an item)
+  balance int not null,
+  to_name text, from_name text, message text,
+  expires_at timestamptz not null,
+  void boolean not null default false,
+  created_by uuid references staff(id),
+  created_at timestamptz not null default now()
+);
+create index if not exists gift_cards_business_idx on gift_cards(business_id, created_at desc);
+create table if not exists gift_card_uses (
+  id bigserial primary key,
+  gift_card_id uuid not null references gift_cards(id) on delete cascade,
+  amount int not null,
+  staff_id uuid references staff(id),
+  created_at timestamptz not null default now()
+);
+
+-- Offers the owner sends to a group of members (WhatsApp, wallet and a banner on the card).
+create table if not exists campaigns (
+  id uuid primary key default gen_random_uuid(),
+  business_id uuid not null references businesses(id) on delete cascade,
+  staff_id uuid references staff(id),
+  segment text not null,
+  message text not null,
+  voucher jsonb,                          -- optional gift: { label, kind, value, days }
+  recipients int not null default 0,
+  created_at timestamptz not null default now(),
+  finished_at timestamptz
+);
+create index if not exists campaigns_business_idx on campaigns(business_id, created_at desc);
+create table if not exists campaign_recipients (
+  campaign_id uuid not null references campaigns(id) on delete cascade,
+  customer_id uuid not null references customers(id) on delete cascade,
+  status text not null default 'pending' check (status in ('pending','done')),
+  whatsapp boolean not null default false,
+  wallet boolean not null default false,
+  primary key (campaign_id, customer_id)
+);
+alter table vouchers drop constraint if exists vouchers_source_check;
+alter table vouchers add constraint vouchers_source_check check (source in ('spin','birthday','gift','campaign'));
+
+-- Apple / Google Wallet cards
+alter table customers add column if not exists wallet_token text unique;  -- fixed barcode on wallet cards
+alter table customers add column if not exists wallet_updated_at timestamptz;
+alter table customers add column if not exists wallet_news text;          -- latest offer shown on the pass
+alter table customers add column if not exists google_wallet boolean not null default false;
+create table if not exists apple_devices (
+  device_id text primary key,
+  push_token text not null,
+  updated_at timestamptz not null default now()
+);
+create table if not exists apple_registrations (
+  device_id text not null references apple_devices(device_id) on delete cascade,
+  customer_id uuid not null references customers(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (device_id, customer_id)
+);
+
+-- Customers sign up with a username (WhatsApp number stays for codes and messages)
+alter table customers add column if not exists username text;
+alter table customers add column if not exists terms_accepted_at timestamptz;
+create unique index if not exists customers_username_idx on customers (business_id, lower(username)) where username is not null;

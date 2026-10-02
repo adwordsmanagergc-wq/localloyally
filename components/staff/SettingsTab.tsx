@@ -186,6 +186,7 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
         <Check path="spin.enabled" label="Spin to win" />
         {s.spin.enabled && (
           <>
+            <Check path="spin.halfway" label="Give 1 spin per card when customers are halfway to the top reward" />
             <Check path="spin.onRedeem" label="Give a spin every time a reward is claimed" />
             <Check path="spin.weekly" label="Give 1 spin a week to members who visited that week" />
             <label style={{ maxWidth: 220 }}>Prize voucher lasts (days)<input type="number" min={1} max={60} value={s.spin.voucherDays} onChange={num('spin.voucherDays')} /></label>
@@ -213,6 +214,24 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
               onClick={() => set('spin.prizes', [...s.spin.prizes, { label: '5% off', kind: 'percent', value: 5, weight: 10 }])}>+ Add prize</button>}
           </>
         )}
+      </fieldset>
+
+      <fieldset>
+        <legend>Gift certificates</legend>
+        <Check path="gifts.enabled" label="Sell gift certificates (staff create them in the Gifts tab)" />
+        <div className="grid2">
+          {s.gifts.enabled && <label>Valid for (days)<input type="number" min={7} max={730} value={s.gifts.validDays} onChange={num('gifts.validDays')} /></label>}
+          <label>Currency symbol<input value={s.currency} onChange={(e) => set('currency', e.target.value)} maxLength={6} placeholder="Rp" /></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Shop location</legend>
+        <p className="small muted">Members with the wallet card get a reminder on their lock screen when they walk past. In Google Maps, press and hold on your shop, then copy the numbers that appear, e.g. -8.6705, 115.2126.</p>
+        <label style={{ maxWidth: 360 }}>Latitude, longitude
+          <input defaultValue={s.location.lat != null ? `${s.location.lat}, ${s.location.lng}` : ''} placeholder="-8.6705, 115.2126"
+            onChange={(e) => { const [lat, lng] = e.target.value.split(',').map((x) => x.trim()); set('location', { lat: lat || null, lng: lng || null }); }} />
+        </label>
       </fieldset>
 
       <fieldset>

@@ -36,7 +36,7 @@ export default function TrialForm() {
       </div>
       <div className="row2">
         <label>Email (optional)<input type="email" value={f.email} onChange={set('email')} maxLength={120} autoComplete="email" /></label>
-        <label>City<input value={f.city} onChange={set('city')} maxLength={60} placeholder="Canggu" /></label>
+        <label>Area<input value={f.city} onChange={set('city')} maxLength={60} placeholder="Canggu" /></label>
       </div>
       <label>Anything we should know? (optional)<textarea rows={3} value={f.message} onChange={set('message')} maxLength={600} placeholder="E.g. we want 10 stamps for a free coffee and spin to win" /></label>
       {msg && <div className={`lp-msg ${msg.ok ? 'ok' : 'err'}`} role="status">{msg.text}</div>}

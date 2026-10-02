@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   const wa = whatsapp.replace(/\D/g, '');
   const text = [
     `New sign-up request on Loyal Locally`, '',
-    `Business: ${businessName}`, `Type: ${clean(b.businessType, 40) || '-'}`, `City: ${clean(b.city, 60) || '-'}`,
+    `Business: ${businessName}`, `Type: ${clean(b.businessType, 40) || '-'}`, `Area: ${clean(b.city, 60) || '-'}`,
     `Name: ${contactName}`, `WhatsApp: ${whatsapp} (https://wa.me/${wa})`, `Email: ${email || '-'}`, '',
     `Message: ${clean(b.message, 600) || '-'}`, '', `All requests: ${siteUrl()}/platform`,
   ].join('\n');

@@ -73,7 +73,7 @@ export default function PlatformConsole({ loggedIn, appUrl }: { loggedIn: boolea
         {data?.trials?.length ? (
           <div className="scroll-x">
             <table className="table">
-              <thead><tr><th>Business</th><th>Contact</th><th>WhatsApp</th><th>City</th><th>Note</th><th>When</th></tr></thead>
+              <thead><tr><th>Business</th><th>Contact</th><th>WhatsApp</th><th>Area</th><th>Note</th><th>When</th></tr></thead>
               <tbody>
                 {data.trials.map((t: any) => (
                   <tr key={t.id}>

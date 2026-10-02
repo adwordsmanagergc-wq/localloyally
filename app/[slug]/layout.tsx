@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getBusiness } from '@/lib/business';
 import { fontHref, themeClass, themeVars } from '@/lib/theme';
+import { siteUrl } from '@/lib/site';
 
 type P = { params: Promise<{ slug: string }> };
 
@@ -9,8 +10,13 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
   const biz = await getBusiness((await params).slug);
   if (!biz) return {};
   return {
-    title: `${biz.name} Rewards`,
+    title: `${biz.name} Rewards | Loyal Locally`,
     description: biz.settings.tagline,
+    // Link previews (WhatsApp, Instagram) show these
+    openGraph: {
+      title: `${biz.name} Rewards`, description: biz.settings.tagline, siteName: 'Loyal Locally', type: 'website',
+      url: `${siteUrl()}/${biz.slug}`, images: biz.settings.logoUrl ? [{ url: biz.settings.logoUrl }] : undefined,
+    },
     manifest: `/${biz.slug}/manifest.webmanifest`,
     themeColor: biz.settings.colors.bg,
     appleWebApp: { capable: true, title: biz.name, statusBarStyle: 'default' },

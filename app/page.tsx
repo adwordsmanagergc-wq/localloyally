@@ -85,6 +85,13 @@ const COMPARE: [string, string, string, string][] = [
 ];
 const mark = (v: string) => (v === 'yes' ? <span className="yes">✓</span> : v === 'no' ? <span className="no">✕</span> : <span className="meh">Sometimes</span>);
 
+/** Monthly price after the free week, by country. */
+const PRICES = [
+  { flag: '🇮🇩', country: 'Indonesia', price: 'Rp 5.500.000' },
+  { flag: '🇦🇺', country: 'Australia', price: 'A$499' },
+  { flag: '🇬🇧', country: 'United Kingdom', price: '£249' },
+];
+
 const FAQ = [
   ['Do my customers need to download an app?', `No. They open your rewards page in their phone browser, join with their WhatsApp number and can save the card to ${WALLET ? 'Apple Wallet, Google Wallet or ' : ''}their home screen.`],
   ['How do staff add stamps?', 'Staff open your staff page on any phone or tablet, log in with their own PIN and scan the customer\'s QR code. It takes about two seconds.'],
@@ -92,7 +99,7 @@ const FAQ = [
   ['Can I make it look like my brand?', 'Yes. Upload your logo, pick your colours, font, background texture and stamp icon, and change the wording to suit you, like "coffee", "cut" or "class".'],
   ['How does it help with Google Maps and AI search?', 'Google ranks local businesses partly on how many reviews you have, how good they are and how recent they are. AI assistants like ChatGPT and Google AI Overviews also read reviews when they recommend places. Loyal Locally asks your regulars, the people most likely to leave 5 stars, for a review at the right moment, so a steady stream keeps coming in.'],
   ['Do customers get stamps for reviews?', 'No, and that is on purpose. Google\'s rules ban rewarding customers for reviews, and businesses that do it can have reviews removed. We simply ask happy regulars, which keeps your profile safe.'],
-  ['What happens after the free week?', 'If you love it, you move onto a simple monthly plan. If not, there is nothing to cancel and no card is needed to start.'],
+  ['What happens after the free week?', 'If you love it, you move onto one simple monthly plan with every feature: Rp 5.500.000 a month in Indonesia, A$499 in Australia or £249 in the UK. If not, there is nothing to cancel and no card is needed to start.'],
   ['Does it work outside Indonesia?', 'Yes. Customers can join with any international WhatsApp number, and you set your own country and timezone.'],
 ];
 
@@ -115,6 +122,7 @@ export default function Home() {
             <a href="#reviews">Reviews</a>
             <a href="#how">How it works</a>
             <a href="#compare">Compare</a>
+            <a href="#pricing">Pricing</a>
             <a href="#faq">FAQ</a>
           </nav>
           <div className="lp-nav-cta">
@@ -339,6 +347,23 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="lp-section" id="pricing" style={{ paddingTop: 0 }}>
+          <div className="lp-container">
+            <div className="lp-eyebrow">✺ Pricing</div>
+            <h2 className="lp-title">One plan. Every feature.</h2>
+            <p className="lp-lead">Start with a free week. If you love it, it&apos;s one simple monthly price for your business, with unlimited customers, staff logins and everything on this page.</p>
+            <div className="lp-plans">
+              {PRICES.map((p) => (
+                <div key={p.country} className="lp-plan">
+                  <div className="lp-plan-country"><span aria-hidden="true">{p.flag}</span> {p.country}</div>
+                  <div className="lp-plan-price">{p.price}<span>/ month</span></div>
+                  <a className="lp-btn small orange" href="#trial">Start your free week</a>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="lp-section" id="trial" style={{ background: '#fffaf1', borderBlock: '2px solid #1c1511' }}>
           <div className="lp-container">
             <div className="lp-eyebrow">✺ Try it free</div>
@@ -353,7 +378,7 @@ export default function Home() {
                   <li>Unlimited customers and staff logins</li>
                   <li>Spin to win, social stamps and referrals</li>
                   <li>Help setting up your rewards and design</li>
-                  <li>Simple monthly plan after, only if you love it</li>
+                  <li>Then one monthly price, only if you love it</li>
                 </ul>
               </div>
               <TrialForm />

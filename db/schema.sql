@@ -223,3 +223,14 @@ create table if not exists personal_codes (  -- one-off codes a manager sends to
 alter table gift_cards add column if not exists customer_id uuid references customers(id) on delete set null;
 alter table gift_cards add column if not exists from_customer_id uuid references customers(id) on delete set null;  -- member who bought it
 alter table gift_cards add column if not exists to_phone text;                                                       -- friend who isn't a member yet
+
+-- Images businesses upload in Settings (logo, background photo, stamp). Served from /api/uploads/{id}.
+create table if not exists uploads (
+  id uuid primary key default gen_random_uuid(),
+  business_id uuid not null references businesses(id) on delete cascade,
+  kind text not null check (kind in ('logo','background','stamp')),
+  content_type text not null,
+  data bytea not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists uploads_business_idx on uploads(business_id, created_at desc);

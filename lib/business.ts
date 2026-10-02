@@ -193,7 +193,8 @@ export function validateSettings(input: any): Settings {
   try { new Intl.DateTimeFormat('en', { timeZone: tz }); } catch { tz = d.timezone; }
   const img = (v: any) => {
     const u = str(v, 500);
-    return u && (/^https:\/\//.test(u) || /^\/brands\/[\w./-]+$/.test(u)) ? u : '';
+    // An https link, a built-in brand image, or an image uploaded in Settings
+    return u && (/^https:\/\//.test(u) || /^\/brands\/[\w./-]+$/.test(u) || /^\/api\/uploads\/[0-9a-f-]{36}$/.test(u)) ? u : '';
   };
   const logoUrl = img(input.logoUrl);
 

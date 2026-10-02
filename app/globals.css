@@ -145,7 +145,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
 .scroll-x { overflow-x: auto; }
 .toast {
-  position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--bg);
+  position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--surface);
   padding: 12px 18px; border-radius: 14px; font-weight: 600; z-index: 50; max-width: calc(100vw - 32px); box-shadow: 0 10px 30px #0004;
 }
 .qty { display: flex; align-items: center; gap: 0; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
@@ -236,3 +236,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
 .btn.disabled { opacity: .45; pointer-events: none; }
 .gift-card-link { text-decoration: none; color: inherit; }
 .has-photo .voucher { background: var(--surface); color: var(--ink); text-shadow: none; }
+.img-preview { width: 64px; height: 64px; border-radius: 12px; border: 1px solid var(--line); background: var(--soft); display: grid; place-items: center; overflow: hidden; flex: none; }
+.img-preview.background { width: 96px; }
+.img-preview img { width: 100%; height: 100%; object-fit: contain; }
+.img-preview.background img { object-fit: cover; }
+.has-photo fieldset .linkbtn { color: var(--muted); }

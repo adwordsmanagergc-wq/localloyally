@@ -11,6 +11,42 @@ const COLORS: [string, string][] = [
   ['bg', 'Background'], ['surface', 'Cards'], ['ink', 'Text'], ['muted', 'Soft text'], ['accent', 'Brand colour'], ['accentInk', 'Text on brand colour'],
 ];
 
+/** Upload an image (or paste a link). Shows a preview; Save settings keeps it. */
+function ImagePicker({ slug, kind, label, hint, value, onChange, toast }: {
+  slug: string; kind: 'logo' | 'background' | 'stamp'; label: string; hint: string; value: string; onChange: (v: string) => void; toast: Toast;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [link, setLink] = useState(false);
+  async function upload(file: File) {
+    setBusy(true);
+    try {
+      const fd = new FormData(); fd.append('file', file); fd.append('kind', kind);
+      const res = await fetch(`/api/b/${slug}/admin/upload`, { method: 'POST', body: fd });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(d.error || 'Upload failed');
+      onChange(d.url); toast('Uploaded. Tap Save settings to keep it.');
+    } catch (e: any) { toast(e.message); } finally { setBusy(false); }
+  }
+  return (
+    <div className="stack" style={{ gap: 6 }}>
+      <span className="small" style={{ fontWeight: 600 }}>{label}</span>
+      <div className="row" style={{ alignItems: 'center' }}>
+        <div className={`img-preview ${kind}`}>
+          {value ? <img src={value} alt="" /> /* eslint-disable-line @next/next/no-img-element */ : <span className="tiny muted">None</span>}
+        </div>
+        <label className="btn small" style={{ cursor: 'pointer' }}>
+          {busy ? 'Uploading…' : value ? 'Change' : 'Upload'}
+          <input type="file" accept="image/*" hidden disabled={busy} onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ''; }} />
+        </label>
+        {value && <button type="button" className="btn ghost small" onClick={() => onChange('')}>Remove</button>}
+        <button type="button" className="linkbtn small" onClick={() => setLink((v) => !v)}>{link ? 'Hide link' : 'Use a link'}</button>
+      </div>
+      {link && <input value={value} onChange={(e) => onChange(e.target.value)} placeholder="https://…" />}
+      <span className="tiny muted">{hint}</span>
+    </div>
+  );
+}
+
 export default function SettingsTab({ slug, toast }: { slug: string; toast: Toast }) {
   const [name, setName] = useState('');
   const [s, setS] = useState<any>(null);
@@ -80,9 +116,12 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
           <label>Business name<input value={name} onChange={(e) => setName(e.target.value)} /></label>
           <label>Tagline<input value={s.tagline} onChange={(e) => set('tagline', e.target.value)} maxLength={80} /></label>
         </div>
-        <label>Logo image link (https, square PNG works best)<input value={s.logoUrl} onChange={(e) => set('logoUrl', e.target.value)} placeholder="https://…/logo.png" /></label>
-        <label>Background photo link (optional, replaces the texture)<input value={s.bgImageUrl} onChange={(e) => set('bgImageUrl', e.target.value)} placeholder="https://…/background.jpg" /></label>
-        <label>Custom stamp image link (optional, e.g. your logo as a transparent PNG)<input value={s.stampImageUrl} onChange={(e) => set('stampImageUrl', e.target.value)} placeholder="https://…/stamp.png" /></label>
+        <ImagePicker slug={slug} kind="logo" label="Logo" hint="Square works best. PNG with a see-through background looks great."
+          value={s.logoUrl} onChange={(v) => set('logoUrl', v)} toast={toast} />
+        <ImagePicker slug={slug} kind="background" label="Background photo (optional, replaces the texture)" hint="A photo of your place, food or texture. Large photos are shrunk automatically."
+          value={s.bgImageUrl} onChange={(v) => set('bgImageUrl', v)} toast={toast} />
+        <ImagePicker slug={slug} kind="stamp" label="Custom stamp (optional)" hint="Your logo or an icon, ideally a PNG with a see-through background."
+          value={s.stampImageUrl} onChange={(v) => set('stampImageUrl', v)} toast={toast} />
         <div className="grid3">
           {COLORS.map(([k, l]) => (
             <label key={k}>{l}<input type="color" value={s.colors[k]} onChange={(e) => set(`colors.${k}`, e.target.value)} /></label>

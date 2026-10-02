@@ -46,7 +46,7 @@ export async function addPurchase(biz: Business, customerId: string, staffId: st
     if (s.referral.enabled && c.referred_by && !c.referral_rewarded) {
       const [{ n }] = await tx`select count(*)::int n from stamps where customer_id = ${customerId} and reason = 'purchase'`;
       if (n === 1) {
-        await add(customerId, s.referral.stamps, 'referral', 'Joined with a friend');
+        // Only the referrer gets a bonus; the new member already got their welcome stamps.
         await add(c.referred_by, s.referral.stamps, 'referral', 'Friend made first visit');
         await tx`update customers set referral_rewarded = true where id = ${customerId}`;
         referrerId = c.referred_by;

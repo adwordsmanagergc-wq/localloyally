@@ -169,8 +169,8 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
           </div>
         )}
         <hr />
-        <Check path="referral.enabled" label="Refer a friend (both get stamps after the friend's first visit)" />
-        {s.referral.enabled && <label style={{ maxWidth: 200 }}>Stamps each<input type="number" min={1} max={5} value={s.referral.stamps} onChange={num('referral.stamps')} /></label>}
+        <Check path="referral.enabled" label="Refer a friend (the member who invited them gets stamps after the friend's first visit)" />
+        {s.referral.enabled && <label style={{ maxWidth: 200 }}>Bonus stamps<input type="number" min={1} max={5} value={s.referral.stamps} onChange={num('referral.stamps')} /></label>}
         <hr />
         <Check path="birthday.enabled" label="Birthday treat" />
         {s.birthday.enabled && (

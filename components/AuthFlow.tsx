@@ -77,7 +77,7 @@ export default function AuthFlow({ slug, refCode, businessName, start }: { slug:
         <h2 className="auth-title">
           {mode === 'login' ? 'Welcome back' : mode === 'join' ? `Get your ${businessName} card` : 'Reset your password'}
         </h2>
-        {mode === 'join' && refCode && <div className="banner small">A friend invited you. You&apos;ll both get a bonus stamp after your first visit.</div>}
+        {mode === 'join' && refCode && <div className="banner small">A friend invited you. Welcome!</div>}
         {info && <div className="banner good small">{info}</div>}
 
         {(mode === 'join' || mode === 'login') && (

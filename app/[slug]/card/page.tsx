@@ -143,9 +143,9 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
         )}
         {s.referral.enabled && (
           <div className="card flat stack">
-            <div className="row between"><h3>Bring a friend</h3><span className="pill accent">+{s.referral.stamps} each</span></div>
-            <p className="small muted">When they join with your link and make their first visit, you both get a bonus stamp.</p>
-            <ShareReferral link={refLink} text={`Join ${biz.name} rewards with my link and we both get a bonus stamp`} />
+            <div className="row between"><h3>Bring a friend</h3><span className="pill accent">+{s.referral.stamps}</span></div>
+            <p className="small muted">When a friend joins with your link and makes their first visit, you get {s.referral.stamps === 1 ? 'a bonus stamp' : `${s.referral.stamps} bonus stamps`}.</p>
+            <ShareReferral link={refLink} text={`Join ${biz.name} rewards with my link${s.welcomeStamps > 0 ? ` and get ${s.welcomeStamps === 1 ? 'a free stamp' : `${s.welcomeStamps} free stamps`} when you sign up` : ''}`} />
           </div>
         )}
         <div className="card flat stack small">

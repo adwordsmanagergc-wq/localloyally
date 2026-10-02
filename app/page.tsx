@@ -1,10 +1,9 @@
 import './landing.css';
 import type { Metadata } from 'next';
-import StampIcon from '@/components/StampIcon';
 import TrialForm from '@/components/landing/TrialForm';
 
 export const metadata: Metadata = {
-  title: 'Loyalty Rewards | Digital stamp cards for your business',
+  title: 'Loyal Locally | Digital stamp cards for your business',
   description:
     'Digital loyalty stamp cards for cafes, restaurants, barbers, salons and gyms. Customers join with WhatsApp, staff scan a QR code. Spin to win, social stamps and your own branding. Free for 7 days.',
 };
@@ -83,7 +82,7 @@ const FAQ = [
   ['How do staff add stamps?', 'Staff open your staff page on any phone or tablet, log in with their own PIN and scan the customer\'s QR code. It takes about two seconds.'],
   ['Can people cheat the system?', 'The customer QR code changes every few minutes, so screenshots stop working. Every stamp is logged with the staff member who gave it, spin results are decided on our server, and social posts need staff approval.'],
   ['Can I make it look like my brand?', 'Yes. Upload your logo, pick your colours, font, background texture and stamp icon, and change the wording to suit you, like "coffee", "cut" or "class".'],
-  ['How does it help with Google Maps and AI search?', 'Google ranks local businesses partly on how many reviews you have, how good they are and how recent they are. AI assistants like ChatGPT and Google AI Overviews also read reviews when they recommend places. Loyalty Rewards asks your regulars, the people most likely to leave 5 stars, for a review at the right moment, so a steady stream keeps coming in.'],
+  ['How does it help with Google Maps and AI search?', 'Google ranks local businesses partly on how many reviews you have, how good they are and how recent they are. AI assistants like ChatGPT and Google AI Overviews also read reviews when they recommend places. Loyal Locally asks your regulars, the people most likely to leave 5 stars, for a review at the right moment, so a steady stream keeps coming in.'],
   ['Do customers get stamps for reviews?', 'No, and that is on purpose. Google\'s rules ban rewarding customers for reviews, and businesses that do it can have reviews removed. We simply ask happy regulars, which keeps your profile safe.'],
   ['What happens after the free week?', 'If you love it, you move onto a simple monthly plan. If not, there is nothing to cancel and no card is needed to start.'],
   ['Does it work outside Indonesia?', 'Yes. Customers can join with any international WhatsApp number, and you set your own country and timezone.'],
@@ -94,13 +93,13 @@ export default function Home() {
     <div className="lp">
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&family=Nunito:wght@900&display=swap" />
 
       <header className="lp-nav">
         <div className="lp-container">
-          <a href="/" className="lp-logo" aria-label="Loyalty Rewards home">
-            <span className="lp-logo-mark"><StampIcon icon="star" size={18} /></span>
-            <span className="lp-logo-text">Loyalty Rewards</span>
+          <a href="/" className="lp-logo" aria-label="Loyal Locally home">
+            <img className="lp-logo-img" src="/brand/loyal-locally-icon.png" width={38} height={38} alt="" />
+            <span className="lp-logo-text">Loyal <span className="lp-logo-pill">Locally</span></span>
           </a>
           <nav className="lp-links" aria-label="Main">
             <a href="#features">Features</a>
@@ -190,7 +189,7 @@ export default function Home() {
           <div className="lp-container">
             <div className="lp-eyebrow">✺ Everything in one place</div>
             <h2 className="lp-title">More than a stamp card. A reason to come back.</h2>
-            <p className="lp-lead">Paper cards get lost and most loyalty apps make customers download something. Loyalty Rewards lives in their phone browser and does the marketing for you.</p>
+            <p className="lp-lead">Paper cards get lost and most loyalty apps make customers download something. Loyal Locally lives in their phone browser and does the marketing for you.</p>
             <div className="lp-grid">
               {FEATURES.map((f) => (
                 <article key={f.t} className="lp-feature">
@@ -246,7 +245,7 @@ export default function Home() {
               <div className="lp-eyebrow">✺ Get found</div>
               <h2 className="lp-title">More reviews. Higher on Google Maps. Picked by AI.</h2>
               <p className="lp-lead">
-                Reviews are one of the biggest reasons a business shows up in the Google Maps top 3, and AI assistants like ChatGPT and Google AI Overviews read them when they recommend where to go. Your regulars love you. Loyalty Rewards makes sure they say so.
+                Reviews are one of the biggest reasons a business shows up in the Google Maps top 3, and AI assistants like ChatGPT and Google AI Overviews read them when they recommend where to go. Your regulars love you. Loyal Locally makes sure they say so.
               </p>
               <ul className="lp-checks">
                 <li>Asks regulars for a review on WhatsApp after their 3rd visit (you choose when)</li>
@@ -320,7 +319,7 @@ export default function Home() {
             <div className="lp-table-wrap">
               <table className="lp-table">
                 <thead>
-                  <tr><th scope="col"></th><th scope="col">Paper cards</th><th scope="col">Typical loyalty apps</th><th scope="col" className="us">Loyalty Rewards</th></tr>
+                  <tr><th scope="col"></th><th scope="col">Paper cards</th><th scope="col">Typical loyalty apps</th><th scope="col" className="us">Loyal Locally</th></tr>
                 </thead>
                 <tbody>
                   {COMPARE.map(([label, a, b, c]) => (
@@ -382,16 +381,16 @@ export default function Home() {
 
       <footer className="lp-footer">
         <div className="lp-container">
-          <div className="lp-logo" style={{ color: '#1c1511' }}>
-            <span className="lp-logo-mark"><StampIcon icon="star" size={18} /></span> Loyalty Rewards
-          </div>
+          <a href="/" className="lp-footer-logo" aria-label="Loyal Locally home">
+            <img src="/brand/loyal-locally-logo.png" width={88} height={120} alt="Loyal Locally" />
+          </a>
           <nav aria-label="Footer">
             <a href="/login?as=member">Member login</a>
             <a href="/login?as=business">Business login</a>
             <a href="#trial">Free trial</a>
             <a href="/platform">Admin</a>
           </nav>
-          <span>© {new Date().getFullYear()} Loyalty Rewards by Metatap Digital</span>
+          <span>© {new Date().getFullYear()} Loyal Locally by Metatap Digital</span>
         </div>
       </footer>
     </div>

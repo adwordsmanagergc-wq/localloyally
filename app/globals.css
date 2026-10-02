@@ -178,7 +178,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
 .has-photo .card input, .has-photo .card select, .has-photo .card textarea { background: color-mix(in srgb, var(--ink) 5%, var(--surface)); }
 .has-photo .slot.img:not(.on) { background: rgba(255, 250, 243, .6); }
 
-/* Login / join: same look as the Loyalty Rewards home page */
+/* Login / join: same look as the Loyal Locally home page */
 .theme { --lp-ink: #1c1511; --lp-head: 'Bricolage Grotesque', var(--font-head); --lp-lime: #d4f56b; --lp-lilac: #c8b8ff; }
 .join-title { font-family: var(--lp-head); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(2.1rem, 9vw, 2.9rem); line-height: 1.05; }
 .sticker {

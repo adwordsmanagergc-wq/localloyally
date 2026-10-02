@@ -2,8 +2,9 @@ import { randomBytes } from 'node:crypto';
 import { sql } from '../db';
 import { customerSummary } from '../loyalty';
 import type { Business } from '../business';
+import { siteUrl } from '../site';
 
-export const appUrl = () => (process.env.APP_URL || '').replace(/\/$/, '');
+export const appUrl = siteUrl;
 
 /** Wallet cards can't refresh like the web QR, so they carry a fixed code. Prefix tells the scanner what it is. */
 export const WALLET_PREFIX = 'RW1:';

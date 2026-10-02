@@ -2,6 +2,7 @@ import { sql } from '@/lib/db';
 import { mergeSettings } from '@/lib/business';
 import { json } from '@/lib/util';
 import { sendWhatsApp } from '@/lib/whatsapp';
+import { siteUrl } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +10,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret || req.headers.get('authorization') !== `Bearer ${secret}`) return json({ error: 'Unauthorized' }, 401);
-  const base = (process.env.APP_URL || '').replace(/\/$/, '');
+  const base = siteUrl();
   let nudges = 0, reminders = 0, reviewAsks = 0;
 
   const businesses = await sql`select id, slug, name, settings from businesses where active`;

@@ -2,12 +2,13 @@ import { sql } from './db';
 import { RuleError } from './loyalty';
 import { cleanGiftCode } from './money';
 import type { Business } from './business';
+import { siteUrl } from './site';
 
 const CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const newCode = () => Array.from(crypto.getRandomValues(new Uint8Array(10)), (b) => CHARS[b % CHARS.length]).join('');
 
 export const giftUrl = (biz: Business, code: string) =>
-  `${(process.env.APP_URL || '').replace(/\/$/, '')}/${biz.slug}/g/${code}`;
+  `${siteUrl()}/${biz.slug}/g/${code}`;
 
 export type GiftInput = { kind: 'amount' | 'item'; amount?: number; label?: string; to?: string; from?: string; message?: string; days?: number };
 

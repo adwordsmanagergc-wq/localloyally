@@ -9,6 +9,7 @@ import Stamp from '@/components/Stamp';
 import { CardQr, CodeForm, LogoutButton, ShareReferral, SocialForm } from '@/components/CardParts';
 import SpinWheel from '@/components/SpinWheel';
 import { latestOffer } from '@/lib/campaigns';
+import { siteUrl } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,7 +28,7 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
   const next = s.rewards.find((r) => balance < r.stamps);
   const cols = maxTier <= 6 ? maxTier : maxTier <= 10 ? 5 : 6;
   const tierAt = new Map(s.rewards.map((r) => [r.stamps, r.label]));
-  const base = (process.env.APP_URL || '').replace(/\/$/, '');
+  const base = siteUrl();
   const refLink = `${base}/${biz.slug}/r/${sum.customer.ref_code}`;
   const socialPending = sum.lastSocial?.status === 'pending';
   // Show the wallet that matches the phone; both on a computer.

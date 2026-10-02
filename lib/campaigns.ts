@@ -4,6 +4,7 @@ import { memberStats, segmentWhere, type Segment } from './segments';
 import { sendWhatsApp } from './whatsapp';
 import { syncWallet } from './wallet';
 import type { Business } from './business';
+import { siteUrl } from './site';
 
 export type OfferVoucher = { label: string; kind: 'percent' | 'item'; value: number; days: number };
 
@@ -44,7 +45,7 @@ export async function createCampaign(biz: Business, staffId: string, segment: Se
 export async function sendBatch(biz: Business, campaignId: string, size = 20) {
   const [c] = await sql`select id, message, voucher from campaigns where id = ${campaignId} and business_id = ${biz.id}`;
   if (!c) throw new RuleError('Offer not found');
-  const link = `${(process.env.APP_URL || '').replace(/\/$/, '')}/${biz.slug}/card`;
+  const link = `${siteUrl()}/${biz.slug}/card`;
   const batch = await sql`
     update campaign_recipients r set status = 'done' from customers cu
     where r.customer_id = cu.id and r.campaign_id = ${c.id}

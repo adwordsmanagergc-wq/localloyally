@@ -63,7 +63,7 @@ create index if not exists stamps_business_idx on stamps(business_id, created_at
 create table if not exists spins (
   id bigserial primary key,
   customer_id uuid not null references customers(id) on delete cascade,
-  source text not null check (source in ('redeem','weekly','gift')),
+  source text not null check (source in ('redeem','weekly','gift','halfway')),
   period_key text,                       -- e.g. 2026-40 for weekly spins, stops doubles
   used_at timestamptz,
   voucher_id uuid,
@@ -122,3 +122,5 @@ create table if not exists trial_requests (
 
 alter table customers add column if not exists review_asked_at timestamptz;
 alter table customers add column if not exists password_hash text;
+alter table spins drop constraint if exists spins_source_check;
+alter table spins add constraint spins_source_check check (source in ('redeem','weekly','gift','halfway'));

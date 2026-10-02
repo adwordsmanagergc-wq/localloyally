@@ -31,7 +31,7 @@ export const DEFAULT_SETTINGS = {
   streak: { enabled: true, visits: 3, days: 7 },
   referral: { enabled: true, stamps: 1 },
   spin: {
-    enabled: true, weekly: true, onRedeem: true, voucherDays: 7,
+    enabled: true, weekly: true, onRedeem: true, halfway: false, voucherDays: 7,
     prizes: [
       { label: '5% off', kind: 'percent', value: 5, weight: 40 },
       { label: '10% off', kind: 'percent', value: 10, weight: 25 },
@@ -221,7 +221,7 @@ export function validateSettings(input: any): Settings {
     streak: { enabled: bool(input.streak?.enabled), visits: int(input.streak?.visits, 2, 10, 3), days: int(input.streak?.days, 2, 30, 7) },
     referral: { enabled: bool(input.referral?.enabled), stamps: int(input.referral?.stamps, 1, 5, 1) },
     spin: {
-      enabled: spinEnabled, weekly: bool(input.spin?.weekly), onRedeem: bool(input.spin?.onRedeem),
+      enabled: spinEnabled, weekly: bool(input.spin?.weekly), onRedeem: bool(input.spin?.onRedeem), halfway: bool(input.spin?.halfway),
       voucherDays: int(input.spin?.voucherDays, 1, 60, 7), prizes: prizes.length >= 2 ? prizes : d.spin.prizes,
     },
     birthday: { enabled: bool(input.birthday?.enabled), windowDays: int(input.birthday?.windowDays, 0, 14, 3), label: str(input.birthday?.label, 40, d.birthday.label) || d.birthday.label },
@@ -246,6 +246,8 @@ export async function saveSettings(businessId: string, name: string, s: Settings
 
 export const maxTier = (s: Settings) => Math.max(...s.rewards.map((r) => r.stamps));
 export const minTier = (s: Settings) => Math.min(...s.rewards.map((r) => r.stamps));
+/** Stamps needed for the halfway spin, e.g. 4 on an 8-stamp card. */
+export const halfwayAt = (s: Settings) => Math.ceil(maxTier(s) / 2);
 
 /** Local wall-clock parts in the business's timezone. */
 export function localNow(tz: string, now = new Date()) {

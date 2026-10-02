@@ -1,6 +1,6 @@
 import { randomInt } from 'node:crypto';
 import { sql, type Tx } from './db';
-import { isDoubleHour, localNow, maxTier, type Business, type Prize } from './business';
+import { halfwayAt, isDoubleHour, localNow, maxTier, type Business, type Prize } from './business';
 
 export class RuleError extends Error {}
 
@@ -84,9 +84,17 @@ export async function redeemReward(biz: Business, customerId: string, staffId: s
   });
 }
 
-/** Rewards that appear on their own: weekly spin for active members, birthday treat. */
+/** Rewards that appear on their own: halfway and weekly spins, birthday treat. */
 export async function grantPassive(biz: Business, customerId: string) {
   const s = biz.settings;
+  if (s.spin.enabled && s.spin.halfway) {
+    // One spin per card: the key counts rewards claimed so far, so a new card earns a new spin.
+    await sql`
+      insert into spins (customer_id, source, period_key)
+      select ${customerId}, 'halfway', 'card-' || (select count(*) from stamps where customer_id = ${customerId} and reason = 'redeem')
+      where (select coalesce(sum(delta), 0) from stamps where customer_id = ${customerId}) >= ${halfwayAt(s)}
+      on conflict do nothing`;
+  }
   if (s.spin.enabled && s.spin.weekly) {
     await sql`
       insert into spins (customer_id, source, period_key)
@@ -194,7 +202,7 @@ export async function customerSummary(biz: Business, customerId: string) {
   if (!c) return null;
   const [balance, [spins], vouchers, history, [social], [lastVisit]] = await Promise.all([
     getBalance(sql, customerId),
-    sql`select count(*)::int n from spins where customer_id = ${customerId} and used_at is null`,
+    sql`select count(*)::int n, bool_or(source = 'halfway') halfway from spins where customer_id = ${customerId} and used_at is null`,
     sql`select id, label, kind, value, source, expires_at from vouchers where customer_id = ${customerId}
         and redeemed_at is null and expires_at > now() order by expires_at`,
     sql`select delta, reason, note, created_at from stamps where customer_id = ${customerId} order by created_at desc, id desc limit 10`,
@@ -202,7 +210,7 @@ export async function customerSummary(biz: Business, customerId: string) {
     sql`select max(created_at) as at, count(*)::int as visits from stamps where customer_id = ${customerId} and reason = 'purchase'`,
   ]);
   return {
-    customer: c, balance, spins: biz.settings.spin.enabled ? (spins.n as number) : 0, vouchers, history,
+    customer: c, balance, spins: biz.settings.spin.enabled ? (spins.n as number) : 0, halfwaySpin: spins.halfway === true, vouchers, history,
     lastSocial: social ?? null, lastVisit: lastVisit?.at ?? null, visits: (lastVisit?.visits as number) ?? 0, doubleHourNow: isDoubleHour(biz.settings),
     maxTier: maxTier(biz.settings),
   };

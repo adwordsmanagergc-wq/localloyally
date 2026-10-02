@@ -18,6 +18,9 @@ export default function SpinWheel({ slug, prizes, voucherDays }: { slug: string;
   const rotRef = useRef(0);
   const n = prizes.length;
   const seg = (2 * Math.PI) / n;
+  // Shrink long labels so they stay inside their slice (bold text is about 0.62em per character).
+  const room = 2 * 62 * Math.sin(seg / 2);
+  const fit = (label: string) => Math.max(6, Math.min(n > 7 ? 8 : 10, room / (0.62 * label.length)));
 
   async function go() {
     setBusy(true); setErr(''); setWon(null);
@@ -45,7 +48,7 @@ export default function SpinWheel({ slug, prizes, voucherDays }: { slug: string;
             return (
               <g key={i}>
                 <path d={arc(100, 100, 98, i * seg, (i + 1) * seg)} fill={i % 2 ? 'var(--surface)' : 'var(--accent)'} stroke="var(--ink)" strokeOpacity=".15" />
-                <text x={tx} y={ty} fill={i % 2 ? 'var(--ink)' : 'var(--accent-ink)'} fontSize={n > 7 ? 8 : 10} fontWeight="700"
+                <text x={tx} y={ty} fill={i % 2 ? 'var(--ink)' : 'var(--accent-ink)'} fontSize={fit(label)} fontWeight="700"
                   textAnchor="middle" dominantBaseline="middle" transform={`rotate(${(mid * 180) / Math.PI} ${tx} ${ty})`}>
                   {label}
                 </text>

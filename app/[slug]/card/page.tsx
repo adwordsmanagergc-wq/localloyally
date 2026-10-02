@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getBusiness } from '@/lib/business';
+import { getBusiness, halfwayAt } from '@/lib/business';
 import { getCustomerId } from '@/lib/auth';
 import { customerSummary, grantPassive, REASON_LABEL } from '@/lib/loyalty';
 import Brand from '@/components/Brand';
@@ -79,7 +79,12 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
 
       {sum.spins > 0 && (
         <section className="card stack center">
-          <h2>You have {sum.spins} spin{sum.spins > 1 ? 's' : ''}</h2>
+          {sum.halfwaySpin ? (
+            <>
+              <h2>You&apos;re halfway there!</h2>
+              <p className="small muted">Have a spin to see if you can win a prize for your next visit!</p>
+            </>
+          ) : <h2>You have {sum.spins} spin{sum.spins > 1 ? 's' : ''}</h2>}
           <SpinWheel slug={biz.slug} prizes={s.spin.prizes.map((p) => p.label)} voucherDays={s.spin.voucherDays} />
         </section>
       )}
@@ -126,7 +131,13 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
             <p>⏱ <strong>Double stamps</strong> {s.doubleHours.start} to {s.doubleHours.end}
               {s.doubleHours.days.length < 7 && ` on ${s.doubleHours.days.sort().map((x) => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][x]).join(', ')}`}.</p>
           )}
-          {s.spin.enabled && <p>🎡 <strong>Spin to win</strong>{s.spin.onRedeem ? ' every time you claim a reward' : ''}{s.spin.weekly ? `${s.spin.onRedeem ? ', plus' : ''} once a week when you visit` : ''}.</p>}
+          {s.spin.enabled && (s.spin.halfway || s.spin.onRedeem || s.spin.weekly) && (
+            <p>🎡 <strong>Spin to win</strong> {[
+              s.spin.halfway && `when you reach ${halfwayAt(s)} stamps`,
+              s.spin.onRedeem && 'every time you claim a reward',
+              s.spin.weekly && 'once a week when you visit',
+            ].filter(Boolean).join(', plus ')}.</p>
+          )}
           {s.birthday.enabled && <p>🎂 <strong>{s.birthday.label}</strong> around your birthday.</p>}
         </div>
       </section>

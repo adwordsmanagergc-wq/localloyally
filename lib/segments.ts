@@ -4,7 +4,7 @@ export { SEGMENTS, isSegment, type Segment } from './segments-meta';
 
 /** One row per member with the numbers the segments need. */
 export const memberStats = (bizId: string) => sql`
-  select c.id, c.name, c.phone, c.marketing_opt_in, c.created_at,
+  select c.id, c.name, c.username, c.phone, c.marketing_opt_in, c.created_at,
     coalesce(x.balance, 0)::int balance, coalesce(x.visits, 0)::int visits, coalesce(x.visits60, 0)::int visits60, x.last_visit
   from customers c
   left join lateral (

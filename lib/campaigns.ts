@@ -4,12 +4,12 @@ import { memberStats, segmentWhere, type Segment } from './segments';
 import { sendWhatsApp } from './whatsapp';
 import { syncWallet } from './wallet';
 import type { Business } from './business';
+import { firstName, personalise } from './personalise';
+export { personalise };
 import { siteUrl } from './site';
 
 export type OfferVoucher = { label: string; kind: 'percent' | 'item'; value: number; days: number };
 
-const firstName = (n: string) => n.trim().split(/\s+/)[0] || n;
-export const personalise = (msg: string, name: string) => msg.replace(/\{name\}/gi, firstName(name));
 
 /** Saves the offer, picks the members and gives them the voucher. Messages go out in batches via sendBatch. */
 export async function createCampaign(biz: Business, staffId: string, segment: Segment, rawMessage: string, rawVoucher: any) {

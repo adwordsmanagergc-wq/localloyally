@@ -221,3 +221,6 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
 .powered { display: grid; justify-items: center; gap: 6px; padding: 18px 0 8px; text-align: center; }
 .powered-cta { text-shadow: none; display: inline-block; font-weight: 700; font-size: 0.9rem; padding: 9px 16px; border-radius: 999px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); text-decoration: none; }
 .powered .tiny { opacity: .8; }
+.wa-next { background: var(--soft); border-radius: 16px; padding: 14px 16px; }
+.wa-who { font-family: var(--font-head); font-size: 1.5rem; font-weight: 800; }
+.wa-preview { margin: 10px 0 0; padding: 10px 12px; background: #dcf8c6; color: #111; border-radius: 12px 12px 12px 2px; white-space: pre-wrap; font-size: 0.95rem; }

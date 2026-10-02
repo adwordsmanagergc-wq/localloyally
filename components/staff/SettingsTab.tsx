@@ -215,6 +215,15 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
       </fieldset>
 
       <fieldset>
+        <legend>Your WhatsApp</legend>
+        <p className="small muted">Customers message this number from their card, for example to buy a gift card for a friend.</p>
+        <label style={{ maxWidth: 360 }}>Business WhatsApp number
+          <input inputMode="tel" value={s.whatsappNumber}
+            onChange={(e) => set('whatsappNumber', e.target.value)} placeholder="+62 812 3456 7890" />
+        </label>
+      </fieldset>
+
+      <fieldset>
         <legend>Counter codes</legend>
         <Check path="counterCodes" label="Let customers type a code from the staff screen instead of being scanned (codes change every 2 minutes)" />
       </fieldset>

@@ -6,9 +6,11 @@ import { getCustomerId } from '@/lib/auth';
 import { customerSummary, grantPassive, REASON_LABEL } from '@/lib/loyalty';
 import Brand from '@/components/Brand';
 import Stamp from '@/components/Stamp';
-import { CardRefresh, CodeForm, LogoutButton, OptInToggle, ShareReferral, SocialForm } from '@/components/CardParts';
+import { CardRefresh, CodeForm, GiftFriend, LogoutButton, OptInToggle, ShareReferral, SocialForm } from '@/components/CardParts';
 import SpinWheel from '@/components/SpinWheel';
 import { latestOffer } from '@/lib/campaigns';
+import { memberGifts } from '@/lib/gifts';
+import { fmtGiftCode, money } from '@/lib/money';
 import { siteUrl } from '@/lib/site';
 import PoweredBy from '@/components/PoweredBy';
 
@@ -22,7 +24,7 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
   const id = await getCustomerId(biz.id);
   if (!id) redirect(`/${biz.slug}`);
   await grantPassive(biz, id);
-  const [sum, offer] = await Promise.all([customerSummary(biz, id).then((x) => x!), latestOffer(id)]);
+  const [sum, offer, gifts] = await Promise.all([customerSummary(biz, id).then((x) => x!), latestOffer(id), memberGifts(id)]);
   const s = biz.settings;
   const { balance, maxTier } = sum;
   const earned = s.rewards.filter((r) => balance >= r.stamps);
@@ -112,6 +114,21 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
         </section>
       )}
 
+      {gifts.length > 0 && (
+        <section className="stack">
+          <h2 className="on-bg">Your gift cards</h2>
+          {gifts.map((g: any) => (
+            <a key={g.code} className="voucher gift-card-link" href={`/${biz.slug}/g/${g.code}`}>
+              <div>
+                <div className="v-label">🎁 {g.kind === 'item' ? g.label : money(s.currency, g.balance)}</div>
+                <div className="tiny muted">{g.from_name ? `From ${g.from_name} · ` : ''}tell staff your username to use it · {fmtGiftCode(g.code)}</div>
+              </div>
+              <span aria-hidden="true">→</span>
+            </a>
+          ))}
+        </section>
+      )}
+
       {sum.vouchers.length > 0 && (
         <section className="stack">
           <h2 className="on-bg">Your vouchers</h2>
@@ -181,6 +198,14 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
           </div>
         </section>
       )}
+      {s.gifts.enabled && s.whatsappNumber && (
+        <section className="card flat stack">
+          <h3>🎁 Send a gift to a friend</h3>
+          <p className="small muted">Treat a friend to a {biz.name} gift card. Pick an amount and we&apos;ll open WhatsApp to the team.</p>
+          <GiftFriend bizName={biz.name} waNumber={s.whatsappNumber} currency={s.currency} me={sum.customer.username ?? sum.customer.name} />
+        </section>
+      )}
+
       <section className="card flat stack small">
         <OptInToggle slug={biz.slug} initial={!!sum.customer.marketing_opt_in} business={biz.name} />
       </section>

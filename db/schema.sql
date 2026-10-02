@@ -218,3 +218,8 @@ create table if not exists personal_codes (  -- one-off codes a manager sends to
   created_at timestamptz not null default now(),
   unique (customer_id, code)
 );
+
+-- Gift certificates can be sent to a member: they show on that member's card
+alter table gift_cards add column if not exists customer_id uuid references customers(id) on delete set null;
+alter table gift_cards add column if not exists from_customer_id uuid references customers(id) on delete set null;  -- member who bought it
+alter table gift_cards add column if not exists to_phone text;                                                       -- friend who isn't a member yet

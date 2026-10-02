@@ -4,6 +4,7 @@ import { staffRoute, body } from '@/lib/route';
 import { json, maskPhone, normalizePhone } from '@/lib/util';
 import { customerByWalletCode, WALLET_PREFIX } from '@/lib/wallet/data';
 import { cleanUsername } from '@/lib/username';
+import { memberGifts } from '@/lib/gifts';
 
 export const POST = staffRoute(async (req, biz, staff) => {
   const b = await body(req);
@@ -43,5 +44,5 @@ export const POST = staffRoute(async (req, biz, staff) => {
   if (!sum) return json({ error: 'Member not found' }, 404);
   if (staff.role !== 'manager') sum.customer.phone = maskPhone(sum.customer.phone);
   const [pending] = await sql`select id, url, platform from social_submissions where customer_id = ${id} and status = 'pending' limit 1`;
-  return json({ ...sum, pendingSocial: pending ?? null });
+  return json({ ...sum, pendingSocial: pending ?? null, gifts: await memberGifts(id!) });
 });

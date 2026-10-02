@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import { sql } from './db';
+import { normalizePhone } from './util';
 
 export type Prize = { label: string; kind: 'percent' | 'item'; value: number; weight: number };
 export type RewardTier = { stamps: number; label: string };
@@ -51,6 +52,8 @@ export const DEFAULT_SETTINGS = {
   location: { lat: null as number | null, lng: null as number | null },
   // Customers can type a code from the staff screen instead of being scanned
   counterCodes: true,
+  // The business's own WhatsApp: customers message it, e.g. to buy a gift for a friend
+  whatsappNumber: '',
 };
 export type Settings = typeof DEFAULT_SETTINGS;
 export type Business = { id: string; slug: string; name: string; active: boolean; settings: Settings };
@@ -248,6 +251,13 @@ export function validateSettings(input: any): Settings {
     currency: str(input.currency, 6, d.currency) || d.currency,
     gifts: { enabled: bool(input.gifts?.enabled), validDays: int(input.gifts?.validDays, 7, 730, d.gifts.validDays) },
     counterCodes: bool(input.counterCodes),
+    whatsappNumber: (() => {
+      const raw = str(input.whatsappNumber, 30);
+      if (!raw) return '';
+      const n = normalizePhone(raw, d.defaultCountryCode);
+      if (!n) throw new Error('Check the business WhatsApp number, e.g. +62 812 3456 7890');
+      return n;
+    })(),
     location: (() => {
       const lat = Number(input.location?.lat), lng = Number(input.location?.lng);
       const ok = input.location?.lat !== null && input.location?.lat !== '' && Number.isFinite(lat) && Number.isFinite(lng)

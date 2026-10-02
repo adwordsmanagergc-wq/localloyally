@@ -4,6 +4,7 @@ import { api, fmtDate, fmtDateTime } from '@/lib/client';
 import Stamp from '../Stamp';
 import type { BizInfo, Toast } from './StaffConsole';
 import { GiftPanel } from './GiftsTab';
+import { fmtGiftCode, money } from '@/lib/money';
 
 const LABEL: Record<string, string> = {
   purchase: 'Visit', double_hour: 'Double hour', welcome: 'Welcome', social: 'Social post',
@@ -212,6 +213,13 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
             onClick={() => { if (window.confirm(`Give ${r.label} and use ${r.stamps} stamps?`)) act('redeem', { tier: r.stamps }, (x) => `${x.label} redeemed`); }}>
             {r.label} · {r.stamps} stamps {bal < r.stamps && `(needs ${r.stamps - bal} more)`}
           </button>
+        ))}
+        {data.gifts?.map((g: any) => (
+          <div key={g.code} className="voucher">
+            <div><div className="v-label">🎁 {g.kind === 'item' ? g.label : money(biz.currency, g.balance)}</div>
+              <div className="tiny muted">Gift card{g.from_name ? ` from ${g.from_name}` : ''} · {fmtGiftCode(g.code)}</div></div>
+            <button className="btn small" onClick={() => setGift(g.code)}>Use</button>
+          </div>
         ))}
         {data.vouchers.length > 0 && <hr />}
         {data.vouchers.map((v: any) => (

@@ -153,7 +153,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .qty span { min-width: 36px; text-align: center; font-weight: 700; font-size: 1.1rem; }
 #reader { border-radius: 16px; overflow: hidden; }
 #reader video { border-radius: 16px; }
-fieldset { border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin: 0; display: grid; gap: 12px; }
+fieldset { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin: 0; display: grid; gap: 12px; }
 legend { font-family: var(--font-head); font-weight: 700; padding: 0 6px; font-size: 1.05rem; }
 hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
 
@@ -224,3 +224,15 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
 .wa-next { background: var(--soft); border-radius: 16px; padding: 14px 16px; }
 .wa-who { font-family: var(--font-head); font-size: 1.5rem; font-weight: 800; }
 .wa-preview { margin: 10px 0 0; padding: 10px 12px; background: #dcf8c6; color: #111; border-radius: 12px 12px 12px 2px; white-space: pre-wrap; font-size: 0.95rem; }
+/* Settings sections and ghost buttons stay readable on a photo background */
+.has-photo fieldset { box-shadow: 0 18px 40px -16px rgba(0,0,0,.6); }
+.has-photo legend { background: var(--surface); border-radius: 10px; padding: 4px 10px; }
+.has-photo fieldset input, .has-photo fieldset select, .has-photo fieldset textarea { background: color-mix(in srgb, var(--ink) 5%, var(--surface)); }
+.has-photo .btn.ghost { background: var(--surface); color: var(--ink); }
+.gift-to { border: 1px dashed var(--line); border-radius: 14px; padding: 12px; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--soft); border-radius: 999px; padding: 4px; gap: 4px; }
+.seg button { font: inherit; font-weight: 600; font-size: 0.9rem; border: 0; border-radius: 999px; padding: 8px; background: transparent; color: var(--ink); cursor: pointer; }
+.seg button[aria-pressed='true'] { background: var(--surface); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+.btn.disabled { opacity: .45; pointer-events: none; }
+.gift-card-link { text-decoration: none; color: inherit; }
+.has-photo .voucher { background: var(--surface); color: var(--ink); text-shadow: none; }

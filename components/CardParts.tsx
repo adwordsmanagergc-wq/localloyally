@@ -109,3 +109,40 @@ export function OptInToggle({ slug, initial, business }: { slug: string; initial
     </label>
   );
 }
+
+/** Ask the business on WhatsApp to send a friend a gift card; payment is sorted out with staff. */
+export function GiftFriend({ bizName, waNumber, currency, me }: { bizName: string; waNumber: string; currency: string; me: string }) {
+  const presets = currency === 'Rp' ? [50000, 100000, 200000] : [25, 50, 100];
+  const [isMember, setIsMember] = useState(true);
+  const [friend, setFriend] = useState('');
+  const [friendName, setFriendName] = useState('');
+  const [friendPhone, setFriendPhone] = useState('');
+  const [amount, setAmount] = useState(presets[1]);
+  const fmt = (n: number) => `${currency} ${n.toLocaleString(currency === 'Rp' ? 'id-ID' : 'en-US')}`;
+  const to = isMember ? (friend.trim() ? `@${friend.trim().replace(/^@/, '')}` : '') : (friendName.trim() && friendPhone.trim() ? `${friendName.trim()} (WhatsApp ${friendPhone.trim()})` : '');
+  const ready = !!to && amount > 0;
+  const text = `Hi ${bizName}! I'm @${me} and I'd like to send a gift card for ${fmt(amount)} to my friend ${to}. How can I pay?`;
+  return (
+    <div className="stack">
+      <div className="seg">
+        <button type="button" aria-pressed={isMember} onClick={() => setIsMember(true)}>They have a card</button>
+        <button type="button" aria-pressed={!isMember} onClick={() => setIsMember(false)}>They&apos;re new</button>
+      </div>
+      {isMember
+        ? <input value={friend} onChange={(e) => setFriend(e.target.value)} placeholder="Friend's username" autoCapitalize="none" autoCorrect="off" />
+        : <div className="row"><input className="grow" value={friendName} onChange={(e) => setFriendName(e.target.value)} placeholder="Friend's name" />
+            <input className="grow" value={friendPhone} onChange={(e) => setFriendPhone(e.target.value)} inputMode="tel" placeholder="+61 412 345 678" /></div>}
+      <div className="row wrap-row">
+        {presets.map((p) => (
+          <button key={p} type="button" className={`btn small ${amount === p ? '' : 'ghost'}`} onClick={() => setAmount(p)}>{fmt(p)}</button>
+        ))}
+        <input type="number" inputMode="numeric" min={1} value={amount || ''} onChange={(e) => setAmount(Number(e.target.value))} style={{ width: 130 }} aria-label="Other amount" />
+      </div>
+      <a className={`btn block ${ready ? '' : 'disabled'}`} aria-disabled={!ready} target="_blank" rel="noopener noreferrer"
+        href={ready ? `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}` : undefined}>
+        Ask {bizName} on WhatsApp →
+      </a>
+      <p className="tiny muted">You&apos;ll sort out payment with the team, then they send the gift to your friend.</p>
+    </div>
+  );
+}

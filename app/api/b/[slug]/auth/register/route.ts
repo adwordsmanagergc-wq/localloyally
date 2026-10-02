@@ -1,6 +1,7 @@
 import { sql } from '@/lib/db';
 import { hashPin, setCustomerSession, setMemberSession } from '@/lib/auth';
 import { createCard } from '@/lib/members';
+import { claimGift } from '@/lib/gifts';
 import { bizRoute, body } from '@/lib/route';
 import { clientIp, json, normalizePhone, rateLimit } from '@/lib/util';
 import { cleanUsername, usernameTakenByOther } from '@/lib/username';
@@ -36,6 +37,7 @@ export const POST = bizRoute(async (req, biz) => {
     birthdayMonth: bday ? m : null, birthdayDay: bday ? d : null,
   });
   if (!cust) return json({ error: 'That number already has a card. Log in instead.', exists: true }, 409);
+  if (b.gift) await claimGift(biz, cust.id, b.gift);
   await setCustomerSession(biz.id, cust.id);
   await setMemberSession(phone);
   return json({ ok: true });

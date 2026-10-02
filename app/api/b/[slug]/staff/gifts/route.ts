@@ -1,7 +1,8 @@
 import { sql } from '@/lib/db';
-import { createGift, giftUrl } from '@/lib/gifts';
+import { createGift, giftJoinUrl, giftUrl } from '@/lib/gifts';
 import { staffRoute, body } from '@/lib/route';
 import { json } from '@/lib/util';
+import { money } from '@/lib/money';
 
 export const dynamic = 'force-dynamic';
 export const GET = staffRoute(async (_req, biz) => {
@@ -13,8 +14,22 @@ export const GET = staffRoute(async (_req, biz) => {
 });
 
 export const POST = staffRoute(async (req, biz, staff) => {
-  const g = await createGift(biz, staff.id, await body(req));
-  return json({ gift: g, url: giftUrl(biz, g.code) });
+  const { gift, member, from, toPhone } = await createGift(biz, staff.id, await body(req));
+  const url = giftUrl(biz, gift.code);
+  const what = gift.kind === 'item' ? `a ${gift.label} at ${biz.name}` : `a ${biz.name} gift card for ${money(biz.settings.currency, gift.amount)}`;
+  const fromWho = gift.from_name ? `${gift.from_name} sent you` : "You've got";
+  const note = gift.message ? `"${gift.message}"\n` : '';
+  // Managers get a ready-made WhatsApp to whoever it's for
+  let whatsapp: string | null = null;
+  if (staff.role === 'manager' && member) {
+    const text = `Hi ${member.username}! ${fromWho} ${what} 🎁\n${note}It's on your card now, or open it here: ${url}`;
+    whatsapp = `https://wa.me/${member.phone}?text=${encodeURIComponent(text)}`;
+  } else if (staff.role === 'manager' && toPhone) {
+    const text = `Hi${gift.to_name ? ` ${gift.to_name}` : ''}! ${fromWho} ${what} 🎁\n${note}`
+      + `Sign up here to collect it on your rewards card (it takes 30 seconds): ${giftJoinUrl(biz, gift.code, from?.ref_code)}`;
+    whatsapp = `https://wa.me/${toPhone}?text=${encodeURIComponent(text)}`;
+  }
+  return json({ gift, url, member: member ? { username: member.username } : null, invite: !member && !!toPhone, whatsapp });
 });
 
 /** Managers can cancel a certificate, e.g. a refund. */

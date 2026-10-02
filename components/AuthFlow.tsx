@@ -6,7 +6,9 @@ import { api, savePassword } from '@/lib/client';
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 type Mode = 'join' | 'login' | 'forgot' | 'reset';
 
-export default function AuthFlow({ slug, refCode, businessName, start }: { slug: string; refCode?: string; businessName: string; start?: 'join' | 'forgot' }) {
+export default function AuthFlow({ slug, refCode, businessName, start, giftCode }: {
+  slug: string; refCode?: string; businessName: string; start?: 'join' | 'forgot'; giftCode?: string;
+}) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>(refCode ? 'join' : start ?? 'login');
   const [phone, setPhone] = useState('');
@@ -40,7 +42,7 @@ export default function AuthFlow({ slug, refCode, businessName, start }: { slug:
     if (mode === 'join')
       return run(async () => {
         await api(`/api/b/${slug}/auth/register`, {
-          username, phone, password, optIn, terms, ref: refCode,
+          username, phone, password, optIn, terms, ref: refCode, gift: giftCode,
           birthdayMonth: bm ? Number(bm) : undefined, birthdayDay: bd ? Number(bd) : undefined,
         });
         await savePassword(username.trim().toLowerCase(), password);
@@ -78,7 +80,8 @@ export default function AuthFlow({ slug, refCode, businessName, start }: { slug:
         <h2 className="auth-title">
           {mode === 'login' ? 'Welcome back' : mode === 'join' ? `Get your ${businessName} card` : 'Reset your password'}
         </h2>
-        {mode === 'join' && refCode && <div className="banner small">A friend invited you. Welcome!</div>}
+        {mode === 'join' && giftCode && <div className="banner good small">🎁 You&apos;ve been sent a gift card! Sign up and it&apos;ll be waiting on your card.</div>}
+        {mode === 'join' && refCode && !giftCode && <div className="banner small">A friend invited you. Welcome!</div>}
         {info && <div className="banner good small">{info}</div>}
 
         {(mode === 'join' || mode === 'login') && (

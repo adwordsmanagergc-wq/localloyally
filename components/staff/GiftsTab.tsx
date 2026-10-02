@@ -64,8 +64,8 @@ export function GiftPanel({ biz, code, toast, onDone }: { biz: BizInfo; code: st
 
 export default function GiftsTab({ biz, toast, manager }: { biz: BizInfo; toast: Toast; manager: boolean }) {
   const [items, setItems] = useState<any[]>([]);
-  const [form, setForm] = useState({ kind: 'amount', amount: '', label: '', to: '', from: '', message: '' });
-  const [made, setMade] = useState<{ url: string; gift: any } | null>(null);
+  const [form, setForm] = useState({ kind: 'amount', amount: '', label: '', to: '', from: '', message: '', toUsername: '', toPhone: '', fromUsername: '' });
+  const [made, setMade] = useState<{ url: string; gift: any; member: { username: string } | null; invite: boolean; whatsapp: string | null } | null>(null);
   const [code, setCode] = useState('');
   const [open, setOpen] = useState('');
   const [busy, setBusy] = useState(false);
@@ -78,7 +78,7 @@ export default function GiftsTab({ biz, toast, manager }: { biz: BizInfo; toast:
     e.preventDefault(); setBusy(true); setErr('');
     try {
       const r = await api(`/api/b/${biz.slug}/staff/gifts`, { ...form, amount: Number(form.amount) });
-      setMade(r); setForm({ kind: form.kind, amount: '', label: '', to: '', from: '', message: '' }); load();
+      setMade(r); setForm({ ...({ kind: 'amount', amount: '', label: '', to: '', from: '', message: '', toUsername: '', toPhone: '', fromUsername: '' }), kind: form.kind }); load();
     } catch (e: any) { setErr(e.message); } finally { setBusy(false); }
   }
   async function cancel(g: any) {
@@ -103,10 +103,24 @@ export default function GiftsTab({ biz, toast, manager }: { biz: BizInfo; toast:
             ? <label>Value ({biz.currency})<input type="number" inputMode="numeric" min={1} value={form.amount} onChange={f('amount')} required /></label>
             : <label>Item<input list="gift-items" value={form.label} onChange={f('label')} placeholder="Free coffee" maxLength={40} required />
                 <datalist id="gift-items">{biz.rewards.map((r) => <option key={r.stamps} value={r.label} />)}</datalist></label>}
-          <div className="grid2">
-            <label>For (optional)<input value={form.to} onChange={f('to')} maxLength={40} /></label>
-            <label>From (optional)<input value={form.from} onChange={f('from')} maxLength={40} /></label>
+          <label>Bought by a member? (their username, optional)
+            <input value={form.fromUsername} onChange={f('fromUsername')} autoCapitalize="none" placeholder="e.g. ketut.d" maxLength={40} />
+            <span className="tiny muted" style={{ fontWeight: 400 }}>If their friend signs up from the gift, it counts as their referral.</span>
+          </label>
+          <div className="gift-to stack">
+            <strong className="small">Who is it for?</strong>
+            <label>A member: their username
+              <input value={form.toUsername} onChange={f('toUsername')} autoCapitalize="none" placeholder="e.g. made.w" maxLength={40} />
+            </label>
+            {!form.toUsername.trim() && (
+              <div className="grid2">
+                <label>Or a friend: name<input value={form.to} onChange={f('to')} maxLength={40} placeholder="e.g. Made" /></label>
+                <label>Friend&apos;s WhatsApp<input value={form.toPhone} onChange={f('toPhone')} inputMode="tel" placeholder="+61 412 345 678" /></label>
+              </div>
+            )}
+            <span className="tiny muted">Members see it on their card straight away. A friend gets a link to sign up and collect it.</span>
           </div>
+          {!form.fromUsername.trim() && <label>From (name on the gift, optional)<input value={form.from} onChange={f('from')} maxLength={40} /></label>}
           <label>Message (optional)<textarea value={form.message} onChange={f('message')} maxLength={200} rows={2} placeholder="e.g. Happy birthday!" /></label>
           <button className="btn" disabled={busy}>Create gift certificate</button>
           {err && <div className="banner bad small">{err}</div>}
@@ -115,7 +129,11 @@ export default function GiftsTab({ biz, toast, manager }: { biz: BizInfo; toast:
           {made && (
             <div className="card stack">
               <div className="banner good">Gift certificate ready: <strong>{fmtGiftCode(made.gift.code)}</strong></div>
-              <p className="small muted">Send the link to the buyer. They can forward it to whoever it&apos;s for.</p>
+              {made.member ? <p className="small muted">It&apos;s on @{made.member.username}&apos;s card now.{made.whatsapp ? ' Let them know on WhatsApp:' : ''}</p>
+                : made.invite ? <p className="small muted">Send your friend the sign-up link. When they join, the gift lands on their card.</p>
+                : <p className="small muted">Send the link to the buyer. They can forward it to whoever it&apos;s for.</p>}
+              {made.whatsapp && <a className="btn block" href={made.whatsapp} target="_blank" rel="noopener noreferrer">
+                {made.member ? `Send to @${made.member.username} on WhatsApp` : `Send ${made.gift.to_name || 'your friend'} the sign-up link on WhatsApp`}</a>}
               <div className="row wrap-row">
                 <a className="btn grow" target="_blank" rel="noopener noreferrer"
                   href={`https://wa.me/?text=${encodeURIComponent(`Your ${biz.name} gift certificate: ${made.url}`)}`}>Send on WhatsApp</a>

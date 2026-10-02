@@ -9,12 +9,12 @@ import PoweredBy from '@/components/PoweredBy';
 export const dynamic = 'force-dynamic';
 
 export default async function Join({ params, searchParams }: {
-  params: Promise<{ slug: string }>; searchParams: Promise<{ ref?: string; forgot?: string; join?: string }>;
+  params: Promise<{ slug: string }>; searchParams: Promise<{ ref?: string; forgot?: string; join?: string; gift?: string }>;
 }) {
   const biz = await getBusiness((await params).slug);
   if (!biz) notFound();
   if (await getCustomerId(biz.id)) redirect(`/${biz.slug}/card`);
-  const { ref, forgot, join } = await searchParams;
+  const { ref, forgot, join, gift } = await searchParams;
   const s = biz.settings;
   const first = s.rewards[0];
   const perks = [
@@ -40,7 +40,7 @@ export default async function Join({ params, searchParams }: {
           {perks.map((p) => <span key={p} className="perk">{p}</span>)}
         </div>
       </section>
-      <AuthFlow slug={biz.slug} refCode={ref} businessName={biz.name} start={join === '1' ? 'join' : forgot === '1' ? 'forgot' : undefined} />
+      <AuthFlow slug={biz.slug} refCode={ref} businessName={biz.name} start={join === '1' || gift ? 'join' : forgot === '1' ? 'forgot' : undefined} giftCode={gift} />
       <p className="tiny muted center on-bg">
         We only message you on WhatsApp about your rewards if you agree.
       </p>

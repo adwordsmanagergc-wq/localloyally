@@ -23,7 +23,7 @@ Digital stamp cards for any business: cafes, restaurants, barbers, salons, gyms,
 - Social post stamps (amount, cooldown, handle to tag)
 - Double stamp hours (times and days)
 - Streak bonus, refer a friend, birthday treat
-- Spin to win: halfway through the card, on redeem and/or weekly, prizes, % off, chances, voucher expiry
+- Spin to win: one spin per card when customers reach half the stamps for the top reward (4 on an 8-stamp card); prizes, % off, chances, voucher expiry
 - Gift certificates on/off, how long they last, currency symbol
 - Counter codes on/off (customers type a stamp or bonus code shown on the staff screen instead of being scanned)
 - Shop location (wallet cards remind members when they're nearby)

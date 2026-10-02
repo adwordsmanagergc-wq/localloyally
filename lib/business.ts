@@ -31,7 +31,7 @@ export const DEFAULT_SETTINGS = {
   streak: { enabled: true, visits: 3, days: 7 },
   referral: { enabled: true, stamps: 1 },
   spin: {
-    enabled: true, weekly: true, onRedeem: true, halfway: false, voucherDays: 7,
+    enabled: true, voucherDays: 7, // one spin per card, at half the top reward
     prizes: [
       { label: '5% off', kind: 'percent', value: 5, weight: 40 },
       { label: '10% off', kind: 'percent', value: 10, weight: 25 },
@@ -86,7 +86,7 @@ export const PRESETS: Record<string, { label: string; settings: Partial<Settings
       stampIcon: 'scissors', itemWord: 'cut', itemWordPlural: 'cuts', font: 'modern', texture: 'none',
       rewards: [{ stamps: 6, label: 'Free haircut' }], welcomeStamps: 0,
       streak: { enabled: false, visits: 3, days: 7 },
-      spin: { ...DEFAULT_SETTINGS.spin, weekly: false, prizes: [
+      spin: { ...DEFAULT_SETTINGS.spin, prizes: [
         { label: '10% off', kind: 'percent', value: 10, weight: 50 }, { label: 'Free beard trim', kind: 'item', value: 0, weight: 25 },
         { label: '20% off', kind: 'percent', value: 20, weight: 20 }, { label: 'Free cut', kind: 'item', value: 0, weight: 5 },
       ] },
@@ -229,7 +229,7 @@ export function validateSettings(input: any): Settings {
     streak: { enabled: bool(input.streak?.enabled), visits: int(input.streak?.visits, 2, 10, 3), days: int(input.streak?.days, 2, 30, 7) },
     referral: { enabled: bool(input.referral?.enabled), stamps: int(input.referral?.stamps, 1, 5, 1) },
     spin: {
-      enabled: spinEnabled, weekly: bool(input.spin?.weekly), onRedeem: bool(input.spin?.onRedeem), halfway: bool(input.spin?.halfway),
+      enabled: spinEnabled,
       voucherDays: int(input.spin?.voucherDays, 1, 60, 7), prizes: prizes.length >= 2 ? prizes : d.spin.prizes,
     },
     birthday: { enabled: bool(input.birthday?.enabled), windowDays: int(input.birthday?.windowDays, 0, 14, 3), label: str(input.birthday?.label, 40, d.birthday.label) || d.birthday.label },

@@ -80,27 +80,19 @@ export async function redeemReward(biz: Business, customerId: string, staffId: s
     if (bal < tier.stamps) throw new RuleError(`${tier.label} needs ${tier.stamps} stamps, they have ${bal}`);
     await tx`insert into stamps (business_id, customer_id, delta, reason, staff_id, note)
              values (${biz.id}, ${customerId}, ${-tier.stamps}, 'redeem', ${staffId}, ${tier.label})`;
-    if (s.spin.enabled && s.spin.onRedeem) await tx`insert into spins (customer_id, source) values (${customerId}, 'redeem')`;
     return { balance: bal - tier.stamps, label: tier.label };
   });
 }
 
-/** Rewards that appear on their own: halfway and weekly spins, birthday treat. */
+/** Rewards that appear on their own: the halfway spin and the birthday treat. */
 export async function grantPassive(biz: Business, customerId: string) {
   const s = biz.settings;
-  if (s.spin.enabled && s.spin.halfway) {
-    // One spin per card: the key counts rewards claimed so far, so a new card earns a new spin.
+  if (s.spin.enabled) {
+    // The only spin: one per card, when they're halfway to the top reward (4 of 8). the key counts rewards claimed so far, so a new card earns a new spin.
     await sql`
       insert into spins (customer_id, source, period_key)
       select ${customerId}, 'halfway', 'card-' || (select count(*) from stamps where customer_id = ${customerId} and reason = 'redeem')
       where (select coalesce(sum(delta), 0) from stamps where customer_id = ${customerId}) >= ${halfwayAt(s)}
-      on conflict do nothing`;
-  }
-  if (s.spin.enabled && s.spin.weekly) {
-    await sql`
-      insert into spins (customer_id, source, period_key)
-      select ${customerId}, 'weekly', to_char(now() at time zone ${s.timezone}, 'IYYY-IW')
-      where exists (select 1 from stamps where customer_id = ${customerId} and reason = 'purchase' and created_at > now() - interval '7 days')
       on conflict do nothing`;
   }
   if (!s.birthday.enabled) return;
@@ -136,7 +128,7 @@ export async function spin(biz: Business, customerId: string) {
   const s = biz.settings;
   if (!s.spin.enabled) throw new RuleError('Spin to win is switched off');
   return sql.begin(async (tx) => {
-    const [sp] = await tx`select id from spins where customer_id = ${customerId} and used_at is null
+    const [sp] = await tx`select id from spins where customer_id = ${customerId} and source = 'halfway' and used_at is null
       order by created_at limit 1 for update skip locked`;
     if (!sp) throw new RuleError('No spins available');
     const index = pickPrize(s.spin.prizes);
@@ -203,7 +195,7 @@ export async function customerSummary(biz: Business, customerId: string) {
   if (!c) return null;
   const [balance, [spins], vouchers, history, [social], [lastVisit]] = await Promise.all([
     getBalance(sql, customerId),
-    sql`select count(*)::int n, bool_or(source = 'halfway') halfway from spins where customer_id = ${customerId} and used_at is null`,
+    sql`select count(*)::int n from spins where customer_id = ${customerId} and source = 'halfway' and used_at is null`,
     sql`select id, label, kind, value, source, expires_at from vouchers where customer_id = ${customerId}
         and redeemed_at is null and expires_at > now() order by expires_at`,
     sql`select delta, reason, note, created_at from stamps where customer_id = ${customerId} order by created_at desc, id desc limit 10`,
@@ -211,7 +203,7 @@ export async function customerSummary(biz: Business, customerId: string) {
     sql`select max(created_at) as at, count(*)::int as visits from stamps where customer_id = ${customerId} and reason = 'purchase'`,
   ]);
   return {
-    customer: c, balance, spins: biz.settings.spin.enabled ? (spins.n as number) : 0, halfwaySpin: spins.halfway === true, vouchers, history,
+    customer: c, balance, spins: biz.settings.spin.enabled ? (spins.n as number) : 0, vouchers, history,
     lastSocial: social ?? null, lastVisit: lastVisit?.at ?? null, visits: (lastVisit?.visits as number) ?? 0, doubleHourNow: isDoubleHour(biz.settings),
     maxTier: maxTier(biz.settings),
   };

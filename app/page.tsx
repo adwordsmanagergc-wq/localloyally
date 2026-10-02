@@ -22,7 +22,7 @@ const Icon = ({ d, bg }: { d: string; bg: string }) => (
 
 const FEATURES = [
   { t: 'Digital stamp cards', p: 'Set any number of stamps and up to four reward tiers, like 5 for a pastry and 8 for a free coffee.', bg: '#d4f56b', d: 'M4 6h16v12H4zM8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01' },
-  { t: 'Spin to win', p: 'Customers spin a prize wheel halfway through their card, when they claim a reward or once a week. You set the prizes and the odds.', bg: '#ffb8cb', d: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 3v9l6 6M12 12L5 16' },
+  { t: 'Spin to win', p: 'Halfway through their card, customers unlock a spin of the prize wheel for their next visit. You set the prizes and the odds.', bg: '#ffb8cb', d: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 3v9l6 6M12 12L5 16' },
   { t: 'Stamps for social posts', p: 'Give bonus stamps when customers post about you on Instagram or TikTok. Staff approve each post in one tap.', bg: '#9fd8ff', d: 'M7 4h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM17 7h.01' },
   WALLET
     ? { t: 'Apple and Google Wallet', p: 'No app to download. Customers join with their WhatsApp number and a password, then save the card to their phone wallet. It updates after every visit.', bg: '#c8b8ff', d: 'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2' }

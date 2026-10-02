@@ -20,7 +20,7 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
   useEffect(() => { api(`/api/b/${slug}/admin/settings`).then((r) => { setName(r.name); setS(r.settings); }); }, [slug]);
   if (!s) return <p className="muted">Loading…</p>;
 
-  /** set('spin.weekly', true) */
+  /** set('spin.enabled', true) */
   const set = (path: string, value: any) =>
     setS((prev: any) => {
       const next = structuredClone(prev);
@@ -186,9 +186,7 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
         <Check path="spin.enabled" label="Spin to win" />
         {s.spin.enabled && (
           <>
-            <Check path="spin.halfway" label="Give 1 spin per card when customers are halfway to the top reward" />
-            <Check path="spin.onRedeem" label="Give a spin every time a reward is claimed" />
-            <Check path="spin.weekly" label="Give 1 spin a week to members who visited that week" />
+            <p className="small muted">Customers get one spin per card when they reach half the stamps for your top reward ({Math.ceil(Math.max(...s.rewards.map((r: any) => Number(r.stamps) || 0)) / 2)} stamps).</p>
             <label style={{ maxWidth: 220 }}>Prize voucher lasts (days)<input type="number" min={1} max={60} value={s.spin.voucherDays} onChange={num('spin.voucherDays')} /></label>
             <div className="scroll-x">
               <table className="table">

@@ -146,3 +146,61 @@ export function GiftFriend({ bizName, waNumber, currency, me }: { bizName: strin
     </div>
   );
 }
+
+const b64ToBytes = (b64: string) => {
+  const s = atob((b64 + '='.repeat((4 - (b64.length % 4)) % 4)).replace(/-/g, '+').replace(/_/g, '/'));
+  return Uint8Array.from(s, (c) => c.charCodeAt(0));
+};
+
+/** Lets a member turn phone notifications on. iPhones only allow it once the card is on the home screen. */
+export function PushToggle({ slug, publicKey, business }: { slug: string; publicKey: string; business: string }) {
+  const [state, setState] = useState<'loading' | 'unsupported' | 'ios-install' | 'off' | 'on' | 'blocked'>('loading');
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    (async () => {
+      const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
+      const standalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
+      if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window))
+        return setState(ios && !standalone ? 'ios-install' : 'unsupported');
+      if (Notification.permission === 'denied') return setState('blocked');
+      const reg = await navigator.serviceWorker.getRegistration('/');
+      const sub = await reg?.pushManager.getSubscription();
+      // The phone may already allow notifications for another card; check this one
+      const on = sub ? (await api(`/api/b/${slug}/card/push?endpoint=${encodeURIComponent(sub.endpoint)}`)).on : false;
+      setState(on ? 'on' : 'off');
+    })().catch(() => setState('unsupported'));
+  }, [slug]);
+
+  async function turnOn() {
+    setBusy(true);
+    try {
+      const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+      await navigator.serviceWorker.ready;
+      if ((await Notification.requestPermission()) !== 'granted') { setState('blocked'); return; }
+      const sub = (await reg.pushManager.getSubscription()) ?? await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(publicKey) });
+      await api(`/api/b/${slug}/card/push`, sub.toJSON());
+      setState('on');
+    } catch { setState('blocked'); } finally { setBusy(false); }
+  }
+  async function turnOff() {
+    setBusy(true);
+    try {
+      const sub = await (await navigator.serviceWorker.getRegistration('/'))?.pushManager.getSubscription();
+      // Only this card: the phone may still get notifications from other cards
+      if (sub) await api(`/api/b/${slug}/card/push`, { endpoint: sub.endpoint }, 'DELETE').catch(() => {});
+      setState('off');
+    } finally { setBusy(false); }
+  }
+
+  if (state === 'loading' || state === 'unsupported') return null;
+  return (
+    <div className="stack" style={{ gap: 8 }}>
+      <div className="row between"><strong>🔔 Phone notifications</strong>{state === 'on' && <span className="pill accent">On</span>}</div>
+      {state === 'ios-install' && <p className="small muted">To get notifications from {business} on iPhone, tap the Share button in Safari, then <strong>Add to Home Screen</strong>. Open the card from your home screen and turn them on here.</p>}
+      {state === 'blocked' && <p className="small muted">Notifications are blocked for this site. Allow them in your phone&apos;s settings, then come back.</p>}
+      {state === 'off' && <><p className="small muted">Get a buzz when you earn stamps, unlock a spin or {business} has an offer.</p>
+        <button className="btn block" disabled={busy} onClick={turnOn}>{busy ? 'One moment…' : 'Turn on notifications'}</button></>}
+      {state === 'on' && <button className="linkbtn small" style={{ justifySelf: 'start' }} disabled={busy} onClick={turnOff}>Turn off notifications on this phone</button>}
+    </div>
+  );
+}

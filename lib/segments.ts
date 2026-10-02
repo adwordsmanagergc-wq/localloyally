@@ -30,10 +30,12 @@ export function segmentWhere(segment: Segment, tiers: number[]) {
 }
 
 export async function segmentCounts(bizId: string, tiers: number[]) {
-  const out = {} as Record<Segment, { total: number; whatsapp: number }>;
+  const out = {} as Record<Segment, { total: number; whatsapp: number; push: number }>;
   await Promise.all((Object.keys(SEGMENTS) as Segment[]).map(async (k) => {
     const [r] = await sql`with m as (${memberStats(bizId)})
-      select count(*)::int total, count(*) filter (where m.marketing_opt_in)::int whatsapp from m where ${segmentWhere(k, tiers)}`;
+      select count(*)::int total, count(*) filter (where m.marketing_opt_in)::int whatsapp,
+        count(*) filter (where exists (select 1 from push_subscriptions p where p.customer_id = m.id))::int push
+      from m where ${segmentWhere(k, tiers)}`;
     out[k] = r as any;
   }));
   return out;

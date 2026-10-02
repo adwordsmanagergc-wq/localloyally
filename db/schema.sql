@@ -234,3 +234,15 @@ create table if not exists uploads (
   created_at timestamptz not null default now()
 );
 create index if not exists uploads_business_idx on uploads(business_id, created_at desc);
+
+-- Phone notifications for members who added the card to their home screen (web push)
+create table if not exists push_subscriptions (
+  endpoint text not null,                -- one per phone; the same phone can follow several cards
+  customer_id uuid not null references customers(id) on delete cascade,
+  p256dh text not null,
+  auth text not null,
+  created_at timestamptz not null default now(),
+  primary key (endpoint, customer_id)
+);
+create index if not exists push_subscriptions_customer_idx on push_subscriptions(customer_id);
+alter table campaign_recipients add column if not exists push boolean not null default false;

@@ -3,6 +3,7 @@ import { RuleError } from './loyalty';
 import { memberStats, segmentWhere, type Segment } from './segments';
 import { sendWhatsApp } from './whatsapp';
 import { syncWallet } from './wallet';
+import { sendPush } from './push';
 import type { Business } from './business';
 import { firstName, personalise } from './personalise';
 export { personalise };
@@ -54,15 +55,16 @@ export async function sendBatch(biz: Business, campaignId: string, size = 20) {
   await Promise.all(batch.map(async (r: any) => {
     const text = personalise(c.message, r.name);
     const extra = c.voucher ? `\n\n🎁 ${c.voucher.label} is waiting on your card.` : '';
-    const [wa, wallet] = await Promise.all([
+    const [wa, wallet, push] = await Promise.all([
       r.marketing_opt_in
         ? sendWhatsApp(r.phone, `${text}${extra}\n\n${biz.name}: ${link}`,
             // Meta templates can't hold line breaks in parameters.
             { name: process.env.META_OFFER_TEMPLATE || 'offer', params: [firstName(r.name), biz.name, (text + extra).replace(/\s*\n+\s*/g, ' '), link] })
         : Promise.resolve(false),
       syncWallet(biz, r.customer_id, text).catch(() => false),
+      sendPush(r.customer_id, { title: biz.name, body: text + (c.voucher ? ` 🎁 ${c.voucher.label} is on your card.` : ''), url: `/${biz.slug}/card`, icon: biz.settings.logoUrl || undefined }).catch(() => false),
     ]);
-    if (wa || wallet) await sql`update campaign_recipients set whatsapp = ${wa}, wallet = ${wallet} where campaign_id = ${c.id} and customer_id = ${r.customer_id}`;
+    if (wa || wallet || push) await sql`update campaign_recipients set whatsapp = ${wa}, wallet = ${wallet}, push = ${push} where campaign_id = ${c.id} and customer_id = ${r.customer_id}`;
   }));
   const [{ n }] = await sql`select count(*)::int n from campaign_recipients where campaign_id = ${c.id} and status = 'pending'`;
   if (n === 0) await sql`update campaigns set finished_at = coalesce(finished_at, now()) where id = ${c.id}`;
@@ -74,6 +76,7 @@ export async function listCampaigns(biz: Business) {
     select c.id, c.segment, c.message, c.voucher, c.recipients, c.created_at, c.finished_at, s.name staff,
       (select count(*) from campaign_recipients r where r.campaign_id = c.id and r.whatsapp)::int whatsapp,
       (select count(*) from campaign_recipients r where r.campaign_id = c.id and r.wallet)::int wallet,
+      (select count(*) from campaign_recipients r where r.campaign_id = c.id and r.push)::int push,
       (select count(*) from campaign_recipients r where r.campaign_id = c.id and r.status = 'pending')::int pending,
       (select count(*) from campaign_recipients r where r.campaign_id = c.id and exists (
         select 1 from stamps st where st.customer_id = r.customer_id and st.reason = 'purchase'

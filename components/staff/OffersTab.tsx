@@ -77,7 +77,8 @@ export default function OffersTab({ slug, toast }: { slug: string; toast: Toast 
         )}
         <div className="banner small">
           <strong>{seg.total}</strong> member{seg.total === 1 ? '' : 's'} will see it on their card for 7 days.{' '}
-          <strong>{seg.whatsapp}</strong> of them get it on WhatsApp (only people who agreed to messages).
+          <strong>{seg.whatsapp}</strong> of them get it on WhatsApp (only people who agreed to messages)
+          {seg.push ? <> and <strong>{seg.push}</strong> as a phone notification</> : null}.
           {walletOn ? ' Members with the wallet card also get a phone notification.' : ''}
         </div>
         {progress ? (
@@ -94,7 +95,7 @@ export default function OffersTab({ slug, toast }: { slug: string; toast: Toast 
         <p className="small muted">&quot;Came back&quot; counts members who visited within 7 days of the offer.</p>
         <div className="scroll-x">
           <table className="table">
-            <thead><tr><th>Sent</th><th>Group</th><th>Message</th><th>Members</th><th>WhatsApp</th>{walletOn && <th>Wallet</th>}<th>Came back</th><th>Vouchers used</th></tr></thead>
+            <thead><tr><th>Sent</th><th>Group</th><th>Message</th><th>Members</th><th>WhatsApp</th><th>Notified</th>{walletOn && <th>Wallet</th>}<th>Came back</th><th>Vouchers used</th></tr></thead>
             <tbody>
               {d.items.map((c: any) => (
                 <tr key={c.id}>
@@ -103,12 +104,12 @@ export default function OffersTab({ slug, toast }: { slug: string; toast: Toast 
                   <td style={{ minWidth: 200 }}>{c.message.length > 80 ? c.message.slice(0, 80) + '…' : c.message}{c.voucher && <div className="tiny muted">🎁 {c.voucher.label}</div>}
                     {c.pending > 0 && !progress && <div><button className="btn ghost small" onClick={() => sendAll(c.id, c.recipients).catch((e) => setErr(e.message)).finally(() => { setProgress(null); load(); })}>Finish sending ({c.pending} left)</button></div>}
                   </td>
-                  <td>{c.recipients}</td><td>{c.whatsapp}</td>{walletOn && <td>{c.wallet}</td>}
+                  <td>{c.recipients}</td><td>{c.whatsapp}</td><td>{c.push}</td>{walletOn && <td>{c.wallet}</td>}
                   <td><strong>{c.came_back}</strong> <span className="muted">({Math.round((c.came_back / Math.max(1, c.recipients)) * 100)}%)</span></td>
                   <td>{c.voucher ? c.vouchers_used : '-'}</td>
                 </tr>
               ))}
-              {!d.items.length && <tr><td colSpan={8} className="muted">No offers sent yet</td></tr>}
+              {!d.items.length && <tr><td colSpan={9} className="muted">No offers sent yet</td></tr>}
             </tbody>
           </table>
         </div>

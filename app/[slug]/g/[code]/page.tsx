@@ -14,7 +14,8 @@ const d = (x: Date) => new Date(x).toLocaleDateString('en-GB', { day: 'numeric',
 /** The certificate the buyer shares. Anyone with the link can see it; staff scan the QR to use it. */
 export default async function GiftPage({ params }: { params: Promise<{ slug: string; code: string }> }) {
   const p = await params;
-  const biz = (await getBusiness(p.slug))!;
+  const biz = await getBusiness(p.slug);
+  if (!biz) notFound();
   const g = await findGift(biz, p.code);
   if (!g) notFound();
   const url = giftUrl(biz, g.code);

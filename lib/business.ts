@@ -116,7 +116,7 @@ export const PRESETS: Record<string, { label: string; settings: Partial<Settings
   },
 };
 
-const RESERVED = new Set(['api', 'platform', '_next', 'favicon.ico', 'robots.txt', 'sitemap.xml', 'admin', 'login', 'static']);
+const RESERVED = new Set(['api', 'platform', '_next', 'favicon.ico', 'robots.txt', 'sitemap.xml', 'admin', 'login', 'static', 'terms', 'member']);
 export const validSlug = (s: string) => /^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/.test(s) && !RESERVED.has(s);
 
 export function mergeSettings(saved: any): Settings {

@@ -246,3 +246,7 @@
 .lp-screen .s-dot.img.on { background: #fffaf3; box-shadow: 0 0 0 1.5px #9a5a32; }
 .lp-screen .s-dot.img.on img { filter: none; opacity: 1; transform: rotate(-8deg); }
 .lp-screen-roasted .s-btn { background: #9a5a32; }
+.lp-terms h2 { font-size: 1.15rem; margin: 28px 0 8px; }
+.lp-terms p, .lp-terms li { color: #3d342c; line-height: 1.6; }
+.lp-terms ul { padding-left: 20px; display: grid; gap: 6px; }
+.lp-terms-meta { color: #5f544b; margin-top: 8px; }

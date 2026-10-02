@@ -6,7 +6,9 @@ Digital stamp cards for any business: cafes, restaurants, barbers, salons, gyms,
 
 | Page | Who | What |
 |---|---|---|
-| `/{slug}` | Customers | Join or log in with WhatsApp number + password (a WhatsApp code is only used to reset a password) |
+| `/{slug}` | Customers | Sign up with a username, password and WhatsApp number (and agree to the terms), or log in with username + password. A WhatsApp code is only used to reset a password |
+| `/login` | Customers | Log in with username + password from the main site; "Sign up" finds the business first |
+| `/terms` | Everyone | Terms and conditions customers agree to at sign-up |
 | `/{slug}/card` | Customers | Stamp card, rotating QR code, spin to win, vouchers, social post stamps, refer-a-friend link, latest offer. Can be added to the home screen, or to Apple / Google Wallet |
 | `/{slug}/g/{code}` | Anyone with the link | A gift certificate with its QR code and balance |
 | `/{slug}/staff` | Staff (PIN) | Scan member, wallet or gift QR, or search phone; add stamps, redeem rewards and vouchers, approve social posts, sell and use gift certificates |

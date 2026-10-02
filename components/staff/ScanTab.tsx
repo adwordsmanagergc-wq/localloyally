@@ -92,10 +92,10 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
         )}
         <form className="card flat stack" onSubmit={(e) => { e.preventDefault(); lookup({ phone }); }}>
           <label>
-            Or find by WhatsApp number
+            Or find by WhatsApp number or username
             <div className="row">
-              <input className="grow" inputMode="tel" placeholder="0812…" value={phone} onChange={(e) => setPhone(e.target.value)} />
-              <button className="btn" disabled={busy || phone.length < 6}>Find</button>
+              <input className="grow" autoCapitalize="none" placeholder="0812… or username" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              <button className="btn" disabled={busy || phone.trim().length < 3}>Find</button>
             </div>
           </label>
         </form>
@@ -110,7 +110,7 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
       <div className="card stack">
         <div className="row between">
           <div>
-            <h2>{data.customer.name}</h2>
+            <h2>{data.customer.name}{data.customer.username && data.customer.username !== data.customer.name && <span className="muted small"> @{data.customer.username}</span>}</h2>
             <p className="small muted">{data.customer.phone.startsWith('+') ? data.customer.phone : '+' + data.customer.phone} · last visit {data.lastVisit ? fmtDate(data.lastVisit) : 'never'}</p>
           </div>
           <div className="center"><div className="bigcount">{bal}</div><div className="tiny muted">stamps</div></div>

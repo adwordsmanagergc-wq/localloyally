@@ -189,3 +189,8 @@ create table if not exists apple_registrations (
   created_at timestamptz not null default now(),
   primary key (device_id, customer_id)
 );
+
+-- Customers sign up with a username (WhatsApp number stays for codes and messages)
+alter table customers add column if not exists username text;
+alter table customers add column if not exists terms_accepted_at timestamptz;
+create unique index if not exists customers_username_idx on customers (business_id, lower(username)) where username is not null;

@@ -4,6 +4,7 @@ import { customerSummary } from '@/lib/loyalty';
 import { staffRoute, body } from '@/lib/route';
 import { json, maskPhone, normalizePhone } from '@/lib/util';
 import { customerByWalletCode, WALLET_PREFIX } from '@/lib/wallet/data';
+import { cleanUsername } from '@/lib/username';
 
 export const POST = staffRoute(async (req, biz, staff) => {
   const b = await body(req);
@@ -15,10 +16,12 @@ export const POST = staffRoute(async (req, biz, staff) => {
     id = await readCardToken(biz.id, String(b.token));
     if (!id) return json({ error: 'QR code expired or from another business. Ask them to refresh their card.' }, 400);
   } else if (b.phone) {
-    const phone = normalizePhone(b.phone, biz.settings.defaultCountryCode);
-    if (!phone) return json({ error: 'Check the number' }, 400);
-    const [c] = await sql`select id from customers where business_id = ${biz.id} and phone = ${phone}`;
-    if (!c) return json({ error: 'No member with that number' }, 404);
+    // The search box takes a WhatsApp number or a username
+    const username = cleanUsername(b.phone);
+    const phone = username ? null : normalizePhone(b.phone, biz.settings.defaultCountryCode);
+    if (!username && !phone) return json({ error: 'Check the number or username' }, 400);
+    const [c] = await sql`select id from customers where business_id = ${biz.id} and ${username ? sql`lower(username) = ${username}` : sql`phone = ${phone}`}`;
+    if (!c) return json({ error: username ? 'No member with that username' : 'No member with that number' }, 404);
     id = c.id;
   } else if (b.customerId) {
     id = String(b.customerId);

@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { redirect, notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import { walletEnabled } from '@/lib/wallet/config';
 import { getBusiness, halfwayAt } from '@/lib/business';
@@ -15,7 +15,8 @@ export const dynamic = 'force-dynamic';
 const d = (x: Date) => new Date(x).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 
 export default async function CardPage({ params }: { params: Promise<{ slug: string }> }) {
-  const biz = (await getBusiness((await params).slug))!;
+  const biz = await getBusiness((await params).slug);
+  if (!biz) notFound();
   const id = await getCustomerId(biz.id);
   if (!id) redirect(`/${biz.slug}`);
   await grantPassive(biz, id);

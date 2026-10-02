@@ -197,7 +197,7 @@ export async function reviewSocial(biz: Business, id: number, approve: boolean, 
 }
 
 export async function customerSummary(biz: Business, customerId: string) {
-  const [c] = await sql`select id, name, phone, ref_code, marketing_opt_in, created_at
+  const [c] = await sql`select id, name, username, phone, ref_code, marketing_opt_in, created_at
     from customers where id = ${customerId} and business_id = ${biz.id}`;
   if (!c) return null;
   const [balance, [spins], vouchers, history, [social], [lastVisit]] = await Promise.all([

@@ -94,23 +94,23 @@ export function MembersTab({ slug, toast }: { slug: string; toast: Toast }) {
     <div className="stack">
       <div className="row wrap-row">
         <form className="row grow" onSubmit={(e) => { e.preventDefault(); load(); }}>
-          <input className="grow" placeholder="Search name or number" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input className="grow" placeholder="Search name, username or number" value={q} onChange={(e) => setQ(e.target.value)} />
           <button className="btn">Search</button>
         </form>
         <a className="btn ghost" href={`/api/b/${slug}/admin/export`}>Export CSV</a>
       </div>
       <div className="card flat scroll-x">
         <table className="table">
-          <thead><tr><th>Name</th><th>WhatsApp</th><th>Stamps</th><th>Visits</th><th>Last visit</th><th>Opt-in</th><th></th></tr></thead>
+          <thead><tr><th>Name</th><th>Username</th><th>WhatsApp</th><th>Stamps</th><th>Visits</th><th>Last visit</th><th>Opt-in</th><th></th></tr></thead>
           <tbody>
             {items.map((c) => (
               <tr key={c.id}>
-                <td>{c.name}</td><td>+{c.phone}</td><td><strong>{c.balance}</strong></td><td>{c.visits}</td>
+                <td>{c.name}</td><td>{c.username ?? '-'}</td><td>+{c.phone}</td><td><strong>{c.balance}</strong></td><td>{c.visits}</td>
                 <td>{c.last_visit ? fmtDate(c.last_visit) : '-'}</td><td>{c.marketing_opt_in ? 'Yes' : 'No'}</td>
                 <td><button className="btn ghost small" onClick={() => adjust(c)}>Adjust</button></td>
               </tr>
             ))}
-            {!items.length && <tr><td colSpan={7} className="muted">No members found</td></tr>}
+            {!items.length && <tr><td colSpan={8} className="muted">No members found</td></tr>}
           </tbody>
         </table>
       </div>

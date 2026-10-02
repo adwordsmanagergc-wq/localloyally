@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { redirect, notFound } from 'next/navigation';
 import { getBusiness, minTier } from '@/lib/business';
 import { getCustomerId } from '@/lib/auth';
 import Brand from '@/components/Brand';
@@ -8,11 +8,12 @@ import Stamp from '@/components/Stamp';
 export const dynamic = 'force-dynamic';
 
 export default async function Join({ params, searchParams }: {
-  params: Promise<{ slug: string }>; searchParams: Promise<{ ref?: string }>;
+  params: Promise<{ slug: string }>; searchParams: Promise<{ ref?: string; forgot?: string; join?: string }>;
 }) {
-  const biz = (await getBusiness((await params).slug))!;
+  const biz = await getBusiness((await params).slug);
+  if (!biz) notFound();
   if (await getCustomerId(biz.id)) redirect(`/${biz.slug}/card`);
-  const { ref } = await searchParams;
+  const { ref, forgot, join } = await searchParams;
   const s = biz.settings;
   const first = s.rewards[0];
   const perks = [
@@ -38,9 +39,9 @@ export default async function Join({ params, searchParams }: {
           {perks.map((p) => <span key={p} className="perk">{p}</span>)}
         </div>
       </section>
-      <AuthFlow slug={biz.slug} refCode={ref} businessName={biz.name} />
+      <AuthFlow slug={biz.slug} refCode={ref} businessName={biz.name} start={join === '1' ? 'join' : forgot === '1' ? 'forgot' : undefined} />
       <p className="tiny muted center on-bg">
-        Your WhatsApp number is your username. We only message you about rewards if you agree.
+        We only message you on WhatsApp about your rewards if you agree.
       </p>
     </main>
   );

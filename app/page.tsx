@@ -85,6 +85,26 @@ const COMPARE: [string, string, string, string][] = [
 ];
 const mark = (v: string) => (v === 'yes' ? <span className="yes">✓</span> : v === 'no' ? <span className="no">✕</span> : <span className="meh">Sometimes</span>);
 
+/** Everything switched on in the free week (and the plan after). */
+const TRIAL = [
+  { e: '🎨', t: 'Your brand, your card', p: 'Logo, colours, photo background and your own stamp. It looks like you, not us.' },
+  { e: '☕', t: 'Digital stamp cards', p: 'Up to 4 reward levels, like 5 for a pastry and 8 for a free coffee. Nothing to lose.' },
+  { e: '📱', t: 'No app to download', p: 'Customers join in 30 seconds on their phone with a username and password.' },
+  { e: '🎡', t: 'Spin to win', p: 'Halfway to their reward, they spin for a prize on their next visit. You set the odds.' },
+  { e: '📸', t: 'Stamps for posts', p: 'Customers post about you on Instagram or TikTok and earn bonus stamps. Free marketing.' },
+  { e: '🤝', t: 'Refer a friend', p: 'Every member gets a share link and earns a stamp when their friend visits.' },
+  { e: '🔢', t: 'Scan or code', p: 'Scan their QR, or read out a 6-digit counter code that changes every 2 minutes.' },
+  { e: '🎁', t: 'Gift certificates', p: 'Sell gift cards at the counter, shared by link, used over several visits.' },
+  { e: '📣', t: 'Send offers', p: 'Message regulars, people close to a reward or lost customers, with a voucher if you like.' },
+  { e: '💬', t: 'WhatsApp nudges', p: 'Automatic reminders when they are 1 stamp away or a voucher is about to expire.' },
+  { e: '⭐', t: 'More Google reviews', p: 'Happy regulars get asked for a review at the right moment. Climb Google Maps.' },
+  { e: '🎂', t: 'Birthdays, streaks, happy hours', p: 'Birthday treats, streak bonuses and double stamps in your quiet hours.' },
+  { e: '📊', t: 'Know your numbers', p: 'Who comes back, who is slipping away and what each staff member did.' },
+  { e: '📋', t: 'Your marketing list', p: 'Every customer who said yes to WhatsApp, ready to download any time.' },
+  { e: '👥', t: 'Unlimited everything', p: 'Unlimited customers, staff logins and cards. No per-member fees.' },
+  { e: '🙋', t: 'Set up with you', p: 'We help you pick rewards, prizes and design so you launch looking great.' },
+];
+
 /** Monthly price after the free week, by country. */
 const PRICES = [
   { flag: '🇮🇩', country: 'Indonesia', price: 'Rp 5.500.000' },
@@ -349,6 +369,26 @@ export default function Home() {
 
         <section className="lp-section" id="pricing" style={{ paddingTop: 0 }}>
           <div className="lp-container">
+            <div className="lp-trial-hero">
+              <div className="lp-trial-badge"><span>7</span>days free</div>
+              <div>
+                <div className="lp-eyebrow">✺ Your free week</div>
+                <h2 className="lp-title">Everything. Switched on. Free for 7 days.</h2>
+                <p className="lp-lead">No card, no catch, no cut-down version. Here&apos;s what your business gets from day one.</p>
+              </div>
+            </div>
+            <div className="lp-trial-perks">
+              {TRIAL.map((f) => (
+                <div key={f.t} className="lp-perk">
+                  <span className="lp-perk-e" aria-hidden="true">{f.e}</span>
+                  <div><strong>{f.t}</strong><p>{f.p}</p></div>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', margin: '28px 0 56px' }}>
+              <a className="lp-btn orange" href="#trial">Start your free week →</a>
+            </div>
+
             <div className="lp-eyebrow">✺ Pricing</div>
             <h2 className="lp-title">One plan. Every feature.</h2>
             <p className="lp-lead">Start with a free week. If you love it, it&apos;s one simple monthly price for your business, with unlimited customers, staff logins and everything on this page.</p>

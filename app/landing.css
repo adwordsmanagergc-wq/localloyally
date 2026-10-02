@@ -250,3 +250,16 @@
 .lp-terms p, .lp-terms li { color: #3d342c; line-height: 1.6; }
 .lp-terms ul { padding-left: 20px; display: grid; gap: 6px; }
 .lp-terms-meta { color: #5f544b; margin-top: 8px; }
+
+/* Member home (/me) */
+.lp-me h2 { font-size: 1.2rem; margin: 30px 0 12px; }
+.lp-me-sub { color: #5f544b; margin: -4px 0 14px; }
+.me-biz { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.me-biz img, .me-dot { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex: none; background: #f0e8dc; }
+.me-biz small { display: block; font-weight: 500; color: #5f544b; font-size: 0.8rem; }
+.me-place { cursor: default; }
+.me-join { border-top: 2px dashed #d9cfc2; padding-top: 14px; display: grid; gap: 10px; }
+.me-join p { color: #5f544b; margin: 0; }
+.me-check { display: flex !important; gap: 10px; align-items: flex-start; font-weight: 500 !important; }
+.me-check input { width: 20px; height: 20px; flex: none; margin-top: 2px; }
+.me-place:hover { background: var(--cream); }

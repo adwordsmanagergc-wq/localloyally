@@ -1,7 +1,8 @@
 import { sql } from '@/lib/db';
-import { hashPin, setCustomerSession } from '@/lib/auth';
+import { hashPin, setCustomerSession, setMemberSession } from '@/lib/auth';
+import { createCard } from '@/lib/members';
 import { bizRoute, body } from '@/lib/route';
-import { clientIp, json, normalizePhone, randomRefCode, rateLimit } from '@/lib/util';
+import { clientIp, json, normalizePhone, rateLimit } from '@/lib/util';
 import { cleanUsername, usernameTakenByOther } from '@/lib/username';
 
 export const POST = bizRoute(async (req, biz) => {
@@ -30,25 +31,12 @@ export const POST = bizRoute(async (req, biz) => {
     const [r] = await sql`select id from customers where business_id = ${biz.id} and ref_code = ${String(b.ref).toUpperCase()}`;
     referredBy = r?.id ?? null;
   }
-  const hash = hashPin(password);
-  const cust = await sql.begin(async (tx) => {
-    let row: any;
-    for (let i = 0; i < 5 && !row; i++) {
-      try {
-        [row] = await tx`insert into customers (business_id, name, username, phone, password_hash, birthday_month, birthday_day, marketing_opt_in, ref_code, referred_by, terms_accepted_at)
-          values (${biz.id}, ${name}, ${username}, ${phone}, ${hash}, ${bday ? m : null}, ${bday ? d : null}, ${b.optIn === true}, ${randomRefCode()}, ${referredBy}, now())
-          on conflict (ref_code) do nothing returning id`;
-      } catch (e: any) {
-        if (e.code === '23505') throw Object.assign(new Error('exists'), { exists: true });
-        throw e;
-      }
-    }
-    if (!row) throw new Error('Could not create member');
-    if (biz.settings.welcomeStamps > 0)
-      await tx`insert into stamps (business_id, customer_id, delta, reason) values (${biz.id}, ${row.id}, ${biz.settings.welcomeStamps}, 'welcome')`;
-    return row;
-  }).catch((e) => (e.exists ? null : Promise.reject(e)));
+  const cust = await createCard(biz, {
+    name, username, phone, passwordHash: hashPin(password), optIn: b.optIn === true, referredBy,
+    birthdayMonth: bday ? m : null, birthdayDay: bday ? d : null,
+  });
   if (!cust) return json({ error: 'That number already has a card. Log in instead.', exists: true }, 409);
   await setCustomerSession(biz.id, cust.id);
+  await setMemberSession(phone);
   return json({ ok: true });
 });

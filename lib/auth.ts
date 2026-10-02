@@ -47,6 +47,23 @@ export async function getCustomerId(bizId: string): Promise<string | null> {
   return c ? (c.id as string) : null;
 }
 
+/** Site-wide member login: knows who the person is (by WhatsApp number) across all their cards. */
+const MEMBER_COOKIE = 'rr_member';
+export async function setMemberSession(phone: string) {
+  const token = await signToken({ sub: phone, typ: 'member' }, '180d');
+  (await cookies()).set(MEMBER_COOKIE, token, cookieOpts(60 * 60 * 24 * 180));
+}
+export async function getMemberPhone(): Promise<string | null> {
+  const p = await verifyToken((await cookies()).get(MEMBER_COOKIE)?.value);
+  return p?.typ === 'member' ? (p.sub as string) : null;
+}
+/** Logs out everywhere: the member login and every card on this device. */
+export async function clearAllCustomerSessions() {
+  const jar = await cookies();
+  jar.delete(MEMBER_COOKIE);
+  for (const c of jar.getAll()) if (c.name.startsWith('rrc_')) jar.delete(c.name);
+}
+
 export async function setStaffSession(bizId: string, staffId: string) {
   const token = await signToken({ sub: staffId, biz: bizId, typ: 'staff' }, '14h');
   (await cookies()).set(staffCookie(bizId), token, cookieOpts(60 * 60 * 14));

@@ -11,7 +11,6 @@ function MemberLogin({ onForgot, onSignup }: { onForgot: () => void; onSignup: (
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
-  const [cards, setCards] = useState<Item[] | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setBusy(true); setErr('');
@@ -19,22 +18,11 @@ function MemberLogin({ onForgot, onSignup }: { onForgot: () => void; onSignup: (
       const r = await fetch('/api/member/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ login, password }) });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) { setErr(d.error || 'Something went wrong'); setBusy(false); return; }
-      if (d.cards.length === 1) { window.location.href = `/${d.cards[0].slug}/card`; return; }
-      setCards(d.cards); setBusy(false);
+      // One card: open it. Several: their My cards page.
+      window.location.href = d.cards.length === 1 ? `/${d.cards[0].slug}/card` : '/me';
     } catch { setErr('Something went wrong, please try again'); setBusy(false); }
   }
 
-  if (cards)
-    return (
-      <div className="lp-form">
-        <p style={{ color: '#5f544b' }}>You have cards at more than one place. Which one?</p>
-        <div className="lp-results">
-          {cards.map((b) => (
-            <a key={b.slug} className="lp-result" href={`/${b.slug}/card`}><span>{b.name}</span><span aria-hidden="true">→</span></a>
-          ))}
-        </div>
-      </div>
-    );
   return (
     <form className="lp-form" onSubmit={submit}>
       <label>

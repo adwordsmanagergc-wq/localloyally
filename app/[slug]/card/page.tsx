@@ -38,7 +38,7 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
 
   return (
     <main className="wrap stack-lg">
-      <Brand biz={biz} right={<LogoutButton slug={biz.slug} />} />
+      <Brand biz={biz} right={<div className="row" style={{ gap: 14 }}><a className="linkbtn small" href="/me">My cards</a><LogoutButton slug={biz.slug} /></div>} />
 
       {offer && <div className="banner offer">📣 {offer}</div>}
 
@@ -184,6 +184,10 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
           </div>
         </section>
       )}
+      <a className="card flat row between more-places" href="/me">
+        <span><strong>Collect stamps at more places</strong><br /><span className="small muted">See all your cards and join other businesses with one tap.</span></span>
+        <span aria-hidden="true">→</span>
+      </a>
     </main>
   );
 }

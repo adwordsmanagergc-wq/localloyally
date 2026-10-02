@@ -1,9 +1,7 @@
 import { clearAllCustomerSessions } from '@/lib/auth';
-import { bizRoute } from '@/lib/route';
 import { json } from '@/lib/util';
 
-// Logs out of every card on this phone, not just this one.
-export const POST = bizRoute(async () => {
+export async function POST() {
   await clearAllCustomerSessions();
   return json({ ok: true });
-});
+}

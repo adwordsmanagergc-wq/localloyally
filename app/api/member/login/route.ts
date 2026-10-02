@@ -1,4 +1,4 @@
-import { checkPin, setCustomerSession } from '@/lib/auth';
+import { checkPin, setCustomerSession, setMemberSession } from '@/lib/auth';
 import { findCards } from '@/lib/username';
 import { clientIp, json, rateLimit } from '@/lib/util';
 
@@ -23,5 +23,6 @@ export async function POST(req: Request) {
     return json({ error: 'Wrong password' }, 401);
   }
   for (const c of ok) await setCustomerSession(c.biz_id, c.id);
+  await setMemberSession(ok[0].phone);
   return json({ cards: ok.map((c: any) => ({ name: c.name, slug: c.slug })) });
 }

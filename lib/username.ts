@@ -21,7 +21,7 @@ export async function findCards(login: string, defaultCountry = '62', bizId?: st
   const u = cleanUsername(login);
   const phone = u ? null : normalizePhone(login, defaultCountry);
   if (!u && !phone) return [];
-  return sql`select c.id, c.password_hash, b.id biz_id, b.name, b.slug from customers c join businesses b on b.id = c.business_id
+  return sql`select c.id, c.phone, c.password_hash, b.id biz_id, b.name, b.slug from customers c join businesses b on b.id = c.business_id
     where b.active and ${u ? sql`lower(c.username) = ${u}` : sql`c.phone = ${phone}`}
       ${bizId ? sql`and c.business_id = ${bizId}` : sql``}
     order by b.name`;

@@ -1,4 +1,4 @@
-import { checkPin, setCustomerSession } from '@/lib/auth';
+import { checkPin, setCustomerSession, setMemberSession } from '@/lib/auth';
 import { bizRoute, body } from '@/lib/route';
 import { findCards } from '@/lib/username';
 import { clientIp, json, rateLimit } from '@/lib/util';
@@ -15,5 +15,6 @@ export const POST = bizRoute(async (req, biz) => {
   if (!c.password_hash) return json({ error: 'Your card has no password yet. Tap "Forgot password" to set one.' }, 401);
   if (!checkPin(password, c.password_hash)) return json({ error: 'Wrong password' }, 401);
   await setCustomerSession(biz.id, c.id);
+  await setMemberSession(c.phone);
   return json({ ok: true });
 });

@@ -1,6 +1,6 @@
 import { timingSafeEqual } from 'node:crypto';
 import { sql } from '@/lib/db';
-import { hashOtp, hashPin, setCustomerSession } from '@/lib/auth';
+import { hashOtp, hashPin, setCustomerSession, setMemberSession } from '@/lib/auth';
 import { bizRoute, body } from '@/lib/route';
 import { json, normalizePhone } from '@/lib/util';
 
@@ -19,9 +19,12 @@ export const POST = bizRoute(async (req, biz) => {
     await sql`update otp_codes set attempts = attempts + 1 where business_id = ${biz.id} and phone = ${phone}`;
     return json({ error: 'That code is not right' }, 400);
   }
-  const [c] = await sql`update customers set password_hash = ${hashPin(password)} where business_id = ${biz.id} and phone = ${phone} returning id`;
+  // Same person, verified by WhatsApp: one password for all their cards.
+  await sql`update customers set password_hash = ${hashPin(password)} where phone = ${phone}`;
+  const [c] = await sql`select id from customers where business_id = ${biz.id} and phone = ${phone}`;
   await sql`delete from otp_codes where business_id = ${biz.id} and phone = ${phone}`;
   if (!c) return json({ error: 'No card with that number' }, 404);
   await setCustomerSession(biz.id, c.id);
+  await setMemberSession(phone);
   return json({ ok: true });
 });

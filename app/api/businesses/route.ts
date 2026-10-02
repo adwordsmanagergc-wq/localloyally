@@ -9,6 +9,6 @@ export async function GET(req: Request) {
   if (q.length < 2) return json({ items: [] });
   if (!(await rateLimit(`bizsearch:${clientIp(req)}`, 60, 300))) return json({ items: [] }, 429);
   const like = `%${q.replace(/[%_\\]/g, '\\$&')}%`;
-  const items = await sql`select name, slug from businesses where active and (name ilike ${like} or slug ilike ${like}) order by name limit 8`;
+  const items = await sql`select name, slug, settings->>'logoUrl' logo, settings->>'tagline' tagline from businesses where active and (name ilike ${like} or slug ilike ${like}) order by name limit 8`;
   return json({ items });
 }

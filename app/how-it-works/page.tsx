@@ -166,7 +166,7 @@ export default async function HowItWorks() {
                 <li>Every offer shows how many came back within 7 days</li>
               </ul>
             </div>
-            <Phone src="marketing-send.webp" alt="Sending a WhatsApp offer from the business's own number" />
+            <Phone src="marketing-phone.webp" alt="Sending a WhatsApp offer from the business's own number" />
           </div>
           <div className="lp-container" style={{ marginTop: 34 }}>
             <div className="hiw-sample">Sample results</div>

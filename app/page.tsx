@@ -171,7 +171,7 @@ export default async function Home() {
               </p>
               <div className="lp-hero-cta">
                 <a className="lp-btn orange" href="#trial">Get started →</a>
-                <a className="lp-btn ghost" href="#how">See how it works</a>
+                <a className="lp-btn ghost" href="/how-it-works">See how it works</a>
               </div>
               <div className="lp-ticks">
                 <span>Set up with you</span><span>Live the same day</span><span>Works on any phone</span>
@@ -238,7 +238,7 @@ export default async function Home() {
                 <figcaption><strong>2. Staff add stamps in seconds</strong>The customer says their username, staff type it and tap Add stamp. No scanning.</figcaption>
               </figure>
               <figure className="lp-how-shot">
-                <div className="hiw-phone short"><img src="/how-it-works/marketing-send.webp" alt="Sending a WhatsApp offer from the business's own number" loading="lazy" /></div>
+                <div className="hiw-phone"><img src="/how-it-works/marketing-phone.webp" alt="Sending a WhatsApp offer from the business's own number" loading="lazy" /></div>
                 <figcaption><strong>3. You bring them back</strong>WhatsApp offers, reminders and Google review requests fill your quiet days.</figcaption>
               </figure>
             </div>

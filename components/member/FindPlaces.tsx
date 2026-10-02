@@ -84,7 +84,7 @@ export function MemberLogout() {
   return (
     <button type="button" className="lp-btn small ghost" onClick={async () => {
       await post('/api/member/logout', {}).catch(() => {});
-      window.location.href = '/login';
+      window.location.href = '/';
     }}>Log out</button>
   );
 }

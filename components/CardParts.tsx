@@ -59,11 +59,10 @@ export function ShareReferral({ link, text }: { link: string; text: string }) {
 }
 
 export function LogoutButton({ slug }: { slug: string }) {
-  const router = useRouter();
   return (
     <button className="linkbtn small" onClick={async () => {
       await api(`/api/b/${slug}/auth/logout`, {}).catch(() => {});
-      router.replace(`/${slug}`); router.refresh();
+      window.location.href = '/'; // back to the Loyal Locally homepage
     }}>Log out</button>
   );
 }

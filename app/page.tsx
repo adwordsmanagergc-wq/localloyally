@@ -1,5 +1,6 @@
 import './landing.css';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import TrialForm from '@/components/landing/TrialForm';
 import { walletEnabled } from '@/lib/wallet/config';
 
@@ -105,12 +106,19 @@ const TRIAL = [
   { e: '🙋', t: 'Set up with you', p: 'We help you pick rewards, prizes and design so you launch looking great.' },
 ];
 
-/** Monthly price after the free week, by country. */
+/** Monthly price after the free week, by country (ISO code from the visitor's IP). */
 const PRICES = [
-  { flag: '🇮🇩', country: 'Indonesia', price: 'Rp 5.500.000' },
-  { flag: '🇦🇺', country: 'Australia', price: 'A$499' },
-  { flag: '🇬🇧', country: 'United Kingdom', price: '£249' },
+  { code: 'ID', flag: '🇮🇩', country: 'Indonesia', price: 'Rp 5.500.000' },
+  { code: 'AU', flag: '🇦🇺', country: 'Australia', price: 'A$499' },
+  { code: 'GB', flag: '🇬🇧', country: 'United Kingdom', price: '£249' },
 ];
+
+/** Visitors in Indonesia, Australia or the UK see only their price; everyone else sees all three. */
+async function pricesForVisitor() {
+  const country = ((await headers()).get('x-vercel-ip-country') || '').toUpperCase();
+  const mine = PRICES.filter((p) => p.code === country);
+  return mine.length ? mine : PRICES;
+}
 
 const FAQ = [
   ['Do my customers need to download an app?', `No. They open your rewards page in their phone browser, join with their WhatsApp number and can save the card to ${WALLET ? 'Apple Wallet, Google Wallet or ' : ''}their home screen.`],
@@ -119,11 +127,17 @@ const FAQ = [
   ['Can I make it look like my brand?', 'Yes. Upload your logo, pick your colours, font, background texture and stamp icon, and change the wording to suit you, like "coffee", "cut" or "class".'],
   ['How does it help with Google Maps and AI search?', 'Google ranks local businesses partly on how many reviews you have, how good they are and how recent they are. AI assistants like ChatGPT and Google AI Overviews also read reviews when they recommend places. Loyal Locally asks your regulars, the people most likely to leave 5 stars, for a review at the right moment, so a steady stream keeps coming in.'],
   ['Do customers get stamps for reviews?', 'No, and that is on purpose. Google\'s rules ban rewarding customers for reviews, and businesses that do it can have reviews removed. We simply ask happy regulars, which keeps your profile safe.'],
-  ['What happens after the free week?', 'If you love it, you move onto one simple monthly plan with every feature: Rp 5.500.000 a month in Indonesia, A$499 in Australia or £249 in the UK. If not, there is nothing to cancel and no card is needed to start.'],
   ['Does it work outside Indonesia?', 'Yes. Customers can join with any international WhatsApp number, and you set your own country and timezone.'],
 ];
 
-export default function Home() {
+export default async function Home() {
+  const prices = await pricesForVisitor();
+  const priceText = prices.length === 1 ? `${prices[0].price} a month` : 'Rp 5.500.000 a month in Indonesia, A$499 in Australia or £249 in the UK';
+  const faq = [
+    ...FAQ.slice(0, -1),
+    ['What happens after the free week?', `If you love it, you move onto one simple monthly plan with every feature: ${priceText}. If not, there is nothing to cancel and no card is needed to start.`],
+    FAQ[FAQ.length - 1],
+  ];
   return (
     <div className="lp">
       <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -392,8 +406,8 @@ export default function Home() {
             <div className="lp-eyebrow">✺ Pricing</div>
             <h2 className="lp-title">One plan. Every feature.</h2>
             <p className="lp-lead">Start with a free week. If you love it, it&apos;s one simple monthly price for your business, with unlimited customers, staff logins and everything on this page.</p>
-            <div className="lp-plans">
-              {PRICES.map((p) => (
+            <div className={`lp-plans${prices.length === 1 ? ' lp-plans-one' : ''}`}>
+              {prices.map((p) => (
                 <div key={p.country} className="lp-plan">
                   <div className="lp-plan-country"><span aria-hidden="true">{p.flag}</span> {p.country}</div>
                   <div className="lp-plan-price">{p.price}<span>/ month</span></div>
@@ -431,7 +445,7 @@ export default function Home() {
             <div className="lp-eyebrow">✺ Questions</div>
             <h2 className="lp-title">Good to know.</h2>
             <div className="lp-faq">
-              {FAQ.map(([q, a]) => (
+              {faq.map(([q, a]) => (
                 <details key={q}><summary>{q}</summary><p>{a}</p></details>
               ))}
             </div>

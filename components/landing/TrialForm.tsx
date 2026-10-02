@@ -25,7 +25,7 @@ export default function TrialForm() {
 
   return (
     <form className="lp-form" onSubmit={submit}>
-      <h3 style={{ fontSize: '1.5rem' }}>Start your free week</h3>
+      <h3 style={{ fontSize: '1.5rem' }}>Get started</h3>
       <div className="row2">
         <label>Business name<input value={f.businessName} onChange={set('businessName')} required maxLength={80} autoComplete="organization" /></label>
         <label>Type of business<select value={f.businessType} onChange={set('businessType')}>{TYPES.map((t) => <option key={t}>{t}</option>)}</select></label>
@@ -40,8 +40,8 @@ export default function TrialForm() {
       </div>
       <label>Anything we should know? (optional)<textarea rows={3} value={f.message} onChange={set('message')} maxLength={600} placeholder="E.g. we want 10 stamps for a free coffee and spin to win" /></label>
       {msg && <div className={`lp-msg ${msg.ok ? 'ok' : 'err'}`} role="status">{msg.text}</div>}
-      <button className="lp-btn orange" disabled={busy}>{busy ? 'Sending…' : 'Claim my free week →'}</button>
-      <p style={{ fontSize: '0.8rem', color: '#5f544b' }}>No card needed. We only use your details to set up your trial.</p>
+      <button className="lp-btn orange" disabled={busy}>{busy ? 'Sending…' : 'Send →'}</button>
+      <p style={{ fontSize: '0.8rem', color: '#5f544b' }}>We only use your details to get in touch and set up your card.</p>
     </form>
   );
 }

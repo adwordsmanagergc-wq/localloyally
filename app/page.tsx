@@ -127,7 +127,7 @@ export default async function Home() {
   const priceText = priceSentence(prices);
   const faq = [
     ...FAQ.slice(0, -1),
-    ['What happens after the free week?', `If you love it, you move onto one simple monthly plan with every feature: ${priceText}. If not, there is nothing to cancel and no card is needed to start.`],
+    ['How much does it cost?', `One simple monthly plan with every feature: ${priceText}. Unlimited customers and staff logins, and we help you set it up.`],
     FAQ[FAQ.length - 1],
   ];
   return (
@@ -162,7 +162,7 @@ export default async function Home() {
         <section className="lp-hero">
           <div className="lp-container lp-hero-grid">
             <div>
-              <span className="lp-sticker">🎉 Free for your business for 7 days</span>
+              <span className="lp-sticker">🎉 Loyalty cards for local businesses</span>
               <h1>
                 Loyalty cards your customers <span className="squiggle">won&apos;t lose</span>. <span className="hl">Rewards they&apos;ll chase.</span>
               </h1>
@@ -170,11 +170,11 @@ export default async function Home() {
                 Digital stamp cards with spin to win, social media bonus stamps, WhatsApp reminders and automatic Google review requests that help you rank higher on Google Maps. Branded to your business, set up in minutes, no app to download.
               </p>
               <div className="lp-hero-cta">
-                <a className="lp-btn orange" href="#trial">Start your free week →</a>
+                <a className="lp-btn orange" href="#trial">Get started →</a>
                 <a className="lp-btn ghost" href="#how">See how it works</a>
               </div>
               <div className="lp-ticks">
-                <span>No card needed</span><span>Set up in 5 minutes</span><span>Works on any phone</span>
+                <span>Set up with you</span><span>Live the same day</span><span>Works on any phone</span>
               </div>
             </div>
 
@@ -258,7 +258,7 @@ export default async function Home() {
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginTop: 30 }}>
               <a className="lp-btn orange" href="/how-it-works">Take the full tour →</a>
-              <a className="lp-btn ghost" href="#trial">Start your free week</a>
+              <a className="lp-btn ghost" href="#trial">Get started</a>
             </div>
           </div>
         </section>
@@ -375,13 +375,13 @@ export default async function Home() {
           <div className="lp-container">
             <div className="lp-eyebrow">✺ Pricing</div>
             <h2 className="lp-title">One plan. Every feature.</h2>
-            <p className="lp-lead">Start with a free week. If you love it, it&apos;s one simple monthly price for your business, with unlimited customers, staff logins and everything on this page.</p>
+            <p className="lp-lead">One simple monthly price for your business, with unlimited customers, staff logins and everything on this page.</p>
             <div className={`lp-plans${prices.length === 1 ? ' lp-plans-one' : ''}`}>
               {prices.map((p) => (
                 <div key={p.country} className="lp-plan">
                   <div className="lp-plan-country"><span aria-hidden="true">{p.flag}</span> {p.country}</div>
                   <div className="lp-plan-price">{p.price}<span>/ month</span></div>
-                  <a className="lp-btn small orange" href="#trial">Start your free week</a>
+                  <a className="lp-btn small orange" href="#trial">Get started</a>
                 </div>
               ))}
             </div>
@@ -390,19 +390,18 @@ export default async function Home() {
 
         <section className="lp-section" id="trial" style={{ background: '#fffaf1', borderBlock: '2px solid #1c1511' }}>
           <div className="lp-container">
-            <div className="lp-eyebrow">✺ Try it free</div>
-            <h2 className="lp-title">One week free. No card, no catch.</h2>
+            <div className="lp-eyebrow">✺ Get started</div>
+            <h2 className="lp-title">Let&apos;s set up your card.</h2>
             <div className="lp-trial-grid">
               <div className="lp-price">
-                <div style={{ fontWeight: 800 }}>Free trial</div>
-                <div className="big">7 days</div>
-                <p style={{ marginTop: 8, fontWeight: 600 }}>Every feature switched on, set up with you.</p>
+                <div className="big" style={{ fontSize: '2.4rem' }}>Set up with you</div>
+                <p style={{ marginTop: 8, fontWeight: 600 }}>Every feature switched on from day one.</p>
                 <ul>
                   <li>Your own branded rewards page</li>
                   <li>Unlimited customers and staff logins</li>
                   <li>Spin to win, social stamps and referrals</li>
                   <li>Help setting up your rewards and design</li>
-                  <li>Then one monthly price, only if you love it</li>
+                  <li>One simple monthly price</li>
                 </ul>
               </div>
               <TrialForm />
@@ -426,9 +425,9 @@ export default async function Home() {
           <div className="lp-container">
             <div className="lp-final">
               <h2>Turn first visits into regulars.</h2>
-              <p className="lp-lead" style={{ margin: '14px auto 0', color: '#1c1511' }}>Start your free week today. We&apos;ll help you set it up.</p>
+              <p className="lp-lead" style={{ margin: '14px auto 0', color: '#1c1511' }}>Tell us about your business and we&apos;ll help you set it up.</p>
               <div className="lp-hero-cta" style={{ justifyContent: 'center' }}>
-                <a className="lp-btn" href="#trial">Start your free week →</a>
+                <a className="lp-btn" href="#trial">Get started →</a>
                 <a className="lp-btn ghost" href="/login?as=business">Business login</a>
               </div>
             </div>
@@ -445,7 +444,7 @@ export default async function Home() {
             <a href="/login?as=member">Member login</a>
             <a href="/login?as=business">Business login</a>
             <a href="/how-it-works">How it works</a>
-            <a href="#trial">Free trial</a>
+            <a href="#trial">Get started</a>
             <a href="/platform">Admin</a>
           </nav>
           <span>© {new Date().getFullYear()} Loyal Locally by Metatap Digital</span>

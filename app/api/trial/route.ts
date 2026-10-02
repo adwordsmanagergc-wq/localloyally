@@ -24,11 +24,11 @@ export async function POST(req: Request) {
   // Tell the team straight away (after replying, so the visitor isn't kept waiting)
   const wa = whatsapp.replace(/\D/g, '');
   const text = [
-    `New free week request on Loyal Locally`, '',
+    `New sign-up request on Loyal Locally`, '',
     `Business: ${businessName}`, `Type: ${clean(b.businessType, 40) || '-'}`, `City: ${clean(b.city, 60) || '-'}`,
     `Name: ${contactName}`, `WhatsApp: ${whatsapp} (https://wa.me/${wa})`, `Email: ${email || '-'}`, '',
     `Message: ${clean(b.message, 600) || '-'}`, '', `All requests: ${siteUrl()}/platform`,
   ].join('\n');
-  after(() => sendEmail(process.env.TRIAL_EMAIL_TO || 'aj@metatapdigital.com', `Free week request: ${businessName}`, text, email || undefined));
+  after(() => sendEmail(process.env.TRIAL_EMAIL_TO || 'aj@metatapdigital.com', `New business enquiry: ${businessName}`, text, email || undefined));
   return json({ ok: true });
 }

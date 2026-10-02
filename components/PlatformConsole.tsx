@@ -69,7 +69,7 @@ export default function PlatformConsole({ loggedIn, appUrl }: { loggedIn: boolea
       </div>
 
       <div className="card flat stack">
-        <h2>Free trial requests</h2>
+        <h2>Business enquiries</h2>
         {data?.trials?.length ? (
           <div className="scroll-x">
             <table className="table">
@@ -88,7 +88,7 @@ export default function PlatformConsole({ loggedIn, appUrl }: { loggedIn: boolea
               </tbody>
             </table>
           </div>
-        ) : <p className="muted small">No trial requests yet. They appear here when someone fills in the form on the home page.</p>}
+        ) : <p className="muted small">No enquiries yet. They appear here when someone fills in the form on the home page.</p>}
       </div>
 
       <form className="card stack" onSubmit={create} style={{ maxWidth: 720 }}>

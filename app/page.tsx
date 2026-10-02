@@ -1,6 +1,6 @@
 import './landing.css';
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
+import { priceSentence, pricesForVisitor } from '@/lib/pricing';
 import TrialForm from '@/components/landing/TrialForm';
 import { walletEnabled } from '@/lib/wallet/config';
 
@@ -129,20 +129,6 @@ const TRIAL = [
   { e: '🙋', t: 'Set up with you', p: 'We help you pick rewards, prizes and design so you launch looking great.' },
 ];
 
-/** Monthly price after the free week, by country (ISO code from the visitor's IP). */
-const PRICES = [
-  { code: 'ID', flag: '🇮🇩', country: 'Indonesia', price: 'Rp 5.500.000' },
-  { code: 'AU', flag: '🇦🇺', country: 'Australia', price: 'A$499' },
-  { code: 'GB', flag: '🇬🇧', country: 'United Kingdom', price: '£249' },
-];
-
-/** Visitors in Indonesia, Australia or the UK see only their price; everyone else sees all three. */
-async function pricesForVisitor() {
-  const country = ((await headers()).get('x-vercel-ip-country') || '').toUpperCase();
-  const mine = PRICES.filter((p) => p.code === country);
-  return mine.length ? mine : PRICES;
-}
-
 const FAQ = [
   ['Do my customers need to download an app?', `No. They open your rewards page in their phone browser and sign up in 30 seconds with a username, password and WhatsApp number. Their phone keeps them logged in and can save the password, and they can add the card to ${WALLET ? 'Apple Wallet, Google Wallet or ' : ''}their home screen.`],
   ['How do staff add stamps?', 'The customer tells staff their username, which is shown big on their card. Staff type it (or just part of it) on your staff page on any phone or tablet and tap Add stamp. Or staff read out the counter code on their screen and the customer types it on their card. Either way it takes a few seconds, with no scanning.'],
@@ -153,12 +139,12 @@ const FAQ = [
   ['Can I make it look like my brand?', 'Yes. Upload your logo, pick your colours, font, background photo or texture and stamp design, and change the wording to suit you, like "coffee", "cut" or "class".'],
   ['How does it help with Google Maps and AI search?', 'Google ranks local businesses partly on how many reviews you have, how good they are and how recent they are. AI assistants like ChatGPT and Google AI Overviews also read reviews when they recommend places. Loyal Locally asks your regulars, the people most likely to leave 5 stars, for a review at the right moment, so a steady stream keeps coming in.'],
   ['Do customers get stamps for reviews?', 'No, and that is on purpose. Google\'s rules ban rewarding customers for reviews, and businesses that do it can have reviews removed. We simply ask happy regulars, which keeps your profile safe.'],
-  ['Does it work outside Indonesia?', 'Yes. Customers join with any international WhatsApp number by starting with + and their country code, and you set your own country and timezone. It runs in Indonesia, Australia and the UK today.'],
+  ['Does it work outside Indonesia?', 'Yes. Customers join with any international WhatsApp number by starting with + and their country code, and you set your own country and timezone. It runs in Indonesia, Australia, the UK, Europe and the USA.'],
 ];
 
 export default async function Home() {
   const prices = await pricesForVisitor();
-  const priceText = prices.length === 1 ? `${prices[0].price} a month` : 'Rp 5.500.000 a month in Indonesia, A$499 in Australia or £249 in the UK';
+  const priceText = priceSentence(prices);
   const faq = [
     ...FAQ.slice(0, -1),
     ['What happens after the free week?', `If you love it, you move onto one simple monthly plan with every feature: ${priceText}. If not, there is nothing to cancel and no card is needed to start.`],
@@ -180,7 +166,7 @@ export default async function Home() {
             <a href="#features">Features</a>
             <a href="#customise">Customise</a>
             <a href="#reviews">Reviews</a>
-            <a href="#how">How it works</a>
+            <a href="/how-it-works">How it works</a>
             <a href="#compare">Compare</a>
             <a href="#pricing">Pricing</a>
             <a href="#faq">FAQ</a>
@@ -205,7 +191,7 @@ export default async function Home() {
               </p>
               <div className="lp-hero-cta">
                 <a className="lp-btn orange" href="#trial">Start your free week →</a>
-                <a className="lp-btn ghost" href="#how">See how it works</a>
+                <a className="lp-btn ghost" href="/how-it-works">See how it works</a>
               </div>
               <div className="lp-ticks">
                 <span>No card needed</span><span>Set up in 5 minutes</span><span>Works on any phone</span>
@@ -496,6 +482,7 @@ export default async function Home() {
           <nav aria-label="Footer">
             <a href="/login?as=member">Member login</a>
             <a href="/login?as=business">Business login</a>
+            <a href="/how-it-works">How it works</a>
             <a href="#trial">Free trial</a>
             <a href="/platform">Admin</a>
           </nav>

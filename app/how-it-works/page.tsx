@@ -63,7 +63,7 @@ export default async function HowItWorks() {
               </div>
             </div>
             <div className="hiw-duo">
-              <Phone src="card-top.webp" alt="Roasted customer card with 4 stamps and an offer" />
+              <Phone src="card-wheel.webp" alt="Roasted customer card: 4 stamps and the spin to win wheel just unlocked" />
               <Phone src="staff-customer.webp" alt="Staff screen adding a stamp for Sophie" />
             </div>
           </div>
@@ -124,7 +124,7 @@ export default async function HowItWorks() {
 
         <section className="lp-section hiw-band">
           <div className="lp-container hiw-split">
-            <Phone src="card-spin.webp" alt="Spin to win wheel unlocked at 4 stamps" />
+            <Phone src="card-wheel.webp" alt="Customer card with 4 stamps and the spin to win wheel unlocked" />
             <div>
               <div className="lp-eyebrow">✺ Spin to win</div>
               <h2 className="lp-title">A reason to come back before the reward.</h2>
@@ -248,8 +248,8 @@ export default async function HowItWorks() {
         <section className="lp-section" id="pricing">
           <div className="lp-container">
             <div className="lp-eyebrow">✺ Pricing</div>
-            <h2 className="lp-title">Try it free for 7 days.</h2>
-            <p className="lp-lead">Everything on this page, switched on and set up with you. No card needed. Then one monthly price, only if you love it.</p>
+            <h2 className="lp-title">One simple monthly price.</h2>
+            <p className="lp-lead">Everything on this page is included, set up with you, with unlimited customers and staff logins.</p>
             <div className={`lp-plans${prices.length === 1 ? ' lp-plans-one' : ''}`}>
               {prices.map((p) => (
                 <div key={p.country} className="lp-plan">

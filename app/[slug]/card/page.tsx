@@ -86,6 +86,15 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
         )}
       </section>
 
+      {/* A waiting spin goes straight under the stamps, so it's the first thing they see */}
+      {sum.spins > 0 && (
+        <section className="card stack center">
+          <h2>You&apos;re halfway there!</h2>
+          <p className="small muted">Have a spin to see if you can win a prize for your next visit!</p>
+          <SpinWheel slug={biz.slug} prizes={s.spin.prizes.map((p) => p.label)} voucherDays={s.spin.voucherDays} />
+        </section>
+      )}
+
       <section className="card stack center">
         <h2>At the counter</h2>
         <p className="small muted">Tell staff your username and they&apos;ll add your stamps.</p>
@@ -105,14 +114,6 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
           </div>
         )}
       </section>
-
-      {sum.spins > 0 && (
-        <section className="card stack center">
-          <h2>You&apos;re halfway there!</h2>
-          <p className="small muted">Have a spin to see if you can win a prize for your next visit!</p>
-          <SpinWheel slug={biz.slug} prizes={s.spin.prizes.map((p) => p.label)} voucherDays={s.spin.voucherDays} />
-        </section>
-      )}
 
       {gifts.length > 0 && (
         <section className="stack">

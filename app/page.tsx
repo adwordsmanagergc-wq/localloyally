@@ -10,7 +10,7 @@ const WALLET = walletEnabled().apple || walletEnabled().google;
 export const metadata: Metadata = {
   title: 'Loyal Locally | Digital stamp cards for your business',
   description:
-    `Digital loyalty stamp cards for cafes, restaurants, barbers, salons and gyms. Customers join with WhatsApp${WALLET ? ' and can save the card to Apple or Google Wallet' : ', staff find them by username'}. Spin to win, offers, gift certificates and your own branding. Free for 7 days.`,
+    `Digital loyalty stamp cards for cafes, restaurants, barbers, salons and gyms. Customers join with WhatsApp${WALLET ? ' and can save the card to Apple or Google Wallet' : ', staff find them by username'}. Spin to win, offers, gift certificates and your own branding.`,
 };
 
 const Icon = ({ d, bg }: { d: string; bg: string }) => (
@@ -109,26 +109,6 @@ const COMPARE: [string, string, string, string][] = [
 ];
 const mark = (v: string) => (v === 'yes' ? <span className="yes">✓</span> : v === 'no' ? <span className="no">✕</span> : <span className="meh">Sometimes</span>);
 
-/** Everything switched on in the free week (and the plan after). */
-const TRIAL = [
-  { e: '🎨', t: 'Your brand, your card', p: 'Logo, colours, photo background and your own stamp. It looks like you, not us.' },
-  { e: '☕', t: 'Digital stamp cards', p: 'Up to 4 reward levels, like 5 for a pastry and 8 for a free coffee. Nothing to lose.' },
-  { e: '📱', t: 'No app to download', p: 'Customers join in 30 seconds on their phone with a username and password.' },
-  { e: '🎡', t: 'Spin to win', p: 'Halfway to their reward, they spin for a prize on their next visit. You set the odds.' },
-  { e: '📸', t: 'Stamps for posts', p: 'Customers post about you on Instagram or TikTok and earn bonus stamps. Free marketing.' },
-  { e: '🤝', t: 'Refer a friend', p: 'Every member gets a share link and earns a stamp when their friend visits.' },
-  { e: '🔎', t: 'No scanning needed', p: 'Staff type the customer\'s username, or read out a 6-digit counter code that changes every 2 minutes.' },
-  { e: '🎁', t: 'Gift certificates', p: 'Sell gift cards at the counter, shared by link, used over several visits.' },
-  { e: '📣', t: 'Send offers', p: 'Message regulars, people close to a reward or lost customers, with a voucher if you like.' },
-  { e: '💬', t: 'WhatsApp nudges', p: 'Automatic reminders when they are 1 stamp away or a voucher is about to expire.' },
-  { e: '⭐', t: 'More Google reviews', p: 'Happy regulars get asked for a review at the right moment. Climb Google Maps.' },
-  { e: '🎂', t: 'Birthdays, streaks, happy hours', p: 'Birthday treats, streak bonuses and double stamps in your quiet hours.' },
-  { e: '📊', t: 'Know your numbers', p: 'Who comes back, who is slipping away and what each staff member did.' },
-  { e: '📋', t: 'Your marketing list', p: 'Every customer who said yes to WhatsApp, ready to download any time.' },
-  { e: '👥', t: 'Unlimited everything', p: 'Unlimited customers, staff logins and cards. No per-member fees.' },
-  { e: '🙋', t: 'Set up with you', p: 'We help you pick rewards, prizes and design so you launch looking great.' },
-];
-
 const FAQ = [
   ['Do my customers need to download an app?', `No. They open your rewards page in their phone browser and sign up in 30 seconds with a username, password and WhatsApp number. Their phone keeps them logged in and can save the password, and they can add the card to ${WALLET ? 'Apple Wallet, Google Wallet or ' : ''}their home screen.`],
   ['How do staff add stamps?', 'The customer tells staff their username, which is shown big on their card. Staff type it (or just part of it) on your staff page on any phone or tablet and tap Add stamp. Or staff read out the counter code on their screen and the customer types it on their card. Either way it takes a few seconds, with no scanning.'],
@@ -166,7 +146,7 @@ export default async function Home() {
             <a href="#features">Features</a>
             <a href="#customise">Customise</a>
             <a href="#reviews">Reviews</a>
-            <a href="/how-it-works">How it works</a>
+            <a href="#how">How it works</a>
             <a href="#compare">Compare</a>
             <a href="#pricing">Pricing</a>
             <a href="#faq">FAQ</a>
@@ -191,7 +171,7 @@ export default async function Home() {
               </p>
               <div className="lp-hero-cta">
                 <a className="lp-btn orange" href="#trial">Start your free week →</a>
-                <a className="lp-btn ghost" href="/how-it-works">See how it works</a>
+                <a className="lp-btn ghost" href="#how">See how it works</a>
               </div>
               <div className="lp-ticks">
                 <span>No card needed</span><span>Set up in 5 minutes</span><span>Works on any phone</span>
@@ -242,6 +222,46 @@ export default async function Home() {
             ))}
           </div>
         </div>
+
+        <section className="lp-section lp-how" id="how">
+          <div className="lp-container">
+            <div className="lp-eyebrow">✺ How it works</div>
+            <h2 className="lp-title">Join, stamp, spin, come back.</h2>
+            <p className="lp-lead">Here&apos;s Roasted, a real café set-up. Customers carry a branded card on their phone, staff add stamps in seconds, and the card gives people a reason to return.</p>
+            <div className="lp-how-grid">
+              <figure className="lp-how-shot">
+                <div className="hiw-phone"><img src="/how-it-works/card-wheel-home.webp" alt="Customer card with 4 stamps and the spin to win wheel just unlocked" loading="lazy" /></div>
+                <figcaption><strong>1. Customers collect</strong>Their card shows every stamp. Halfway there, they unlock a spin to win.</figcaption>
+              </figure>
+              <figure className="lp-how-shot">
+                <div className="hiw-phone"><img src="/how-it-works/staff-customer.webp" alt="Staff adding a stamp for Sophie" loading="lazy" /></div>
+                <figcaption><strong>2. Staff add stamps in seconds</strong>The customer says their username, staff type it and tap Add stamp. No scanning.</figcaption>
+              </figure>
+              <figure className="lp-how-shot">
+                <div className="hiw-phone short"><img src="/how-it-works/marketing-send.webp" alt="Sending a WhatsApp offer from the business's own number" loading="lazy" /></div>
+                <figcaption><strong>3. You bring them back</strong>WhatsApp offers, reminders and Google review requests fill your quiet days.</figcaption>
+              </figure>
+            </div>
+            <div className="lp-who">
+              <div style={{ background: '#d4f56b' }}>
+                <h3>For owners</h3>
+                <ul><li>Reports on who comes back</li><li>WhatsApp marketing list</li><li>Change rewards and design anytime</li></ul>
+              </div>
+              <div style={{ background: '#c8b8ff' }}>
+                <h3>For staff</h3>
+                <ul><li>Own PIN, no training needed</li><li>Search, tap, done</li><li>Warns about accidental double stamps</li></ul>
+              </div>
+              <div style={{ background: '#ffb8cb' }}>
+                <h3>For customers</h3>
+                <ul><li>No app to download</li><li>Card always in their pocket</li><li>Prizes worth coming back for</li></ul>
+              </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginTop: 30 }}>
+              <a className="lp-btn orange" href="/how-it-works">Take the full tour →</a>
+              <a className="lp-btn ghost" href="#trial">Start your free week</a>
+            </div>
+          </div>
+        </section>
 
         <section className="lp-section" id="features">
           <div className="lp-container">
@@ -332,44 +352,6 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="lp-section" id="how">
-          <div className="lp-container">
-            <div className="lp-eyebrow">✺ Easy for everyone</div>
-            <h2 className="lp-title">Live in an afternoon. Simple from day one.</h2>
-            <div className="lp-steps">
-              <div className="lp-step">
-                <div className="n">01</div>
-                <h3>Set up your card</h3>
-                <p>Pick a template for your type of business, add your logo and colours, and choose your rewards. About 5 minutes.</p>
-              </div>
-              <div className="lp-step">
-                <div className="n">02</div>
-                <h3>Put up your join QR code</h3>
-                <p>Print your join QR for the counter, add a link to your website and Instagram bio. Customers join in 20 seconds.</p>
-              </div>
-              <div className="lp-step">
-                <div className="n">03</div>
-                <h3>Find and reward</h3>
-                <p>Staff type the customer&apos;s username on any phone and tap Add stamp. Stamps, rewards, spins and reminders take care of themselves.</p>
-              </div>
-            </div>
-            <div className="lp-who">
-              <div style={{ background: '#d4f56b' }}>
-                <h3>For owners</h3>
-                <ul><li>Change rewards and design anytime</li><li>See your regulars and busiest days</li><li>Export your customer list</li></ul>
-              </div>
-              <div style={{ background: '#c8b8ff' }}>
-                <h3>For staff</h3>
-                <ul><li>Own PIN, no training needed</li><li>Search, tap, done</li><li>Warns about accidental double stamps</li></ul>
-              </div>
-              <div style={{ background: '#ffb8cb' }}>
-                <h3>For customers</h3>
-                <ul><li>No app, no password</li><li>Card always in their pocket</li><li>Fun prizes worth coming back for</li></ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section className="lp-section" id="compare" style={{ paddingTop: 0 }}>
           <div className="lp-container">
             <div className="lp-eyebrow">✺ The honest comparison</div>
@@ -391,26 +373,6 @@ export default async function Home() {
 
         <section className="lp-section" id="pricing" style={{ paddingTop: 0 }}>
           <div className="lp-container">
-            <div className="lp-trial-hero">
-              <div className="lp-trial-badge"><span>7</span>days free</div>
-              <div>
-                <div className="lp-eyebrow">✺ Your free week</div>
-                <h2 className="lp-title">Everything. Switched on. Free for 7 days.</h2>
-                <p className="lp-lead">No card, no catch, no cut-down version. Here&apos;s what your business gets from day one.</p>
-              </div>
-            </div>
-            <div className="lp-trial-perks">
-              {TRIAL.map((f) => (
-                <div key={f.t} className="lp-perk">
-                  <span className="lp-perk-e" aria-hidden="true">{f.e}</span>
-                  <div><strong>{f.t}</strong><p>{f.p}</p></div>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center', margin: '28px 0 56px' }}>
-              <a className="lp-btn orange" href="#trial">Start your free week →</a>
-            </div>
-
             <div className="lp-eyebrow">✺ Pricing</div>
             <h2 className="lp-title">One plan. Every feature.</h2>
             <p className="lp-lead">Start with a free week. If you love it, it&apos;s one simple monthly price for your business, with unlimited customers, staff logins and everything on this page.</p>

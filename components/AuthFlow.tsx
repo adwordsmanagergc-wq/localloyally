@@ -26,7 +26,7 @@ export default function AuthFlow({ slug, refCode, businessName, start, giftCode,
   const [info, setInfo] = useState('');
 
   const go = (m: Mode) => { setMode(m); setErr(''); setInfo(''); };
-  const done = (welcome = false) => { router.replace(`/${slug}/card${welcome ? '?welcome=1' : ''}`); router.refresh(); };
+  const done = (welcome = false) => router.replace(`/${slug}/card${welcome ? '?welcome=1' : ''}`);
 
   async function run(fn: () => Promise<void>) {
     setBusy(true); setErr('');

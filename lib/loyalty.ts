@@ -132,22 +132,33 @@ export async function redeemReward(biz: Business, customerId: string, staffId: s
 /** Rewards that appear on their own: the halfway spin and the birthday treat. */
 export async function grantPassive(biz: Business, customerId: string) {
   const s = biz.settings;
-  // Stamps from codes, posts or adjustments can fill a card too: turn it into the voucher
-  await sql.begin(async (tx) => {
-    const [c] = await tx`select id from customers where id = ${customerId} and business_id = ${biz.id} for update`;
-    if (c) await convertFullCard(tx, biz, customerId);
-  });
+  // One round trip for what's needed below (the database is far away, so every query counts)
+  const [bal, [c]] = await Promise.all([
+    getBalance(sql, customerId),
+    s.birthday.enabled ? sql`select birthday_month m, birthday_day d from customers where id = ${customerId}` : Promise.resolve([] as any[]),
+  ]);
+  // Stamps from codes, posts or adjustments can fill a card too: turn it into the voucher (rare, so only then lock the card)
+  if (bal >= maxTier(s))
+    await sql.begin(async (tx) => {
+      const [row] = await tx`select id from customers where id = ${customerId} and business_id = ${biz.id} for update`;
+      if (row) await convertFullCard(tx, biz, customerId);
+    });
+  const jobs: Promise<unknown>[] = [];
   if (s.spin.enabled) {
     // The only spin: one per card, when they're halfway to the top reward (4 of 8). the key counts rewards claimed so far, so a new card earns a new spin.
-    await sql`
+    jobs.push(sql`
       insert into spins (customer_id, source, period_key)
       select ${customerId}, 'halfway', 'card-' || (select count(*) from stamps where customer_id = ${customerId} and reason = 'redeem')
       where (select coalesce(sum(delta), 0) from stamps where customer_id = ${customerId}) >= ${halfwayAt(s)}
-      on conflict do nothing`;
+      on conflict do nothing`);
   }
-  if (!s.birthday.enabled) return;
-  const [c] = await sql`select birthday_month m, birthday_day d from customers where id = ${customerId}`;
-  if (!c?.m || !c?.d) return;
+  if (s.birthday.enabled && c?.m && c?.d) jobs.push(grantBirthday(biz, customerId, c.m, c.d));
+  await Promise.all(jobs);
+}
+
+async function grantBirthday(biz: Business, customerId: string, m: number, d: number) {
+  const s = biz.settings;
+  const c = { m, d };
   const l = localNow(s.timezone);
   const today = Date.UTC(l.year, l.month - 1, l.day);
   for (const y of [l.year - 1, l.year, l.year + 1]) {

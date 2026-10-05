@@ -12,7 +12,8 @@ export async function POST(req: Request) {
   const login = String(b.login || '').trim().slice(0, 40);
   const password = String(b.password || '');
   if (!login || !password) return json({ error: 'Enter your username and password' }, 400);
-  if (!(await rateLimit(`mlogin:${login.toLowerCase()}`, 8, 900)) || !(await rateLimit(`mlogin-ip:${clientIp(req)}`, 40, 900)))
+  const limits = await Promise.all([rateLimit(`mlogin:${login.toLowerCase()}`, 8, 900), rateLimit(`mlogin-ip:${clientIp(req)}`, 40, 900)]);
+  if (!limits.every(Boolean))
     return json({ error: 'Too many tries. Wait 15 minutes or reset your password.' }, 429);
 
   const cards = await findCards(login);

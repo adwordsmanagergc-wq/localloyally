@@ -43,7 +43,7 @@ export const GET = managerRoute(async (_req, biz) => {
           (select count(*) from vouchers v where v.redeemed_by = st.id and v.redeemed_at > now() - interval '30 days')::int vouchers,
           (select count(*) from social_submissions x where x.reviewed_by = st.id and x.reviewed_at > now() - interval '30 days')::int posts,
           (select count(*) from gift_cards g where g.created_by = st.id and g.created_at > now() - interval '30 days')::int gifts_sold,
-          (select count(distinct w.customer_id) from stamps w where w.staff_id = st.id and w.reason = 'welcome' and w.created_at > now() - interval '30 days')::int invites
+          (select count(distinct w.customer_id) from stamps w where w.staff_id = st.id and w.note = 'Invited by staff' and w.created_at > now() - interval '30 days')::int invites
         from staff st
         left join lateral (
           select count(*) filter (where reason = 'purchase') visits, sum(delta) filter (where reason = 'purchase') stamps,

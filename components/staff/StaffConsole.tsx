@@ -14,7 +14,7 @@ export type BizInfo = {
   slug: string; name: string; rewards: { stamps: number; label: string }[]; maxPerVisit: number;
   itemWord: string; itemWordPlural: string; social: boolean; stampIcon: string; stampImageUrl?: string;
   currency: string; giftsEnabled: boolean; counterCodes: boolean; countryCode: string; welcomeStamps: number;
-  invite: { label: string; days: number; link: string } | null;
+  invite: { label: string; days: number; stamps: number } | null;
 };
 export type Toast = (msg: string) => void;
 

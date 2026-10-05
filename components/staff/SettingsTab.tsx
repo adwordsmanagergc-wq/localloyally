@@ -211,13 +211,23 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
         <Check path="referral.enabled" label="Refer a friend (the member who invited them gets stamps after the friend's first visit)" />
         {s.referral.enabled && <label style={{ maxWidth: 200 }}>Bonus stamps<input type="number" min={1} max={5} value={s.referral.stamps} onChange={num('referral.stamps')} /></label>}
         <hr />
-        <Check path="staffInvite.enabled" label="Staff invites (staff send their own link on WhatsApp; the friend joins and gets this voucher plus the welcome stamps)" />
-        {s.staffInvite?.enabled && (
-          <div className="grid3">
-            <label>Voucher<input value={s.staffInvite.label} onChange={(e) => set('staffInvite.label', e.target.value)} /></label>
-            <label>Days to use it<input type="number" min={1} max={180} value={s.staffInvite.days} onChange={num('staffInvite.days')} /></label>
-          </div>
-        )}
+        <Check path="staffInvite.enabled" label="Staff invites (staff send a one-off link on WhatsApp that works once, within 24 hours; for each one they pick the voucher or head-start stamps)" />
+        {s.staffInvite?.enabled && (() => {
+          const cap = Math.max(0, Math.min(...s.rewards.map((r: any) => r.stamps)) - s.welcomeStamps - 1);
+          return (
+            <div className="stack">
+              <div className="grid3">
+                <label>Voucher<input value={s.staffInvite.label} onChange={(e) => set('staffInvite.label', e.target.value)} /></label>
+                <label>Days to use it<input type="number" min={1} max={180} value={s.staffInvite.days} onChange={num('staffInvite.days')} /></label>
+                <label>Head-start stamps<input type="number" min={0} max={cap} value={Math.min(s.staffInvite.stamps ?? 0, cap)} onChange={num('staffInvite.stamps')} /></label>
+              </div>
+              <span className="tiny muted">
+                {cap > 0 ? `Up to ${cap}, so with the welcome stamps a new member is still short of the first reward and has to come back. 0 turns this option off.`
+                  : 'Head-start stamps are off: the welcome stamps already get new members close to the first reward.'}
+              </span>
+            </div>
+          );
+        })()}
         <hr />
         <Check path="birthday.enabled" label="Birthday treat" />
         {s.birthday.enabled && (

@@ -33,14 +33,15 @@ export const POST = bizRoute(async (req, biz) => {
     const [r] = await sql`select id from customers where business_id = ${biz.id} and ref_code = ${String(b.ref).toUpperCase()}`;
     referredBy = r?.id ?? null;
   }
-  const inviter = b.invite && biz.settings.staffInvite.enabled ? await findInviter(biz.id, b.invite) : null;
+  const found = b.invite && biz.settings.staffInvite.enabled ? await findInviter(biz.id, b.invite) : null;
+  const inviter = found && found !== 'expired' ? found : null;
   const cust = await createCard(biz, {
     name, username, phone, passwordHash: hashPin(password), optIn: b.optIn === true, referredBy,
     birthdayMonth: bday ? m : null, birthdayDay: bday ? d : null,
   });
   if (!cust) return json({ error: 'That number already has a card. Log in instead.', exists: true }, 409);
   if (b.gift) await claimGift(biz, cust.id, b.gift);
-  if (inviter) await claimStaffInvite(biz, cust.id, inviter.id);
+  if (inviter) await claimStaffInvite(biz, cust.id, inviter);
   await setCustomerSession(biz.id, cust.id);
   await setMemberSession(phone);
   return json({ ok: true });

@@ -196,7 +196,7 @@ export async function customerSummary(biz: Business, customerId: string) {
   const [balance, [spins], vouchers, history, [social], [lastVisit]] = await Promise.all([
     getBalance(sql, customerId),
     sql`select count(*)::int n from spins where customer_id = ${customerId} and source = 'halfway' and used_at is null`,
-    sql`select id, label, kind, value, source, expires_at from vouchers where customer_id = ${customerId}
+    sql`select id, label, kind, value, source, period_key, expires_at from vouchers where customer_id = ${customerId}
         and redeemed_at is null and expires_at > now() order by expires_at`,
     sql`select delta, reason, note, created_at from stamps where customer_id = ${customerId} order by created_at desc, id desc limit 10`,
     sql`select status, created_at from social_submissions where customer_id = ${customerId} order by created_at desc limit 1`,

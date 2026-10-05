@@ -52,12 +52,12 @@ export function DashboardTab({ slug }: { slug: string }) {
         <h3>Team, last 30 days</h3>
         <div className="scroll-x">
           <table className="table">
-            <thead><tr><th>Name</th><th>Visits</th><th>Stamps</th><th>Customers</th><th>Rewards</th><th>Vouchers</th><th>Posts</th><th>Gifts sold</th></tr></thead>
+            <thead><tr><th>Name</th><th>Visits</th><th>Stamps</th><th>Customers</th><th>Rewards</th><th>Vouchers</th><th>Posts</th><th>Gifts sold</th><th>Invited</th></tr></thead>
             <tbody>
               {d.staff.map((s: any) => (
                 <tr key={s.id}>
                   <td>{s.name} {s.role === 'manager' && <span className="pill">manager</span>} {!s.active && <span className="pill">off</span>}</td>
-                  <td><strong>{s.visits}</strong></td><td>{s.stamps}</td><td>{s.customers}</td><td>{s.rewards}</td><td>{s.vouchers}</td><td>{s.posts}</td><td>{s.gifts_sold}</td>
+                  <td><strong>{s.visits}</strong></td><td>{s.stamps}</td><td>{s.customers}</td><td>{s.rewards}</td><td>{s.vouchers}</td><td>{s.posts}</td><td>{s.gifts_sold}</td><td>{s.invites}</td>
                 </tr>
               ))}
             </tbody>
@@ -130,29 +130,39 @@ export function MembersTab({ slug, toast }: { slug: string; toast: Toast }) {
 export function TeamTab({ slug, toast, me }: { slug: string; toast: Toast; me: string }) {
   const [items, setItems] = useState<any[]>([]);
   const [name, setName] = useState('');
-  const [pin, setPin] = useState('');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState('staff');
   const load = () => api(`/api/b/${slug}/admin/staff`).then((r) => setItems(r.items)).catch(() => {});
   useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
-    try { await api(`/api/b/${slug}/admin/staff`, { name, pin, role }); toast(`${name} added`); setName(''); setPin(''); load(); }
+    try { await api(`/api/b/${slug}/admin/staff`, { name, password, role }); toast(`${name} added`); setName(''); setPassword(''); load(); }
     catch (e: any) { toast(e.message); }
   }
   async function toggle(s: any) {
     try { await api(`/api/b/${slug}/admin/staff`, { id: s.id, active: !s.active }, 'PATCH'); load(); }
     catch (e: any) { toast(e.message); }
   }
+  async function newPassword(s: any) {
+    const p = window.prompt(`New password for ${s.name} (at least 6 characters)`);
+    if (!p) return;
+    try { await api(`/api/b/${slug}/admin/staff`, { id: s.id, password: p }, 'PATCH'); toast(`Password changed for ${s.name}`); }
+    catch (e: any) { toast(e.message); }
+  }
   return (
     <div className="grid2" style={{ alignItems: 'start' }}>
       <div className="card flat stack">
         <h3>Team</h3>
+        <p className="small muted">Staff log in with their name and password.</p>
         <div className="list">
           {items.map((s) => (
             <div key={s.id} className="row between">
               <span>{s.name} <span className="pill">{s.role}</span> {!s.active && <span className="pill">off</span>}</span>
-              {s.id !== me && <button className="btn ghost small" onClick={() => toggle(s)}>{s.active ? 'Switch off' : 'Switch on'}</button>}
+              <span className="row">
+                <button className="btn ghost small" onClick={() => newPassword(s)}>Password</button>
+                {s.id !== me && <button className="btn ghost small" onClick={() => toggle(s)}>{s.active ? 'Switch off' : 'Switch on'}</button>}
+              </span>
             </div>
           ))}
         </div>
@@ -160,8 +170,8 @@ export function TeamTab({ slug, toast, me }: { slug: string; toast: Toast; me: s
       <form className="card flat stack" onSubmit={add}>
         <h3>Add a staff login</h3>
         <label>Name<input value={name} onChange={(e) => setName(e.target.value)} required /></label>
-        <label>PIN (4 to 8 digits, unique per person)
-          <input inputMode="numeric" value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))} maxLength={8} required />
+        <label>Password (at least 6 characters)
+          <input value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} maxLength={64} autoComplete="new-password" required />
         </label>
         <label>Role
           <select value={role} onChange={(e) => setRole(e.target.value)}>

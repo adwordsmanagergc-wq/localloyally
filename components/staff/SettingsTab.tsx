@@ -211,6 +211,14 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
         <Check path="referral.enabled" label="Refer a friend (the member who invited them gets stamps after the friend's first visit)" />
         {s.referral.enabled && <label style={{ maxWidth: 200 }}>Bonus stamps<input type="number" min={1} max={5} value={s.referral.stamps} onChange={num('referral.stamps')} /></label>}
         <hr />
+        <Check path="staffInvite.enabled" label="Staff invites (staff send their own link on WhatsApp; the friend joins and gets this voucher plus the welcome stamps)" />
+        {s.staffInvite?.enabled && (
+          <div className="grid3">
+            <label>Voucher<input value={s.staffInvite.label} onChange={(e) => set('staffInvite.label', e.target.value)} /></label>
+            <label>Days to use it<input type="number" min={1} max={180} value={s.staffInvite.days} onChange={num('staffInvite.days')} /></label>
+          </div>
+        )}
+        <hr />
         <Check path="birthday.enabled" label="Birthday treat" />
         {s.birthday.enabled && (
           <div className="grid3">

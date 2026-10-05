@@ -12,8 +12,8 @@ Digital stamp cards for any business: cafes, restaurants, barbers, salons, gyms,
 | `/terms` | Everyone | Terms and conditions customers agree to at sign-up |
 | `/{slug}/card` | Customers | Stamp card with their username for staff, a box for counter or personal codes, spin to win, vouchers, social post stamps, refer-a-friend link, latest offer. Can be added to the home screen, or to Apple / Google Wallet |
 | `/{slug}/g/{code}` | Anyone with the link | A gift certificate with its QR code and balance |
-| `/{slug}/staff` | Staff (PIN) | Find customers by username (or part of it) or number, show counter codes, scan gift certificates; add stamps, redeem rewards and vouchers, approve social posts, sell and use gift certificates |
-| `/{slug}/staff` | Manager (PIN) | Also: dashboard (repeat visits, customer groups, per-staff results), offers to customer groups, members list + CSV export, stamp adjustments, team PINs, **all settings** |
+| `/{slug}/staff` | Staff (name + password) | Send their own WhatsApp invite link (friend gets a free item voucher plus welcome stamps), find customers by username (or part of it) or number, show counter codes, scan gift certificates; add stamps, redeem rewards and vouchers, approve social posts, sell and use gift certificates |
+| `/{slug}/staff` | Manager (name + password) | Also: dashboard (repeat visits, customer groups, per-staff results), offers to customer groups, members list + CSV export, stamp adjustments, team logins, **all settings** |
 | `/platform` | You | Add businesses, pause them, reset manager PINs, see members and activity per client |
 
 ### Settings each business can change (Staff page > Settings)

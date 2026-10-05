@@ -6,8 +6,9 @@ import { api, savePassword } from '@/lib/client';
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 type Mode = 'join' | 'login' | 'forgot' | 'reset';
 
-export default function AuthFlow({ slug, refCode, businessName, start, giftCode }: {
+export default function AuthFlow({ slug, refCode, businessName, start, giftCode, invite }: {
   slug: string; refCode?: string; businessName: string; start?: 'join' | 'forgot'; giftCode?: string;
+  invite?: { code: string; from: string; label: string; welcome: number };
 }) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>(refCode ? 'join' : start ?? 'login');
@@ -42,7 +43,7 @@ export default function AuthFlow({ slug, refCode, businessName, start, giftCode 
     if (mode === 'join')
       return run(async () => {
         await api(`/api/b/${slug}/auth/register`, {
-          username, phone, password, optIn, terms, ref: refCode, gift: giftCode,
+          username, phone, password, optIn, terms, ref: refCode, gift: giftCode, invite: invite?.code,
           birthdayMonth: bm ? Number(bm) : undefined, birthdayDay: bd ? Number(bd) : undefined,
         });
         await savePassword(username.trim().toLowerCase(), password);
@@ -81,7 +82,13 @@ export default function AuthFlow({ slug, refCode, businessName, start, giftCode 
           {mode === 'login' ? 'Welcome back' : mode === 'join' ? `Get your ${businessName} card` : 'Reset your password'}
         </h2>
         {mode === 'join' && giftCode && <div className="banner good small">🎁 You&apos;ve been sent a gift card! Sign up and it&apos;ll be waiting on your card.</div>}
-        {mode === 'join' && refCode && !giftCode && <div className="banner small">A friend invited you. Welcome!</div>}
+        {mode === 'join' && invite && (
+          <div className="banner good small">
+            ☕ {invite.from} sent you a {invite.label.toLowerCase()}! Sign up and it&apos;ll be waiting on your card
+            {invite.welcome > 0 ? `, plus ${invite.welcome} welcome stamp${invite.welcome > 1 ? 's' : ''}` : ''}.
+          </div>
+        )}
+        {mode === 'join' && refCode && !giftCode && !invite && <div className="banner small">A friend invited you. Welcome!</div>}
         {info && <div className="banner good small">{info}</div>}
 
         {(mode === 'join' || mode === 'login') && (

@@ -13,7 +13,8 @@ import MarketingTab from './MarketingTab';
 export type BizInfo = {
   slug: string; name: string; rewards: { stamps: number; label: string }[]; maxPerVisit: number;
   itemWord: string; itemWordPlural: string; social: boolean; stampIcon: string; stampImageUrl?: string;
-  currency: string; giftsEnabled: boolean; counterCodes: boolean;
+  currency: string; giftsEnabled: boolean; counterCodes: boolean; countryCode: string; welcomeStamps: number;
+  invite: { label: string; days: number; link: string } | null;
 };
 export type Toast = (msg: string) => void;
 

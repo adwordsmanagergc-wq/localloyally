@@ -97,6 +97,38 @@ function MessageBox({ slug, customerId, name, toast }: { slug: string; customerI
   );
 }
 
+/** Each staff member sends their own invite link from their own WhatsApp: the friend gets a voucher plus the welcome stamps. */
+function InviteFriend({ biz, toast }: { biz: BizInfo; toast: Toast }) {
+  const [to, setTo] = useState('');
+  if (!biz.invite) return null;
+  const inv = biz.invite;
+  const welcome = biz.welcomeStamps > 0 ? ` and ${biz.welcomeStamps} welcome stamp${biz.welcomeStamps > 1 ? 's' : ''}` : '';
+  const text = `Hi! Here's a ${inv.label.toLowerCase()} on me at ${biz.name} ☕ Join our rewards card with this link and your ${inv.label.toLowerCase()}${welcome} will be waiting for you: ${inv.link}`;
+  let digits = to.replace(/\D/g, '');
+  if (digits.startsWith('0')) digits = biz.countryCode + digits.slice(1);
+  const href = `https://wa.me/${digits.length >= 8 ? digits : ''}?text=${encodeURIComponent(text)}`;
+  return (
+    <div className="card flat stack">
+      <div className="row between"><h3>Send a {inv.label.toLowerCase()}</h3>{biz.welcomeStamps > 0 && <span className="pill accent">+{biz.welcomeStamps} welcome stamp{biz.welcomeStamps > 1 ? 's' : ''}</span>}</div>
+      <p className="small muted">
+        Send your own invite link from your WhatsApp. New members who join with it get a {inv.label.toLowerCase()} voucher
+        (use within {inv.days} days){welcome}.
+      </p>
+      <label>
+        Their WhatsApp number (optional)
+        <input inputMode="tel" placeholder="e.g. 0812 3456 7890 or +61 412 345 678" value={to} onChange={(e) => setTo(e.target.value)} />
+        <span className="tiny muted">Leave empty to pick the chat in WhatsApp.</span>
+      </label>
+      <div className="row">
+        <a className="btn grow" href={href} target="_blank" rel="noopener noreferrer">Send on WhatsApp</a>
+        <button type="button" className="btn ghost" onClick={async () => {
+          try { await navigator.clipboard.writeText(inv.link); toast('Link copied'); } catch { toast(inv.link); }
+        }}>Copy link</button>
+      </div>
+    </div>
+  );
+}
+
 export default function ScanTab({ biz, toast, onSocialChange, manager }: { biz: BizInfo; toast: Toast; onSocialChange: () => void; manager: boolean }) {
   const [scanning, setScanning] = useState(false);
   const [phone, setPhone] = useState('');
@@ -169,6 +201,7 @@ export default function ScanTab({ biz, toast, onSocialChange, manager }: { biz: 
         {busy && <p className="muted">Looking up…</p>}
         {err && <div className="banner bad">{err}</div>}
         {biz.counterCodes && <CounterCodes slug={biz.slug} />}
+        <InviteFriend biz={biz} toast={toast} />
         {scanning ? (
           <div className="stack">
             <Scanner onScan={(t) => {

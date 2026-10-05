@@ -2,6 +2,7 @@ import { sql } from '@/lib/db';
 import { hashPin, setCustomerSession, setMemberSession } from '@/lib/auth';
 import { createCard } from '@/lib/members';
 import { claimGift } from '@/lib/gifts';
+import { claimStaffInvite, findInviter } from '@/lib/invites';
 import { bizRoute, body } from '@/lib/route';
 import { clientIp, json, normalizePhone, rateLimit } from '@/lib/util';
 import { cleanUsername, usernameTakenByOther } from '@/lib/username';
@@ -32,12 +33,14 @@ export const POST = bizRoute(async (req, biz) => {
     const [r] = await sql`select id from customers where business_id = ${biz.id} and ref_code = ${String(b.ref).toUpperCase()}`;
     referredBy = r?.id ?? null;
   }
+  const inviter = b.invite && biz.settings.staffInvite.enabled ? await findInviter(biz.id, b.invite) : null;
   const cust = await createCard(biz, {
     name, username, phone, passwordHash: hashPin(password), optIn: b.optIn === true, referredBy,
     birthdayMonth: bday ? m : null, birthdayDay: bday ? d : null,
   });
   if (!cust) return json({ error: 'That number already has a card. Log in instead.', exists: true }, 409);
   if (b.gift) await claimGift(biz, cust.id, b.gift);
+  if (inviter) await claimStaffInvite(biz, cust.id, inviter.id);
   await setCustomerSession(biz.id, cust.id);
   await setMemberSession(phone);
   return json({ ok: true });

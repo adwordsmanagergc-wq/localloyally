@@ -31,6 +31,8 @@ export const DEFAULT_SETTINGS = {
   doubleHours: { enabled: false, start: '14:00', end: '16:00', days: [1, 2, 3, 4, 5] as number[] },
   streak: { enabled: true, visits: 3, days: 7 },
   referral: { enabled: true, stamps: 1 },
+  // Staff send their own invite link on WhatsApp: the friend joins and gets this voucher on top of the welcome stamps
+  staffInvite: { enabled: true, label: 'Free coffee', days: 30 },
   spin: {
     enabled: true, voucherDays: 7, // one spin per card, at half the top reward
     prizes: [
@@ -134,6 +136,7 @@ export function mergeSettings(saved: any): Settings {
     doubleHours: { ...d.doubleHours, ...(s.doubleHours ?? {}) },
     streak: { ...d.streak, ...(s.streak ?? {}) },
     referral: { ...d.referral, ...(s.referral ?? {}) },
+    staffInvite: { ...d.staffInvite, ...(s.staffInvite ?? {}) },
     spin: { ...d.spin, ...(s.spin ?? {}), prizes: s.spin?.prizes?.length ? s.spin.prizes : d.spin.prizes },
     birthday: { ...d.birthday, ...(s.birthday ?? {}) },
     nudges: { ...d.nudges, ...(s.nudges ?? {}) },
@@ -232,6 +235,11 @@ export function validateSettings(input: any): Settings {
     },
     streak: { enabled: bool(input.streak?.enabled), visits: int(input.streak?.visits, 2, 10, 3), days: int(input.streak?.days, 2, 30, 7) },
     referral: { enabled: bool(input.referral?.enabled), stamps: int(input.referral?.stamps, 1, 5, 1) },
+    staffInvite: {
+      enabled: bool(input.staffInvite?.enabled),
+      label: str(input.staffInvite?.label, 40, d.staffInvite.label) || d.staffInvite.label,
+      days: int(input.staffInvite?.days, 1, 180, d.staffInvite.days),
+    },
     spin: {
       enabled: spinEnabled,
       voucherDays: int(input.spin?.voucherDays, 1, 60, 7), prizes: prizes.length >= 2 ? prizes : d.spin.prizes,

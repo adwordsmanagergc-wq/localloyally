@@ -5,6 +5,11 @@ import { sql } from './db';
  * send it with a one-off invite, or give or take it back on the member screen. Stored on the customer; the columns are added on first use so
  * no manual migration is needed (they're in db/schema.sql too).
  */
+/** Black card members earn this instead of referral stamps, once every BLACK_FOOD_EVERY friends who make a first visit. */
+export const BLACK_FOOD_EVERY = 5;
+export const BLACK_FOOD_LABEL = 'Free food of your choice';
+export const BLACK_FOOD_DAYS = 30;
+
 let ready: Promise<boolean> | null = null;
 export function blackCardReady(): Promise<boolean> {
   ready ??= (async () => {

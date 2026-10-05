@@ -17,6 +17,8 @@ import PoweredBy from '@/components/PoweredBy';
 import WelcomePopup from '@/components/WelcomePopup';
 import BlackCard from '@/components/BlackCard';
 import BlackCardWelcome from '@/components/BlackCardWelcome';
+import { BLACK_FOOD_EVERY } from '@/lib/blackcard';
+import { sql } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,6 +50,10 @@ export default async function CardPage({ params, searchParams }: { params: Promi
   const showApple = wallets.apple && !/Android/i.test(ua);
   const showGoogle = wallets.google && !/iPhone|iPad|iPod/i.test(ua);
   const royal = !!sum.customer.black_card_at;
+  // Black card: friends who joined with their link and made a first visit, towards free food every 5
+  const friends = royal
+    ? (await safe(sql`select count(*)::int n from customers where referred_by = ${id} and referral_rewarded`, [{ n: 0 }] as any))[0].n as number
+    : 0;
   const username = sum.customer.username ?? sum.customer.name;
   const welcome = !royal && (await searchParams).welcome === '1' ? welcomeMessage(biz.name, sum) : null;
 
@@ -131,10 +137,10 @@ export default async function CardPage({ params, searchParams }: { params: Promi
         <p className="small muted">{royal ? 'Tell staff your username. Your coffee is on the house.' : 'Tell staff your username and they\'ll add your stamps.'}</p>
         <div className="username-big">@{sum.customer.username ?? sum.customer.name}</div>
         <CardRefresh slug={biz.slug} />
-        <div className="stack" style={{ textAlign: 'left', marginTop: 6 }}>
+        {!royal && <div className="stack" style={{ textAlign: 'left', marginTop: 6 }}>
           <p className="small muted">{s.counterCodes ? 'Or type the code staff give you, or one we sent you:' : 'Got a code we sent you? Type it here:'}</p>
           <CodeForm slug={biz.slug} />
-        </div>
+        </div>}
         {(showApple || showGoogle) && (
           <div className="stack" style={{ marginTop: 6 }}>
             <p className="small muted">Keep your card in your phone&apos;s wallet. It updates by itself and is one tap away at the counter.</p>
@@ -170,9 +176,25 @@ export default async function CardPage({ params, searchParams }: { params: Promi
                 <div className="v-label">{v.label}</div>
                 <div className="tiny muted">Use by {d(v.expires_at)} · tell staff your username to claim</div>
               </div>
-              <span className="pill">{v.source === 'birthday' ? 'Birthday' : v.period_key === 'staff-invite' ? 'Welcome gift' : v.period_key?.startsWith('reward-') ? 'Full card' : v.source === 'campaign' ? 'Gift' : 'Won'}</span>
+              <span className="pill">{v.source === 'birthday' ? 'Birthday' : v.period_key === 'staff-invite' ? 'Welcome gift' : v.period_key?.startsWith('reward-') ? 'Full card' : v.period_key?.startsWith('black-food-') ? 'Black card' : v.source === 'campaign' ? 'Gift' : 'Won'}</span>
             </div>
           ))}
+        </section>
+      )}
+
+      {royal && s.referral.enabled && (
+        <section className="card stack">
+          <div className="row between"><h3 className="king">Bring a friend</h3><span className="pill accent">🍽️ {friends % BLACK_FOOD_EVERY} of {BLACK_FOOD_EVERY}</span></div>
+          <p className="small muted">
+            Friends who join with your link get {s.welcomeStamps > 1 ? `${s.welcomeStamps} free welcome stamps` : 'a free welcome stamp'}.
+            Every {BLACK_FOOD_EVERY} friends who buy their first coffee earns you <strong className="gold">free food of your choice</strong> from the menu.
+          </p>
+          <div className="row" aria-hidden="true" style={{ gap: 8 }}>
+            {Array.from({ length: BLACK_FOOD_EVERY }, (_, i) => (
+              <span key={i} style={{ flex: 1, height: 8, borderRadius: 999, background: i < friends % BLACK_FOOD_EVERY ? 'var(--accent)' : 'var(--soft)' }} />
+            ))}
+          </div>
+          <ShareReferral link={refLink} text={`Join ${biz.name} rewards with my link and get ${s.welcomeStamps > 1 ? `${s.welcomeStamps} free stamps` : 'a free welcome stamp'}`} />
         </section>
       )}
 

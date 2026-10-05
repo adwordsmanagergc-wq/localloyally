@@ -15,13 +15,13 @@ export const POST = staffRoute(async (req, biz, staff) => {
     const added = (r.events ?? []).reduce((a, e) => a + e.delta, 0);
     after(async () => {
       await notifyStamps(biz, String(b.customerId), added, r.fullBalance!).catch(() => {});
-      if (r.referrerId) await sendPush(r.referrerId, { title: biz.name, body: `Your friend just made their first visit. +${biz.settings.referral.stamps} bonus stamp for you!`, url: `/${biz.slug}/card` }).catch(() => {});
+      if (r.referrerId) await sendPush(r.referrerId, { title: biz.name, body: r.referrerNote!, url: `/${biz.slug}/card` }).catch(() => {});
     });
   }
   if ('referrerId' in r && r.referrerId) {
     const [ref] = await sql`select phone, name, marketing_opt_in from customers where id = ${r.referrerId}`;
     if (ref?.marketing_opt_in)
-      sendWhatsApp(ref.phone, `Hi ${ref.name}, your friend just made their first visit to ${biz.name}. We've added ${biz.settings.referral.stamps} bonus stamp to your card. Thanks for spreading the word!`);
+      sendWhatsApp(ref.phone, `Hi ${ref.name}, ${biz.name}: ${r.referrerNote} Thanks for spreading the word!`);
   }
   return json(r);
 });

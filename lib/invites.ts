@@ -3,6 +3,7 @@ import { sql } from './db';
 import { siteUrl } from './site';
 import { rateLimit } from './util';
 import { inviteStamps, type Business } from './business';
+import { blackCardReady } from './blackcard';
 
 /**
  * Staff invites: staff send a fresh link from their own WhatsApp each time. For each link they pick the gift:
@@ -11,18 +12,18 @@ import { inviteStamps, type Business } from './business';
  */
 const CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const LIFETIME_SEC = 24 * 3600;
-export type InviteGift = 'voucher' | 'stamps';
+export type InviteGift = 'voucher' | 'stamps' | 'black';
 
 const sign = (staffId: string, body: string) => {
   const h = createHmac('sha256', process.env.SESSION_SECRET || '').update(`staff-invite:${staffId}:${body}`).digest();
   return Array.from(h.subarray(0, 10), (b) => CHARS[b % CHARS.length]).join('');
 };
 
-/** S + gift (V/T) + expiry (7 base-36) + one-off id (6) + signature (10). */
+/** S + gift (V voucher, T stamps, B black card) + expiry (7 base-36) + one-off id (6) + signature (10). */
 export function staffInviteCode(staffId: string, gift: InviteGift) {
   const exp = (Math.floor(Date.now() / 1000) + LIFETIME_SEC).toString(36).toUpperCase().padStart(7, '0');
   const nonce = Array.from({ length: 6 }, () => CHARS[randomInt(CHARS.length)]).join('');
-  const body = `${gift === 'stamps' ? 'T' : 'V'}${exp}${nonce}`;
+  const body = `${gift === 'stamps' ? 'T' : gift === 'black' ? 'B' : 'V'}${exp}${nonce}`;
   return `S${body}${sign(staffId, body)}`;
 }
 
@@ -38,17 +39,17 @@ export type Inviter = { id: string; name: string; gift: InviteGift; nonce: strin
 /** Who sent an invite and what it gives. Null if the code is fake or for another business; 'expired' if it's too old or already used. */
 export async function findInviter(bizId: string, raw: unknown): Promise<Inviter | 'expired' | null> {
   const code = cleanInviteCode(raw);
-  const m = code.match(/^S([VT])([0-9A-Z]{7})([A-Z0-9]{6})([A-Z0-9]{10})$/);
+  const m = code.match(/^S([VTB])([0-9A-Z]{7})([A-Z0-9]{6})([A-Z0-9]{10})$/);
   if (!m) return null;
   const [, g, exp, nonce, sig] = m;
   const body = `${g}${exp}${nonce}`;
-  const staff = await sql`select id, name from staff where business_id = ${bizId} and active`;
+  const staff = await sql`select id, name, role from staff where business_id = ${bizId} and active`;
   const s = staff.find((x) => timingSafeEqual(Buffer.from(sign(x.id, body)), Buffer.from(sig)));
-  if (!s) return null;
+  if (!s || (g === 'B' && s.role !== 'manager')) return null;
   if (parseInt(exp, 36) * 1000 < Date.now()) return 'expired';
   const [used] = await sql`select 1 from rate_limits where key = ${usedKey(bizId, nonce)}`;
   if (used) return 'expired';
-  return { id: s.id as string, name: s.name as string, gift: g === 'T' ? 'stamps' : 'voucher', nonce };
+  return { id: s.id as string, name: s.name as string, gift: g === 'T' ? 'stamps' : g === 'B' ? 'black' : 'voucher', nonce };
 }
 
 /** Gives a brand new member the invite gift and credits the staff member who sent it. Each link pays out once. */
@@ -58,8 +59,11 @@ export async function claimStaffInvite(biz: Business, customerId: string, invite
   // Marks the link used atomically, so two sign-ups racing on the same link can't both get the gift
   if (!(await rateLimit(usedKey(biz.id, inviter.nonce), 1, 2 * LIFETIME_SEC))) return;
   const stamps = inviteStamps(biz.settings);
+  if (inviter.gift === 'black' && !(await blackCardReady())) return;
   await sql.begin(async (tx) => {
-    if (inviter.gift === 'stamps' && stamps > 0)
+    if (inviter.gift === 'black')
+      await tx`update customers set black_card_at = now(), black_card_by = ${inviter.id} where id = ${customerId} and business_id = ${biz.id}`;
+    else if (inviter.gift === 'stamps' && stamps > 0)
       await tx`insert into stamps (business_id, customer_id, staff_id, delta, reason, note)
         values (${biz.id}, ${customerId}, ${inviter.id}, ${stamps}, 'bonus', 'Invited by staff')`;
     else

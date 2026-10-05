@@ -47,7 +47,7 @@ export default async function Join({ params, searchParams }: {
       <AuthFlow slug={biz.slug} refCode={ref} businessName={biz.name} start={join === '1' || gift || inviter ? 'join' : forgot === '1' ? 'forgot' : undefined} giftCode={gift}
         invite={inviter ? {
           code: cleanInviteCode(invite), from: inviter.name, welcome: s.welcomeStamps,
-          gift: inviter.gift === 'stamps' && inviteStamps(s) > 0 ? `${inviteStamps(s)} head-start stamps` : `a ${s.staffInvite.label.toLowerCase()}`,
+          gift: inviter.gift === 'black' ? 'a 👑 Black card: free coffee for life' : inviter.gift === 'stamps' && inviteStamps(s) > 0 ? `${inviteStamps(s)} head-start stamps` : `a ${s.staffInvite.label.toLowerCase()}`,
         } : undefined} />
       <p className="tiny muted center on-bg">
         We only message you on WhatsApp about your rewards if you agree.

@@ -246,3 +246,8 @@ create table if not exists push_subscriptions (
 );
 create index if not exists push_subscriptions_customer_idx on push_subscriptions(customer_id);
 alter table campaign_recipients add column if not exists push boolean not null default false;
+
+-- Black card: free coffee for life, sent by a manager (lib/blackcard.ts also adds these on first use)
+alter table customers add column if not exists black_card_at timestamptz;
+alter table customers add column if not exists black_card_by uuid references staff(id) on delete set null;
+alter table customers add column if not exists black_card_welcomed_at timestamptz;  -- intro animation shown

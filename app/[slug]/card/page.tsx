@@ -15,6 +15,8 @@ import { fmtGiftCode, money } from '@/lib/money';
 import { siteUrl } from '@/lib/site';
 import PoweredBy from '@/components/PoweredBy';
 import WelcomePopup from '@/components/WelcomePopup';
+import BlackCard from '@/components/BlackCard';
+import BlackCardWelcome from '@/components/BlackCardWelcome';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,14 +47,35 @@ export default async function CardPage({ params, searchParams }: { params: Promi
   const wallets = walletEnabled();
   const showApple = wallets.apple && !/Android/i.test(ua);
   const showGoogle = wallets.google && !/iPhone|iPad|iPod/i.test(ua);
-  const welcome = (await searchParams).welcome === '1' ? welcomeMessage(biz.name, sum) : null;
+  const royal = !!sum.customer.black_card_at;
+  const username = sum.customer.username ?? sum.customer.name;
+  const welcome = !royal && (await searchParams).welcome === '1' ? welcomeMessage(biz.name, sum) : null;
 
   return (
-    <main className="wrap stack-lg">
+    <>
+    {royal && <div className="royal-bg" aria-hidden="true" />}
+    {royal && <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" />}
+    <main className={`wrap stack-lg${royal ? ' royal' : ''}`}>
       <Brand biz={biz} right={<div className="row" style={{ gap: 14 }}><a className="linkbtn small" href="/me">My cards</a><LogoutButton slug={biz.slug} /></div>} />
 
       {offer && <div className="banner offer">📣 {offer}</div>}
 
+      {royal ? (
+        <section className="stack">
+          <p className="center king on-bg">Welcome, your majesty <strong className="gold">@{username}</strong></p>
+          <BlackCard bizName={biz.name} logoUrl={s.logoUrl || undefined} username={username}
+            since={new Date(sum.customer.black_card_at).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase()} />
+          <div className="card stack center">
+            <div className="stamps" style={{ ['--cols' as any]: cols }}>
+              {Array.from({ length: maxTier }, (_, i) => (
+                <div key={i} className={`slot ${s.stampImageUrl ? 'img' : ''} on`}><Stamp icon={s.stampIcon} image={s.stampImageUrl} size={22} /></div>
+              ))}
+            </div>
+            <p className="king gold" style={{ fontSize: '1.15rem', fontWeight: 700 }}>You don&apos;t need stamps, you king 👑</p>
+            <p className="small muted">Free coffee for life. Show staff your card and it&apos;s on the house.</p>
+          </div>
+        </section>
+      ) : (
       <section className="card stack">
         <div className="row between">
           <div>
@@ -92,6 +115,7 @@ export default async function CardPage({ params, searchParams }: { params: Promi
           </div>
         )}
       </section>
+      )}
 
       {/* A waiting spin goes straight under the stamps, so it's the first thing they see */}
       {sum.spins > 0 && (
@@ -104,7 +128,7 @@ export default async function CardPage({ params, searchParams }: { params: Promi
 
       <section className="card stack center">
         <h2>At the counter</h2>
-        <p className="small muted">Tell staff your username and they&apos;ll add your stamps.</p>
+        <p className="small muted">{royal ? 'Tell staff your username. Your coffee is on the house.' : 'Tell staff your username and they\'ll add your stamps.'}</p>
         <div className="username-big">@{sum.customer.username ?? sum.customer.name}</div>
         <CardRefresh slug={biz.slug} />
         <div className="stack" style={{ textAlign: 'left', marginTop: 6 }}>
@@ -152,7 +176,7 @@ export default async function CardPage({ params, searchParams }: { params: Promi
         </section>
       )}
 
-      <section className="stack">
+      {!royal && <section className="stack">
         <h2 className="on-bg">Earn more stamps</h2>
         {s.social.enabled && (
           <div className="card flat stack">
@@ -182,7 +206,7 @@ export default async function CardPage({ params, searchParams }: { params: Promi
           {s.spin.enabled && <p>🎡 <strong>Spin to win</strong> when you reach {halfwayAt(s)} stamps.</p>}
           {s.birthday.enabled && <p>🎂 <strong>{s.birthday.label}</strong> around your birthday.</p>}
         </div>
-      </section>
+      </section>}
 
       {s.reviews.enabled && s.reviews.googleUrl && sum.visits >= 1 && (
         <section className="card flat stack center">
@@ -225,7 +249,9 @@ export default async function CardPage({ params, searchParams }: { params: Promi
       </a>
       <PoweredBy />
       {welcome && <WelcomePopup slug={biz.slug} {...welcome} />}
+      {royal && !sum.customer.black_card_welcomed_at && <BlackCardWelcome slug={biz.slug} bizName={biz.name} logoUrl={s.logoUrl || undefined} username={username} />}
     </main>
+    </>
   );
 }
 

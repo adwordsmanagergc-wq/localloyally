@@ -246,3 +246,45 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
 .popup-backdrop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(0, 0, 0, 0.45); }
 .popup { width: 100%; max-width: 380px; }
 .popup-emoji { font-size: 2.6rem; line-height: 1; }
+
+/* Black card members: royal black and gold */
+.royal-bg { position: fixed; inset: 0; z-index: 0; background:
+  radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201, 163, 74, .22), transparent 60%),
+  radial-gradient(ellipse 60% 40% at 50% 110%, rgba(201, 163, 74, .12), transparent 60%), #08080a; }
+.royal { position: relative; z-index: 1;
+  --bg: #08080a; --surface: #131315; --ink: #f1e4c3; --muted: #a8977a; --accent: #c9a34a; --accent-ink: #1a1408;
+  --font-head: 'Cinzel', Georgia, serif;
+  --line: rgba(201, 163, 74, .22); --soft: rgba(201, 163, 74, .08); --accent-soft: rgba(201, 163, 74, .14); color: var(--ink); }
+.royal .card { background: linear-gradient(180deg, #17171a, #0f0f11); border: 1px solid rgba(201, 163, 74, .28); color: var(--ink); box-shadow: 0 18px 40px -20px rgba(0, 0, 0, .9); }
+.royal .on-bg, .royal .brand .name { color: #f1e4c3; }
+.royal .gold { background: linear-gradient(100deg, #b8892e, #f6e3a1 40%, #c9a34a 60%, #8a6420); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.royal .slot.on, .royal .slot.img.on { background: linear-gradient(145deg, #f6e3a1, #c9a34a 55%, #8a6420); color: #1a1408; border: 0; }
+.royal .king { font-family: var(--font-head); letter-spacing: .04em; }
+
+.bc { position: relative; overflow: hidden; width: 100%; aspect-ratio: 1.586; border-radius: 18px; padding: 18px 20px; color: #e8c977;
+  background: linear-gradient(135deg, #1d1d20 0%, #060607 55%, #1a1a1d 100%); border: 1px solid rgba(201, 163, 74, .55);
+  box-shadow: 0 30px 60px -25px rgba(0, 0, 0, .95), inset 0 1px 0 rgba(255, 255, 255, .06);
+  display: grid; grid-template-rows: auto 1fr auto auto; font-family: 'Cinzel', Georgia, serif; }
+.bc-shine { position: absolute; inset: -40%; background: linear-gradient(115deg, transparent 40%, rgba(246, 227, 161, .22) 50%, transparent 60%);
+  animation: bc-shine 4.5s ease-in-out infinite; pointer-events: none; }
+@keyframes bc-shine { 0% { transform: translateX(-60%); } 55%, 100% { transform: translateX(60%); } }
+.bc-top { display: flex; justify-content: space-between; align-items: center; }
+.bc-logo { width: 54px; height: 54px; object-fit: contain; border-radius: 50%; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .6)); }
+.bc-logo-text { font-weight: 700; letter-spacing: .08em; }
+.bc-tag { font-size: .8rem; letter-spacing: .32em; font-weight: 700; }
+.bc-chip { width: 44px; height: 32px; border-radius: 6px; align-self: center; background: linear-gradient(135deg, #f6e3a1, #b8892e 60%, #8a6420); opacity: .9; }
+.bc-name { font-size: 1.3rem; letter-spacing: .06em; font-weight: 700; }
+.bc-foot { display: flex; justify-content: space-between; font-size: .62rem; letter-spacing: .18em; opacity: .85; margin-top: 4px; gap: 8px; }
+
+.bcw { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; overflow-y: auto; background: #050506; color: #f1e4c3; }
+.bcw-glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 35%, rgba(201, 163, 74, .28), transparent 55%); animation: bcw-pulse 3s ease-in-out infinite; }
+@keyframes bcw-pulse { 50% { opacity: .55; } }
+.bcw-inner { position: relative; width: 100%; max-width: 380px; display: grid; gap: 14px; text-align: center; }
+.bcw-crown { font-size: 2.4rem; line-height: 1; margin-top: 8px; }
+.bcw-title { font-family: 'Cinzel', Georgia, serif; font-size: 1.7rem; letter-spacing: .04em;
+  background: linear-gradient(100deg, #b8892e, #f6e3a1 45%, #c9a34a 65%, #8a6420); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.bcw-text { font-size: 1rem; }
+.bcw-gold { color: #e8c977; font-style: italic; }
+.bcw-btn { margin-top: 8px; padding: 14px 18px; border-radius: 999px; border: 0; font: 700 1rem 'Cinzel', Georgia, serif; letter-spacing: .06em; cursor: pointer;
+  color: #1a1408; background: linear-gradient(145deg, #f6e3a1, #c9a34a 55%, #8a6420); box-shadow: 0 10px 30px -10px rgba(201, 163, 74, .7); }
+@media (prefers-reduced-motion: reduce) { .bc-shine, .bcw-glow { animation: none; } }

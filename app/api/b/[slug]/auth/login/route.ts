@@ -8,7 +8,8 @@ export const POST = bizRoute(async (req, biz) => {
   const login = String(b.login ?? b.phone ?? '').trim().slice(0, 40); // username, or WhatsApp number for older cards
   const password = String(b.password || '');
   if (!login || !password) return json({ error: 'Enter your username and password' }, 400);
-  if (!(await rateLimit(`login:${biz.id}:${login.toLowerCase()}`, 8, 900)) || !(await rateLimit(`login-ip:${clientIp(req)}`, 40, 900)))
+  const limits = await Promise.all([rateLimit(`login:${biz.id}:${login.toLowerCase()}`, 8, 900), rateLimit(`login-ip:${clientIp(req)}`, 40, 900)]);
+  if (!limits.every(Boolean))
     return json({ error: 'Too many tries. Wait 15 minutes or reset your password.' }, 429);
   const [c] = await findCards(login, biz.settings.defaultCountryCode, biz.id);
   if (!c) return json({ error: 'No card with that username. Tap Join to create one.' }, 401);

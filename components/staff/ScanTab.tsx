@@ -5,6 +5,7 @@ import Stamp from '../Stamp';
 import type { BizInfo, Toast } from './StaffConsole';
 import { GiftPanel } from './GiftsTab';
 import { fmtGiftCode, money } from '@/lib/money';
+import WhatsAppLink, { isIOS } from '../WhatsAppLink';
 
 const LABEL: Record<string, string> = {
   purchase: 'Visit', double_hour: 'Double hour', welcome: 'Welcome', social: 'Social post',
@@ -102,6 +103,7 @@ function InviteFriend({ biz, toast }: { biz: BizInfo; toast: Toast }) {
   const [to, setTo] = useState('');
   const [gift, setGift] = useState<'voucher' | 'stamps' | 'black'>('voucher');
   const [busy, setBusy] = useState(false);
+  const [ready, setReady] = useState(''); // iPhone: the invite is made, one more tap opens WhatsApp
   if (!biz.invite) return null;
   const inv = biz.invite;
   const item = inv.label.toLowerCase();
@@ -114,8 +116,10 @@ function InviteFriend({ biz, toast }: { biz: BizInfo; toast: Toast }) {
     return r.link as string;
   }
   async function send() {
-    // Open the tab now, while the tap still counts, then point it at WhatsApp once the link is ready
-    const w = window.open('', '_blank');
+    // Open the tab now, while the tap still counts, then point it at WhatsApp once the link is ready.
+    // iPhones only open the WhatsApp app from a direct tap, so there the second tap opens it.
+    const ios = isIOS();
+    const w = ios ? null : window.open('', '_blank');
     setBusy(true);
     try {
       const link = await newLink();
@@ -124,7 +128,7 @@ function InviteFriend({ biz, toast }: { biz: BizInfo; toast: Toast }) {
       let digits = to.replace(/\D/g, '');
       if (digits.startsWith('0')) digits = biz.countryCode + digits.slice(1);
       const href = `https://wa.me/${digits.length >= 8 ? digits : ''}?text=${encodeURIComponent(text)}`;
-      if (w) w.location.href = href; else window.location.href = href;
+      if (ios) { setReady(href); toast('Invite ready. Tap Open WhatsApp.'); } else if (w) w.location.href = href; else window.location.href = href;
     } catch (e: any) { w?.close(); toast(e.message); }
     finally { setBusy(false); }
   }
@@ -145,20 +149,22 @@ function InviteFriend({ biz, toast }: { biz: BizInfo; toast: Toast }) {
       </p>
       {(inv.stamps > 0 || biz.blackCard) && (
         <div className="row wrap-row">
-          <button type="button" className={`btn small grow ${gift === 'voucher' ? '' : 'ghost'}`} onClick={() => setGift('voucher')}>{inv.label}</button>
-          {inv.stamps > 0 && <button type="button" className={`btn small grow ${gift === 'stamps' ? '' : 'ghost'}`} onClick={() => setGift('stamps')}>{plural(inv.stamps, 'stamp')} head start</button>}
-          {biz.blackCard && <button type="button" className={`btn small grow ${gift === 'black' ? 'dark' : 'ghost'}`} onClick={() => setGift('black')}>👑 Black card</button>}
+          <button type="button" className={`btn small grow ${gift === 'voucher' ? '' : 'ghost'}`} onClick={() => { setGift('voucher'); setReady(''); }}>{inv.label}</button>
+          {inv.stamps > 0 && <button type="button" className={`btn small grow ${gift === 'stamps' ? '' : 'ghost'}`} onClick={() => { setGift('stamps'); setReady(''); }}>{plural(inv.stamps, 'stamp')} head start</button>}
+          {biz.blackCard && <button type="button" className={`btn small grow ${gift === 'black' ? 'dark' : 'ghost'}`} onClick={() => { setGift('black'); setReady(''); }}>👑 Black card</button>}
         </div>
       )}
       {gift === 'black' && <div className="banner small">Black card: free coffee for life. Only you can send these. You can take it back on their member screen.</div>}
       <p className="small">They get: <strong>{giftText}</strong></p>
       <label>
         Their WhatsApp number (optional)
-        <input inputMode="tel" placeholder="e.g. 0812 3456 7890 or +61 412 345 678" value={to} onChange={(e) => setTo(e.target.value)} />
+        <input inputMode="tel" placeholder="e.g. 0812 3456 7890 or +61 412 345 678" value={to} onChange={(e) => { setTo(e.target.value); setReady(''); }} />
         <span className="tiny muted">Leave empty to pick the chat in WhatsApp.</span>
       </label>
       <div className="row">
-        <button type="button" className="btn grow" disabled={busy} onClick={send}>Send on WhatsApp</button>
+        {ready
+          ? <WhatsAppLink className="btn grow" href={ready} onOpen={() => setReady('')}>Open WhatsApp ↗</WhatsAppLink>
+          : <button type="button" className="btn grow" disabled={busy} onClick={send}>{busy ? 'Making invite…' : 'Send on WhatsApp'}</button>}
         <button type="button" className="btn ghost" disabled={busy} onClick={copy}>Copy link</button>
       </div>
     </div>

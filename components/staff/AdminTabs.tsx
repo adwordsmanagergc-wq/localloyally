@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { api, fmtDate } from '@/lib/client';
 import { SEGMENTS } from '@/lib/segments-meta';
 import type { Toast } from './StaffConsole';
+import { openWhatsApp } from '../WhatsAppLink';
 
 export function DashboardTab({ slug }: { slug: string }) {
   const [d, setD] = useState<any>(null);
@@ -96,7 +97,7 @@ export function MembersTab({ slug, toast }: { slug: string; toast: Toast }) {
     const note = window.prompt('What is it for? (optional, e.g. "Instagram post")') || '';
     try {
       const r = await api(`/api/b/${slug}/admin/codes`, { customerId: c.id, stamps: Number(n), note });
-      if (window.confirm(`Code ${r.code} gives ${r.stamps} stamp${r.stamps > 1 ? 's' : ''} to ${c.name} only. Open WhatsApp to send it?`)) window.open(r.whatsapp, '_blank');
+      if (window.confirm(`Code ${r.code} gives ${r.stamps} stamp${r.stamps > 1 ? 's' : ''} to ${c.name} only. Open WhatsApp to send it?`)) openWhatsApp(r.whatsapp);
     } catch (e: any) { toast(e.message); }
   }
   return (

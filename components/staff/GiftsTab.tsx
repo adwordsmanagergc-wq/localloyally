@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { api, fmtDate, fmtDateTime } from '@/lib/client';
 import { cleanGiftCode, fmtGiftCode, money } from '@/lib/money';
 import type { BizInfo, Toast } from './StaffConsole';
+import WhatsAppLink from '../WhatsAppLink';
 
 /** Look up a certificate and take value off it. Also used by the Scan tab when a gift QR is scanned. */
 export function GiftPanel({ biz, code, toast, onDone }: { biz: BizInfo; code: string; toast: Toast; onDone?: () => void }) {
@@ -132,11 +133,10 @@ export default function GiftsTab({ biz, toast, manager }: { biz: BizInfo; toast:
               {made.member ? <p className="small muted">It&apos;s on @{made.member.username}&apos;s card now.{made.whatsapp ? ' Let them know on WhatsApp:' : ''}</p>
                 : made.invite ? <p className="small muted">Send your friend the sign-up link. When they join, the gift lands on their card.</p>
                 : <p className="small muted">Send the link to the buyer. They can forward it to whoever it&apos;s for.</p>}
-              {made.whatsapp && <a className="btn block" href={made.whatsapp} target="_blank" rel="noopener noreferrer">
-                {made.member ? `Send to @${made.member.username} on WhatsApp` : `Send ${made.gift.to_name || 'your friend'} the sign-up link on WhatsApp`}</a>}
+              {made.whatsapp && <WhatsAppLink className="btn block" href={made.whatsapp}>
+                {made.member ? `Send to @${made.member.username} on WhatsApp` : `Send ${made.gift.to_name || 'your friend'} the sign-up link on WhatsApp`}</WhatsAppLink>}
               <div className="row wrap-row">
-                <a className="btn grow" target="_blank" rel="noopener noreferrer"
-                  href={`https://wa.me/?text=${encodeURIComponent(`Your ${biz.name} gift certificate: ${made.url}`)}`}>Send on WhatsApp</a>
+                <WhatsAppLink className="btn grow" href={`https://wa.me/?text=${encodeURIComponent(`Your ${biz.name} gift certificate: ${made.url}`)}`}>Send on WhatsApp</WhatsAppLink>
                 <button className="btn ghost" type="button" onClick={() => navigator.clipboard.writeText(made.url).then(() => toast('Link copied'))}>Copy link</button>
                 <a className="btn ghost" href={made.url} target="_blank" rel="noopener noreferrer">Open</a>
               </div>

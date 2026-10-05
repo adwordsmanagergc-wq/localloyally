@@ -19,10 +19,10 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
       </header>
       <main className="lp-login">
         <h1 style={{ fontSize: 'clamp(2.2rem, 7vw, 3rem)' }}>Welcome back.</h1>
-        {member && as !== 'business' && (
+        {member && as !== 'business' && as !== 'staff' && (
           <a className="lp-result" href="/me" style={{ marginTop: 18 }}><span>You&apos;re logged in. Go to my cards</span><span aria-hidden="true">→</span></a>
         )}
-        <FindBusiness initial={as === 'business' ? 'business' : 'member'} />
+        <FindBusiness initial={as === 'business' ? 'business' : as === 'staff' ? 'staff' : 'member'} />
       </main>
     </div>
   );

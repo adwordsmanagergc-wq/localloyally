@@ -53,7 +53,7 @@ function MemberLogin({ onForgot, onSignup }: { onForgot: () => void; onSignup: (
   );
 }
 
-export default function FindBusiness({ initial }: { initial: 'member' | 'business' }) {
+export default function FindBusiness({ initial }: { initial: 'member' | 'business' | 'staff' }) {
   const [mode, setMode] = useState(initial);
   // Customers: log in here, or find the business to sign up / reset a password on its page.
   const [step, setStep] = useState<'login' | 'signup' | 'forgot'>('login');
@@ -74,23 +74,26 @@ export default function FindBusiness({ initial }: { initial: 'member' | 'busines
   }, [q]);
 
   // From "Forgot password", open the business's login page with the reset form ready.
-  const target = (slug: string) => (mode === 'business' ? `/${slug}/staff` : `/${slug}?${step === 'signup' ? 'join' : 'forgot'}=1`);
+  const target = (slug: string) => (mode !== 'member' ? `/${slug}/staff?as=${mode}` : `/${slug}?${step === 'signup' ? 'join' : 'forgot'}=1`);
 
   return (
     <div>
-      <div className="lp-tabs" role="tablist">
-        <button role="tab" aria-selected={mode === 'member'} onClick={() => setMode('member')}>I&apos;m a customer</button>
-        <button role="tab" aria-selected={mode === 'business'} onClick={() => setMode('business')}>I&apos;m a business or staff</button>
+      <div className="lp-tabs" role="tablist" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        <button role="tab" aria-selected={mode === 'member'} onClick={() => setMode('member')}>Customer</button>
+        <button role="tab" aria-selected={mode === 'business'} onClick={() => setMode('business')}>Business</button>
+        <button role="tab" aria-selected={mode === 'staff'} onClick={() => setMode('staff')}>Staff</button>
       </div>
       {mode === 'member' && step === 'login' ? <MemberLogin onForgot={() => setStep('forgot')} onSignup={() => setStep('signup')} /> : (
       <div className="lp-form">
-        {mode === 'business' && <h3 style={{ margin: 0 }}>Staff login</h3>}
+        {mode !== 'member' && <h3 style={{ margin: 0 }}>{mode === 'business' ? 'Business sign in' : 'Staff login'}</h3>}
         <p style={{ color: '#5f544b' }}>
           {mode === 'member'
             ? step === 'signup'
               ? 'Search for the business, tap it, then choose a username and password.'
               : 'Which business is your card for? Tap it and we\'ll send a reset code to your WhatsApp.'
-            : 'Staff login: find your business, tap it, then log in with your name and password.'}
+            : mode === 'business'
+              ? 'Find your business, tap it, then enter your business PIN.'
+              : 'Find the business you work at, tap it, then log in with your name and password.'}
         </p>
         <label>
           Business name
@@ -99,7 +102,7 @@ export default function FindBusiness({ initial }: { initial: 'member' | 'busines
         <div className="lp-results">
           {items.map((b) => (
             <a key={b.slug} className="lp-result" href={target(b.slug)}>
-              <span>{b.name} <small>/{b.slug}</small></span><span>{mode === 'business' ? 'Staff login →' : <span aria-hidden="true">→</span>}</span>
+              <span>{b.name} <small>/{b.slug}</small></span><span>{mode === 'business' ? 'Sign in →' : mode === 'staff' ? 'Staff login →' : <span aria-hidden="true">→</span>}</span>
             </a>
           ))}
           {searched && !items.length && <p style={{ color: '#5f544b' }}>No business found with that name.</p>}

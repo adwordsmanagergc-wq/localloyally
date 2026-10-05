@@ -14,12 +14,13 @@ import { memberGifts } from '@/lib/gifts';
 import { fmtGiftCode, money } from '@/lib/money';
 import { siteUrl } from '@/lib/site';
 import PoweredBy from '@/components/PoweredBy';
+import WelcomePopup from '@/components/WelcomePopup';
 
 export const dynamic = 'force-dynamic';
 
 const d = (x: Date) => new Date(x).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 
-export default async function CardPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CardPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ welcome?: string }> }) {
   const biz = await getBusiness((await params).slug);
   if (!biz) notFound();
   const id = await getCustomerId(biz.id);
@@ -44,6 +45,7 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
   const wallets = walletEnabled();
   const showApple = wallets.apple && !/Android/i.test(ua);
   const showGoogle = wallets.google && !/iPhone|iPad|iPod/i.test(ua);
+  const welcome = (await searchParams).welcome === '1' ? welcomeMessage(biz.name, sum) : null;
 
   return (
     <main className="wrap stack-lg">
@@ -222,6 +224,28 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
         <span aria-hidden="true">→</span>
       </a>
       <PoweredBy />
+      {welcome && <WelcomePopup slug={biz.slug} {...welcome} />}
     </main>
   );
+}
+
+/** What a brand new member got, read from their card so it always matches: welcome stamps, plus any staff invite gift. */
+function welcomeMessage(bizName: string, sum: any): { title: string; body: string; note?: string } {
+  const total = (pick: (h: any) => boolean) => (sum.history as any[]).filter(pick).reduce((n, h) => n + h.delta, 0);
+  const welcome = total((h) => h.reason === 'welcome');
+  const headStart = total((h) => h.reason === 'bonus' && h.note === 'Invited by staff');
+  const voucher = (sum.vouchers as any[]).find((v) => v.period_key === 'staff-invite');
+  const stamps = (n: number, w: string) => (n === 1 ? `a ${w} stamp` : `${n} ${w} stamps`);
+  const title = `Welcome to ${bizName}!`;
+  if (voucher) {
+    const days = Math.max(1, Math.ceil((new Date(voucher.expires_at).getTime() - Date.now()) / 86400000));
+    return {
+      title,
+      body: `You received ${welcome > 0 ? `${stamps(welcome, 'welcome')} and ` : ''}a ${voucher.label.toLowerCase()} voucher to use in store within ${days} day${days === 1 ? '' : 's'}.`,
+      note: 'Tell staff your username at the counter to use it.',
+    };
+  }
+  if (headStart > 0)
+    return { title, body: `You received ${welcome > 0 ? `${stamps(welcome, 'welcome')} and ` : ''}${stamps(headStart, 'head-start')}.` };
+  return { title, body: welcome > 0 ? `Here's your ${welcome === 1 ? 'welcome stamp' : `${welcome} welcome stamps`}.` : 'Your card is ready.' };
 }

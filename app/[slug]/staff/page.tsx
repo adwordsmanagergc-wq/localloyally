@@ -9,7 +9,7 @@ import StaffConsole from '@/components/staff/StaffConsole';
 export const dynamic = 'force-dynamic';
 export const metadata = { robots: { index: false } };
 
-export default async function StaffPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function StaffPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ as?: string }> }) {
   const biz = await getBusiness((await params).slug);
   if (!biz) notFound();
   const staff = await getStaff(biz.id);
@@ -17,7 +17,7 @@ export default async function StaffPage({ params }: { params: Promise<{ slug: st
     return (
       <main className="wrap stack-lg">
         <Brand biz={biz} />
-        <PinLogin slug={biz.slug} />
+        <PinLogin slug={biz.slug} initial={(await searchParams).as === 'staff' ? 'staff' : 'business'} />
       </main>
     );
   const s = biz.settings;

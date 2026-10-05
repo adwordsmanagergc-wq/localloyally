@@ -28,7 +28,7 @@ const BENEFITS = [
   { e: '⭐', t: 'More Google reviews', p: 'Your happiest regulars get asked at the right moment, so you climb Google Maps.' },
   { e: '📣', t: 'Marketing that costs nothing', p: 'Message the right group from your own WhatsApp, and let members post and refer for you.' },
   { e: '🧾', t: 'No paper, no hardware', p: 'No cards to print or lose and no till to change. Any phone or tablet works.' },
-  { e: '🛡️', t: 'Hard to cheat', p: 'Staff PINs, a log of every stamp, codes that change every 2 minutes, and approvals for posts.' },
+  { e: '🛡️', t: 'Hard to cheat', p: 'Staff logins, a log of every stamp, codes that change every 2 minutes, and approvals for posts.' },
 ];
 
 export default async function HowItWorks() {
@@ -109,7 +109,7 @@ export default async function HowItWorks() {
               <p className="lp-lead">The customer says their username, which is shown big on their card. Staff type it, or just the first few letters, and tap <strong>Add stamp</strong>.</p>
               <p className="lp-lead">Busy queue? Staff read out a 6-digit counter code instead and the customer types it on their card. Codes change every 2 minutes and work once a day per customer, so sharing them is pointless.</p>
               <ul className="lp-checks">
-                <li>Every staff member logs in with their own PIN</li>
+                <li>Every staff member logs in with their own name and password</li>
                 <li>Every stamp is logged with who gave it</li>
                 <li>Warns about accidental double stamps</li>
               </ul>

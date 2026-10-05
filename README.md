@@ -14,7 +14,7 @@ Digital stamp cards for any business: cafes, restaurants, barbers, salons, gyms,
 | `/{slug}/g/{code}` | Anyone with the link | A gift certificate with its QR code and balance |
 | `/{slug}/staff` | Staff (name + password) | Send their own WhatsApp invite link (friend gets a free item voucher plus welcome stamps), find customers by username (or part of it) or number, show counter codes, scan gift certificates; add stamps, redeem rewards and vouchers, approve social posts, sell and use gift certificates |
 | `/{slug}/staff` | Manager (name + password) | Also: dashboard (repeat visits, customer groups, per-staff results), offers to customer groups, members list + CSV export, stamp adjustments, team logins, **all settings** |
-| `/platform` | You | Add businesses, pause them, reset manager PINs, see members and activity per client |
+| `/platform` | You | Add businesses, pause them, reset manager passwords, see members and activity per client |
 
 ### Settings each business can change (Staff page > Settings)
 - Name, tagline, logo, 6 colours, font, background texture, stamp icon (bean, cup, leaf, star, heart, scissors, paw, bolt, slice, drop)
@@ -37,7 +37,7 @@ New businesses start from a template: cafe, matcha/tea bar, restaurant, barber/s
 - Personal codes a manager sends only work on that one customer's card, once
 - Spin results are decided on the server, not in the browser
 - Social posts need staff approval, one pending at a time, cooldown between posts, same link can't be used twice
-- PIN and code attempts are rate limited; every stamp is logged with the staff member who gave it
+- Staff login and code attempts are rate limited; every stamp is logged with the staff member who gave it
 
 ## Set up (about 20 minutes)
 
@@ -48,7 +48,7 @@ New businesses start from a template: cafe, matcha/tea bar, restaurant, barber/s
    - `WHATSAPP_PROVIDER` (see below)
 4. **Create tables:** on your computer, put the same values in `.env.local`, then `npm install` and `npm run migrate`.
 5. **Domain:** add `loyallocally.com` in Vercel > Domains and set `APP_URL=https://loyallocally.com`.
-6. Go to `/platform`, log in, add **Roasted** (link name `roasted`, template Cafe), then log in at `/roasted/staff` with the manager PIN and open Settings.
+6. Go to `/platform`, log in, add **Roasted** (link name `roasted`, template Cafe), then log in at `/roasted/staff` with the manager name and password and open Settings.
 7. Put a "Rewards" button on the Roasted website linking to `https://your-domain/roasted`, and print a QR code of that link for the counter.
 
 The daily reminder job is already set in `vercel.json` (10am Bali time).

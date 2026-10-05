@@ -26,7 +26,7 @@ export default function AuthFlow({ slug, refCode, businessName, start, giftCode,
   const [info, setInfo] = useState('');
 
   const go = (m: Mode) => { setMode(m); setErr(''); setInfo(''); };
-  const done = () => { router.replace(`/${slug}/card`); router.refresh(); };
+  const done = (welcome = false) => { router.replace(`/${slug}/card${welcome ? '?welcome=1' : ''}`); router.refresh(); };
 
   async function run(fn: () => Promise<void>) {
     setBusy(true); setErr('');
@@ -47,7 +47,7 @@ export default function AuthFlow({ slug, refCode, businessName, start, giftCode,
           birthdayMonth: bm ? Number(bm) : undefined, birthdayDay: bd ? Number(bd) : undefined,
         });
         await savePassword(username.trim().toLowerCase(), password);
-        done();
+        done(true);
       });
     if (mode === 'forgot')
       return run(async () => {

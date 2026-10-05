@@ -10,7 +10,7 @@ export default function PlatformConsole({ loggedIn, appUrl }: { loggedIn: boolea
   const [pw, setPw] = useState('');
   const [err, setErr] = useState('');
   const [data, setData] = useState<any>(null);
-  const [f, setF] = useState({ name: '', slug: '', preset: 'cafe', countryCode: '62', timezone: 'Asia/Makassar', managerName: 'Manager', managerPin: '' });
+  const [f, setF] = useState({ name: '', slug: '', preset: 'cafe', countryCode: '62', timezone: 'Asia/Makassar', managerName: 'Manager', managerPassword: '' });
   const [slugTouched, setSlugTouched] = useState(false);
   const [msg, setMsg] = useState('');
 
@@ -35,7 +35,7 @@ export default function PlatformConsole({ loggedIn, appUrl }: { loggedIn: boolea
     try {
       const r = await api('/api/platform/businesses', f);
       setMsg(`Created. Customer page: ${appUrl}/${r.slug}  ·  Staff: ${appUrl}/${r.slug}/staff`);
-      setF({ ...f, name: '', slug: '', managerPin: '' }); setSlugTouched(false); load();
+      setF({ ...f, name: '', slug: '', managerPassword: '' }); setSlugTouched(false); load();
     } catch (e: any) { setErr(e.message); }
   }
 
@@ -55,11 +55,11 @@ export default function PlatformConsole({ loggedIn, appUrl }: { loggedIn: boolea
                   <button className="btn ghost small" onClick={async () => { await api('/api/platform/businesses', { id: b.id, active: !b.active }, 'PATCH'); load(); }}>
                     {b.active ? 'Pause' : 'Resume'}</button>
                   <button className="btn ghost small" onClick={async () => {
-                    const pin = window.prompt(`New manager PIN for ${b.name} (4-8 digits)`);
-                    if (!pin) return;
-                    try { await api('/api/platform/businesses', { id: b.id, resetPin: pin }, 'PATCH'); setMsg(`New manager login added for ${b.name}`); }
+                    const password = window.prompt(`New manager password for ${b.name} (at least 6 characters). Log in as "Manager (reset)" with it.`);
+                    if (!password) return;
+                    try { await api('/api/platform/businesses', { id: b.id, resetPassword: password }, 'PATCH'); setMsg(`Manager password reset for ${b.name}. Log in at /${b.slug}/staff as "Manager (reset)".`); }
                     catch (e: any) { setErr(e.message); }
-                  }}>New PIN</button>
+                  }}>Reset manager password</button>
                 </td>
               </tr>
             ))}
@@ -108,12 +108,12 @@ export default function PlatformConsole({ loggedIn, appUrl }: { loggedIn: boolea
         </div>
         <div className="grid2">
           <label>Manager name<input value={f.managerName} onChange={(e) => setF({ ...f, managerName: e.target.value })} /></label>
-          <label>Manager PIN (4-8 digits)<input inputMode="numeric" value={f.managerPin} required maxLength={8} onChange={(e) => setF({ ...f, managerPin: e.target.value.replace(/\D/g, '') })} /></label>
+          <label>Manager password (at least 6 characters)<input value={f.managerPassword} required minLength={6} maxLength={64} autoComplete="new-password" onChange={(e) => setF({ ...f, managerPassword: e.target.value })} /></label>
         </div>
         {err && <div className="banner bad small">{err}</div>}
         {msg && <div className="banner good small" style={{ wordBreak: 'break-all' }}>{msg}</div>}
         <button className="btn">Create business</button>
-        <p className="tiny muted">After creating, log in to the staff page with the manager PIN and open Settings to add the logo, colours and rewards.</p>
+        <p className="tiny muted">After creating, log in to the staff page with the manager name and password and open Settings to add the logo, colours and rewards.</p>
       </form>
     </div>
   );

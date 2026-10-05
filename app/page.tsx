@@ -249,7 +249,7 @@ export default async function Home() {
               </div>
               <div style={{ background: '#c8b8ff' }}>
                 <h3>For staff</h3>
-                <ul><li>Own PIN, no training needed</li><li>Search, tap, done</li><li>Warns about accidental double stamps</li></ul>
+                <ul><li>Own login, no training needed</li><li>Search, tap, done</li><li>Warns about accidental double stamps</li></ul>
               </div>
               <div style={{ background: '#ffb8cb' }}>
                 <h3>For customers</h3>

@@ -23,10 +23,10 @@ export async function POST(req: Request) {
   const b = await req.json().catch(() => ({}));
   const name = String(b.name || '').trim().slice(0, 60);
   const slug = String(b.slug || '').trim().toLowerCase();
-  const pin = String(b.managerPin || '');
+  const password = String(b.managerPassword || '');
   if (name.length < 2) return json({ error: 'Add the business name' }, 400);
   if (!validSlug(slug)) return json({ error: 'Link name: 3 to 40 lowercase letters, numbers or dashes' }, 400);
-  if (!/^\d{4,8}$/.test(pin)) return json({ error: 'Manager PIN must be 4 to 8 digits' }, 400);
+  if (password.length < 6 || password.length > 64) return json({ error: 'Manager password needs at least 6 characters' }, 400);
   const preset = PRESETS[b.preset as string] ?? PRESETS.cafe;
   const settings = mergeSettings({ ...DEFAULT_SETTINGS, ...preset.settings });
   if (b.timezone) settings.timezone = String(b.timezone);
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   try {
     await sql.begin(async (tx) => {
       const [biz] = await tx`insert into businesses (slug, name, settings) values (${slug}, ${name}, ${sql.json(settings as any)}) returning id`;
-      await tx`insert into staff (business_id, name, pin_hash, role) values (${biz.id}, ${String(b.managerName || 'Manager').slice(0, 40)}, ${hashPin(pin)}, 'manager')`;
+      await tx`insert into staff (business_id, name, pin_hash, role) values (${biz.id}, ${String(b.managerName || 'Manager').slice(0, 40)}, ${hashPin(password)}, 'manager')`;
     });
   } catch (e: any) {
     if (e.code === '23505') return json({ error: 'That link name is taken' }, 400);
@@ -47,9 +47,14 @@ export async function PATCH(req: Request) {
   if (!(await isPlatformAdmin())) return json({ error: 'Log in' }, 401);
   if (!(req.headers.get('content-type') || '').includes('application/json')) return json({ error: 'Expected JSON' }, 415);
   const b = await req.json().catch(() => ({}));
-  if (b.resetPin) {
-    if (!/^\d{4,8}$/.test(String(b.resetPin))) return json({ error: 'PIN must be 4 to 8 digits' }, 400);
-    await sql`insert into staff (business_id, name, pin_hash, role) values (${String(b.id)}, 'Manager (reset)', ${hashPin(String(b.resetPin))}, 'manager')`;
+  // Reset manager password: sets the password on the "Manager (reset)" login, creating it the first time
+  if (typeof b.resetPassword === 'string') {
+    const password = b.resetPassword;
+    if (password.length < 6 || password.length > 64) return json({ error: 'Password needs at least 6 characters' }, 400);
+    const id = String(b.id);
+    const [existing] = await sql`select id from staff where business_id = ${id} and name = 'Manager (reset)' order by active desc, created_at desc limit 1`;
+    if (existing) await sql`update staff set pin_hash = ${hashPin(password)}, role = 'manager', active = true where id = ${existing.id}`;
+    else await sql`insert into staff (business_id, name, pin_hash, role) values (${id}, 'Manager (reset)', ${hashPin(password)}, 'manager')`;
     return json({ ok: true });
   }
   await sql`update businesses set active = ${b.active === true} where id = ${String(b.id)}`;

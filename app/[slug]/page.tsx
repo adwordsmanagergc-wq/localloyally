@@ -1,5 +1,5 @@
 import { redirect, notFound } from 'next/navigation';
-import { getBusiness, minTier } from '@/lib/business';
+import { getBusiness, inviteStamps, minTier } from '@/lib/business';
 import { getCustomerId } from '@/lib/auth';
 import Brand from '@/components/Brand';
 import AuthFlow from '@/components/AuthFlow';
@@ -16,7 +16,8 @@ export default async function Join({ params, searchParams }: {
   if (!biz) notFound();
   if (await getCustomerId(biz.id)) redirect(`/${biz.slug}/card`);
   const { ref, forgot, join, gift, invite } = await searchParams;
-  const inviter = invite && biz.settings.staffInvite.enabled ? await findInviter(biz.id, invite) : null;
+  const found = invite && biz.settings.staffInvite.enabled ? await findInviter(biz.id, invite) : null;
+  const inviter = found && found !== 'expired' ? found : null;
   const s = biz.settings;
   const first = s.rewards[0];
   const perks = [
@@ -42,8 +43,12 @@ export default async function Join({ params, searchParams }: {
           {perks.map((p) => <span key={p} className="perk">{p}</span>)}
         </div>
       </section>
+      {found === 'expired' && <div className="banner small">This invite link has expired or was already used. You can still join below.</div>}
       <AuthFlow slug={biz.slug} refCode={ref} businessName={biz.name} start={join === '1' || gift || inviter ? 'join' : forgot === '1' ? 'forgot' : undefined} giftCode={gift}
-        invite={inviter ? { code: cleanInviteCode(invite), from: inviter.name, label: s.staffInvite.label, welcome: s.welcomeStamps } : undefined} />
+        invite={inviter ? {
+          code: cleanInviteCode(invite), from: inviter.name, welcome: s.welcomeStamps,
+          gift: inviter.gift === 'stamps' && inviteStamps(s) > 0 ? `${inviteStamps(s)} head-start stamps` : `a ${s.staffInvite.label.toLowerCase()}`,
+        } : undefined} />
       <p className="tiny muted center on-bg">
         We only message you on WhatsApp about your rewards if you agree.
       </p>

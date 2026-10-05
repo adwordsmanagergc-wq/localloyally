@@ -31,8 +31,9 @@ export const DEFAULT_SETTINGS = {
   doubleHours: { enabled: false, start: '14:00', end: '16:00', days: [1, 2, 3, 4, 5] as number[] },
   streak: { enabled: true, visits: 3, days: 7 },
   referral: { enabled: true, stamps: 1 },
-  // Staff send their own invite link on WhatsApp: the friend joins and gets this voucher on top of the welcome stamps
-  staffInvite: { enabled: true, label: 'Free coffee', days: 30 },
+  // Staff send a one-off invite link on WhatsApp (works once, for 24 hours). For each one they pick the gift:
+  // this voucher, or head-start stamps (kept below the first reward so the friend still has to come back and buy)
+  staffInvite: { enabled: true, label: 'Free coffee', days: 10, stamps: 5 },
   spin: {
     enabled: true, voucherDays: 7, // one spin per card, at half the top reward
     prizes: [
@@ -239,6 +240,7 @@ export function validateSettings(input: any): Settings {
       enabled: bool(input.staffInvite?.enabled),
       label: str(input.staffInvite?.label, 40, d.staffInvite.label) || d.staffInvite.label,
       days: int(input.staffInvite?.days, 1, 180, d.staffInvite.days),
+      stamps: int(input.staffInvite?.stamps, 0, 49, d.staffInvite.stamps),
     },
     spin: {
       enabled: spinEnabled,
@@ -282,6 +284,10 @@ export async function saveSettings(businessId: string, name: string, s: Settings
 
 export const maxTier = (s: Settings) => Math.max(...s.rewards.map((r) => r.stamps));
 export const minTier = (s: Settings) => Math.min(...s.rewards.map((r) => r.stamps));
+
+/** Most head-start stamps a staff invite can give: with the welcome stamps, still at least one short of the first reward. */
+export const inviteStampCap = (s: Settings) => Math.max(0, minTier(s) - s.welcomeStamps - 1);
+export const inviteStamps = (s: Settings) => Math.min(s.staffInvite.stamps, inviteStampCap(s));
 /** Stamps needed for the halfway spin, e.g. 4 on an 8-stamp card. */
 export const halfwayAt = (s: Settings) => Math.ceil(maxTier(s) / 2);
 

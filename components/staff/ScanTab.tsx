@@ -74,7 +74,30 @@ function CounterCodes({ slug }: { slug: string }) {
   );
 }
 
-export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; toast: Toast; onSocialChange: () => void }) {
+/** Managers only: send this member a phone notification. */
+function MessageBox({ slug, customerId, name, toast }: { slug: string; customerId: string; name: string; toast: Toast }) {
+  const [text, setText] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  async function send(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true); setErr('');
+    try { await api(`/api/b/${slug}/admin/message`, { customerId, message: text }); toast(`Message sent to ${name}`); setText(''); }
+    catch (e: any) { setErr(e.message); }
+    finally { setBusy(false); }
+  }
+  return (
+    <form className="card stack" onSubmit={send}>
+      <h3>Send a message</h3>
+      <p className="small muted">Goes to their phone as a notification.</p>
+      <textarea rows={2} maxLength={300} value={text} onChange={(e) => setText(e.target.value)} placeholder={`Hi ${name.split(' ')[0]}, …`} />
+      {err && <div className="banner bad small">{err}</div>}
+      <button className="btn block" disabled={busy || text.trim().length < 2}>{busy ? 'Sending…' : 'Send'}</button>
+    </form>
+  );
+}
+
+export default function ScanTab({ biz, toast, onSocialChange, manager }: { biz: BizInfo; toast: Toast; onSocialChange: () => void; manager: boolean }) {
   const [scanning, setScanning] = useState(false);
   const [phone, setPhone] = useState('');
   const [data, setData] = useState<any>(null);
@@ -247,6 +270,8 @@ export default function ScanTab({ biz, toast, onSocialChange }: { biz: BizInfo; 
           </div>
         </div>
       )}
+
+      {manager && <MessageBox slug={biz.slug} customerId={data.customer.id} name={data.customer.name} toast={toast} />}
 
       {err && <div className="banner bad">{err}</div>}
 

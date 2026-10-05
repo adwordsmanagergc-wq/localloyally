@@ -54,7 +54,7 @@ export default function StaffConsole({ biz, staff }: { biz: BizInfo; staff: { id
           <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}>{l}</button>
         ))}
       </div>
-      {tab === 'scan' && <ScanTab biz={biz} toast={show} onSocialChange={loadPending} />}
+      {tab === 'scan' && <ScanTab biz={biz} toast={show} onSocialChange={loadPending} manager={manager} />}
       {tab === 'approvals' && <ApprovalsTab slug={biz.slug} toast={show} onChange={loadPending} />}
       {tab === 'gifts' && <GiftsTab biz={biz} toast={show} manager={manager} />}
       {tab === 'dashboard' && <DashboardTab slug={biz.slug} />}

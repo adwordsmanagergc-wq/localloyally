@@ -1,4 +1,5 @@
 import { randomInt } from 'node:crypto';
+import { blackCardReady } from './blackcard';
 import { sql, type Tx } from './db';
 import { halfwayAt, isDoubleHour, localNow, maxTier, type Business, type Prize } from './business';
 
@@ -190,7 +191,9 @@ export async function reviewSocial(biz: Business, id: number, approve: boolean, 
 }
 
 export async function customerSummary(biz: Business, customerId: string) {
-  const [c] = await sql`select id, name, username, phone, ref_code, marketing_opt_in, created_at
+  const hasBlackCard = await blackCardReady();
+  const [c] = await sql`select id, name, username, phone, ref_code, marketing_opt_in, created_at,
+      ${hasBlackCard ? sql`black_card_at, black_card_welcomed_at` : sql`null::timestamptz black_card_at, null::timestamptz black_card_welcomed_at`}
     from customers where id = ${customerId} and business_id = ${biz.id}`;
   if (!c) return null;
   const [balance, [spins], vouchers, history, [social], [lastVisit]] = await Promise.all([

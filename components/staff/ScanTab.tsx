@@ -100,14 +100,14 @@ function MessageBox({ slug, customerId, name, toast }: { slug: string; customerI
 /** Staff send a one-off invite from their own WhatsApp and pick the gift: a voucher or head-start stamps. Each link works once, for 24 hours. */
 function InviteFriend({ biz, toast }: { biz: BizInfo; toast: Toast }) {
   const [to, setTo] = useState('');
-  const [gift, setGift] = useState<'voucher' | 'stamps'>('voucher');
+  const [gift, setGift] = useState<'voucher' | 'stamps' | 'black'>('voucher');
   const [busy, setBusy] = useState(false);
   if (!biz.invite) return null;
   const inv = biz.invite;
   const item = inv.label.toLowerCase();
   const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? '' : 's'}`;
   const welcome = biz.welcomeStamps > 0 ? ` and ${plural(biz.welcomeStamps, 'welcome stamp')}` : '';
-  const giftText = gift === 'stamps' ? plural(inv.stamps, 'head-start stamp') : `${item} (use within ${inv.days} days)`;
+  const giftText = gift === 'black' ? 'a 👑 Black card: free coffee for life' : gift === 'stamps' ? plural(inv.stamps, 'head-start stamp') : `${item} (use within ${inv.days} days)`;
 
   async function newLink() {
     const r = await api(`/api/b/${biz.slug}/staff/invite`, { gift });
@@ -119,7 +119,7 @@ function InviteFriend({ biz, toast }: { biz: BizInfo; toast: Toast }) {
     setBusy(true);
     try {
       const link = await newLink();
-      const opener = gift === 'stamps' ? `Hi! Here's a head start on your ${biz.name} rewards card ☕` : `Hi! Here's a ${item} on me at ${biz.name} ☕`;
+      const opener = gift === 'black' ? `👑 You've been chosen. Here's a ${biz.name} Black card: free coffee for life.` : gift === 'stamps' ? `Hi! Here's a head start on your ${biz.name} rewards card ☕` : `Hi! Here's a ${item} on me at ${biz.name} ☕`;
       const text = `${opener} Join with this link and your ${giftText}${welcome} will be waiting for you. The link works once, within 24 hours: ${link}`;
       let digits = to.replace(/\D/g, '');
       if (digits.startsWith('0')) digits = biz.countryCode + digits.slice(1);
@@ -143,12 +143,14 @@ function InviteFriend({ biz, toast }: { biz: BizInfo; toast: Toast }) {
         Send an invite from your own WhatsApp. Each link works for one person, within 24 hours. New members also get the usual
         {biz.welcomeStamps > 0 ? ` ${plural(biz.welcomeStamps, 'welcome stamp')}` : ' welcome'}.
       </p>
-      {inv.stamps > 0 && (
-        <div className="row">
+      {(inv.stamps > 0 || biz.blackCard) && (
+        <div className="row wrap-row">
           <button type="button" className={`btn small grow ${gift === 'voucher' ? '' : 'ghost'}`} onClick={() => setGift('voucher')}>{inv.label}</button>
-          <button type="button" className={`btn small grow ${gift === 'stamps' ? '' : 'ghost'}`} onClick={() => setGift('stamps')}>{plural(inv.stamps, 'stamp')} head start</button>
+          {inv.stamps > 0 && <button type="button" className={`btn small grow ${gift === 'stamps' ? '' : 'ghost'}`} onClick={() => setGift('stamps')}>{plural(inv.stamps, 'stamp')} head start</button>}
+          {biz.blackCard && <button type="button" className={`btn small grow ${gift === 'black' ? 'dark' : 'ghost'}`} onClick={() => setGift('black')}>👑 Black card</button>}
         </div>
       )}
+      {gift === 'black' && <div className="banner small">Black card: free coffee for life. Only you can send these. You can take it back on their member screen.</div>}
       <p className="small">They get: <strong>{giftText}</strong></p>
       <label>
         Their WhatsApp number (optional)
@@ -270,6 +272,21 @@ export default function ScanTab({ biz, toast, onSocialChange, manager }: { biz: 
         </div>
         {data.doubleHourNow && <div className="banner small">Double stamp hour is on: each {biz.itemWord} gets 2 stamps.</div>}
       </div>
+
+      {data.customer.black_card_at && (
+        <div className="banner" style={{ background: '#0b0b0c', color: '#e8c977', borderColor: '#c9a34a' }}>
+          👑 <strong>Black card member.</strong> Free coffee, every time. No stamps needed.
+        </div>
+      )}
+      {biz.blackCard && (
+        <button className="btn ghost block" disabled={busy} onClick={async () => {
+          const on = !data.customer.black_card_at;
+          if (!on && !window.confirm(`Take ${data.customer.name}'s black card away?`)) return;
+          setBusy(true);
+          try { await api(`/api/b/${biz.slug}/admin/blackcard`, { customerId: data.customer.id, active: on }); toast(on ? `👑 ${data.customer.name} is now a Black card member` : 'Black card taken back'); await refresh(); }
+          catch (e: any) { setErr(e.message); setBusy(false); }
+        }}>{data.customer.black_card_at ? 'Take back black card' : '👑 Give black card (free coffee for life)'}</button>
+      )}
 
       <div className="card stack">
         <h3>Add stamps</h3>

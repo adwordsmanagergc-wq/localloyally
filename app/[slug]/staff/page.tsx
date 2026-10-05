@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getBusiness, inviteStamps } from '@/lib/business';
+import { canGiveBlackCard } from '@/lib/blackcard';
 import { getStaff } from '@/lib/auth';
 import Brand from '@/components/Brand';
 import PinLogin from '@/components/staff/PinLogin';
@@ -26,7 +27,7 @@ export default async function StaffPage({ params }: { params: Promise<{ slug: st
         biz={{ slug: biz.slug, name: biz.name, rewards: s.rewards, maxPerVisit: s.maxPerVisit, itemWord: s.itemWord,
           itemWordPlural: s.itemWordPlural, social: s.social.enabled, stampIcon: s.stampIcon, stampImageUrl: s.stampImageUrl,
           currency: s.currency, giftsEnabled: s.gifts.enabled, counterCodes: s.counterCodes, countryCode: s.defaultCountryCode,
-          welcomeStamps: s.welcomeStamps,
+          welcomeStamps: s.welcomeStamps, blackCard: await canGiveBlackCard(staff.id),
           invite: s.staffInvite.enabled ? { label: s.staffInvite.label, days: s.staffInvite.days, stamps: inviteStamps(s) } : null }}
         staff={staff}
       />

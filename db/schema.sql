@@ -251,3 +251,4 @@ alter table campaign_recipients add column if not exists push boolean not null d
 alter table customers add column if not exists black_card_at timestamptz;
 alter table customers add column if not exists black_card_by uuid references staff(id) on delete set null;
 alter table customers add column if not exists black_card_welcomed_at timestamptz;  -- intro animation shown
+alter table staff add column if not exists can_black_card boolean not null default false;  -- only these logins (Andy) give black cards

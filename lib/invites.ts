@@ -3,7 +3,7 @@ import { sql } from './db';
 import { siteUrl } from './site';
 import { rateLimit } from './util';
 import { inviteStamps, type Business } from './business';
-import { blackCardReady } from './blackcard';
+import { blackCardReady, canGiveBlackCard } from './blackcard';
 
 /**
  * Staff invites: staff send a fresh link from their own WhatsApp each time. For each link they pick the gift:
@@ -45,7 +45,7 @@ export async function findInviter(bizId: string, raw: unknown): Promise<Inviter 
   const body = `${g}${exp}${nonce}`;
   const staff = await sql`select id, name, role from staff where business_id = ${bizId} and active`;
   const s = staff.find((x) => timingSafeEqual(Buffer.from(sign(x.id, body)), Buffer.from(sig)));
-  if (!s || (g === 'B' && s.role !== 'manager')) return null;
+  if (!s || (g === 'B' && !(await canGiveBlackCard(s.id)))) return null;
   if (parseInt(exp, 36) * 1000 < Date.now()) return 'expired';
   const [used] = await sql`select 1 from rate_limits where key = ${usedKey(bizId, nonce)}`;
   if (used) return 'expired';

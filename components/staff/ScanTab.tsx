@@ -98,7 +98,7 @@ function MessageBox({ slug, customerId, name, toast }: { slug: string; customerI
 }
 
 /** Staff send a one-off invite from their own WhatsApp and pick the gift: a voucher or head-start stamps. Each link works once, for 24 hours. */
-function InviteFriend({ biz, toast, manager }: { biz: BizInfo; toast: Toast; manager: boolean }) {
+function InviteFriend({ biz, toast }: { biz: BizInfo; toast: Toast }) {
   const [to, setTo] = useState('');
   const [gift, setGift] = useState<'voucher' | 'stamps' | 'black'>('voucher');
   const [busy, setBusy] = useState(false);
@@ -143,14 +143,14 @@ function InviteFriend({ biz, toast, manager }: { biz: BizInfo; toast: Toast; man
         Send an invite from your own WhatsApp. Each link works for one person, within 24 hours. New members also get the usual
         {biz.welcomeStamps > 0 ? ` ${plural(biz.welcomeStamps, 'welcome stamp')}` : ' welcome'}.
       </p>
-      {(inv.stamps > 0 || manager) && (
+      {(inv.stamps > 0 || biz.blackCard) && (
         <div className="row wrap-row">
           <button type="button" className={`btn small grow ${gift === 'voucher' ? '' : 'ghost'}`} onClick={() => setGift('voucher')}>{inv.label}</button>
           {inv.stamps > 0 && <button type="button" className={`btn small grow ${gift === 'stamps' ? '' : 'ghost'}`} onClick={() => setGift('stamps')}>{plural(inv.stamps, 'stamp')} head start</button>}
-          {manager && <button type="button" className={`btn small grow ${gift === 'black' ? 'dark' : 'ghost'}`} onClick={() => setGift('black')}>👑 Black card</button>}
+          {biz.blackCard && <button type="button" className={`btn small grow ${gift === 'black' ? 'dark' : 'ghost'}`} onClick={() => setGift('black')}>👑 Black card</button>}
         </div>
       )}
-      {gift === 'black' && <div className="banner small">Black card: free coffee for life. Managers only. You can take it back on their member screen.</div>}
+      {gift === 'black' && <div className="banner small">Black card: free coffee for life. Only you can send these. You can take it back on their member screen.</div>}
       <p className="small">They get: <strong>{giftText}</strong></p>
       <label>
         Their WhatsApp number (optional)
@@ -237,7 +237,7 @@ export default function ScanTab({ biz, toast, onSocialChange, manager }: { biz: 
         {busy && <p className="muted">Looking up…</p>}
         {err && <div className="banner bad">{err}</div>}
         {biz.counterCodes && <CounterCodes slug={biz.slug} />}
-        <InviteFriend biz={biz} toast={toast} manager={manager} />
+        <InviteFriend biz={biz} toast={toast} />
         {scanning ? (
           <div className="stack">
             <Scanner onScan={(t) => {
@@ -278,7 +278,7 @@ export default function ScanTab({ biz, toast, onSocialChange, manager }: { biz: 
           👑 <strong>Black card member.</strong> Free coffee, every time. No stamps needed.
         </div>
       )}
-      {manager && (
+      {biz.blackCard && (
         <button className="btn ghost block" disabled={busy} onClick={async () => {
           const on = !data.customer.black_card_at;
           if (!on && !window.confirm(`Take ${data.customer.name}'s black card away?`)) return;

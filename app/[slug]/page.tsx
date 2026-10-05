@@ -1,5 +1,5 @@
 import { redirect, notFound } from 'next/navigation';
-import { getBusiness, inviteStamps, minTier } from '@/lib/business';
+import { getBusiness, inviteStampCap, inviteStamps, minTier } from '@/lib/business';
 import { getCustomerId } from '@/lib/auth';
 import Brand from '@/components/Brand';
 import AuthFlow from '@/components/AuthFlow';
@@ -10,13 +10,13 @@ import { cleanInviteCode, findInviter } from '@/lib/invites';
 export const dynamic = 'force-dynamic';
 
 export default async function Join({ params, searchParams }: {
-  params: Promise<{ slug: string }>; searchParams: Promise<{ ref?: string; forgot?: string; join?: string; gift?: string; invite?: string }>;
+  params: Promise<{ slug: string }>; searchParams: Promise<{ ref?: string; forgot?: string; join?: string; gift?: string; invite?: string; item?: string }>;
 }) {
   const biz = await getBusiness((await params).slug);
   if (!biz) notFound();
   if (await getCustomerId(biz.id)) redirect(`/${biz.slug}/card`);
-  const { ref, forgot, join, gift, invite } = await searchParams;
-  const found = invite && biz.settings.staffInvite.enabled ? await findInviter(biz.id, invite) : null;
+  const { ref, forgot, join, gift, invite, item } = await searchParams;
+  const found = invite && biz.settings.staffInvite.enabled ? await findInviter(biz.id, invite, item) : null;
   const inviter = found && found !== 'expired' ? found : null;
   const s = biz.settings;
   const first = s.rewards[0];
@@ -46,8 +46,8 @@ export default async function Join({ params, searchParams }: {
       {found === 'expired' && <div className="banner small">This invite link has expired or was already used. You can still join below.</div>}
       <AuthFlow slug={biz.slug} refCode={ref} businessName={biz.name} start={join === '1' || gift || inviter ? 'join' : forgot === '1' ? 'forgot' : undefined} giftCode={gift}
         invite={inviter ? {
-          code: cleanInviteCode(invite), from: inviter.name, welcome: s.welcomeStamps,
-          gift: inviter.gift === 'black' ? 'a 👑 Black card: free coffee for life' : inviter.gift === 'stamps' && inviteStamps(s) > 0 ? `${inviteStamps(s)} head-start stamps` : `a ${s.staffInvite.label.toLowerCase()}`,
+          code: cleanInviteCode(invite), item: inviter.item ?? undefined, from: inviter.name, welcome: s.welcomeStamps,
+          gift: inviter.gift === 'black' ? 'a 👑 Black card: free coffee for life' : inviter.gift === 'stamps' && inviteStamps(s) > 0 ? `${Math.min(inviter.stamps ?? inviteStamps(s), inviteStampCap(s))} head-start stamps` : `a ${(inviter.item ?? s.staffInvite.label).toLowerCase()}`,
         } : undefined} />
       <p className="tiny muted center on-bg">
         We only message you on WhatsApp about your rewards if you agree.

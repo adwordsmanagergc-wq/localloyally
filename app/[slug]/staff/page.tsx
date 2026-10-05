@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getBusiness, inviteStamps } from '@/lib/business';
+import { getBusiness, inviteStampCap, inviteStamps } from '@/lib/business';
 import { canGiveBlackCard } from '@/lib/blackcard';
 import { getStaff } from '@/lib/auth';
 import Brand from '@/components/Brand';
@@ -28,7 +28,7 @@ export default async function StaffPage({ params, searchParams }: { params: Prom
           itemWordPlural: s.itemWordPlural, social: s.social.enabled, stampIcon: s.stampIcon, stampImageUrl: s.stampImageUrl,
           currency: s.currency, giftsEnabled: s.gifts.enabled, counterCodes: s.counterCodes, countryCode: s.defaultCountryCode,
           welcomeStamps: s.welcomeStamps, blackCard: await canGiveBlackCard(staff.id),
-          invite: s.staffInvite.enabled ? { label: s.staffInvite.label, days: s.staffInvite.days, stamps: inviteStamps(s) } : null }}
+          invite: s.staffInvite.enabled ? { label: s.staffInvite.label, days: s.staffInvite.days, stamps: inviteStamps(s), cap: Math.min(inviteStampCap(s), 35) } : null }}
         staff={staff}
       />
     </main>

@@ -99,20 +99,26 @@ function MessageBox({ slug, customerId, name, toast }: { slug: string; customerI
 }
 
 /** Staff send a one-off invite from their own WhatsApp and pick the gift: a voucher or head-start stamps. Each link works once, for 24 hours. */
-function InviteFriend({ biz, toast }: { biz: BizInfo; toast: Toast }) {
+function InviteFriend({ biz, toast, manager }: { biz: BizInfo; toast: Toast; manager: boolean }) {
   const [to, setTo] = useState('');
   const [gift, setGift] = useState<'voucher' | 'stamps' | 'black'>('voucher');
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(''); // iPhone: the invite is made, one more tap opens WhatsApp
+  // Managers choose the free item and the number of head-start stamps; staff send the Settings defaults
+  const [freeItem, setFreeItem] = useState(biz.invite?.label ?? '');
+  const [count, setCount] = useState(biz.invite?.stamps || 1);
   if (!biz.invite) return null;
   const inv = biz.invite;
-  const item = inv.label.toLowerCase();
+  const label = manager && freeItem.trim().length >= 2 ? freeItem.trim() : inv.label;
+  const item = label.toLowerCase();
+  const stampsN = manager ? Math.min(Math.max(1, count), inv.cap) : inv.stamps;
+  const showStamps = manager ? inv.cap > 0 : inv.stamps > 0;
   const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? '' : 's'}`;
   const welcome = biz.welcomeStamps > 0 ? ` and ${plural(biz.welcomeStamps, 'welcome stamp')}` : '';
-  const giftText = gift === 'black' ? 'a 👑 Black card: free coffee for life' : gift === 'stamps' ? plural(inv.stamps, 'head-start stamp') : `${item} (use within ${inv.days} days)`;
+  const giftText = gift === 'black' ? 'a 👑 Black card: free coffee for life' : gift === 'stamps' ? plural(stampsN, 'head-start stamp') : `${item} (use within ${inv.days} days)`;
 
   async function newLink() {
-    const r = await api(`/api/b/${biz.slug}/staff/invite`, { gift });
+    const r = await api(`/api/b/${biz.slug}/staff/invite`, { gift, stamps: stampsN, item: label });
     return r.link as string;
   }
   async function send() {
@@ -147,14 +153,31 @@ function InviteFriend({ biz, toast }: { biz: BizInfo; toast: Toast }) {
         Send an invite from your own WhatsApp. Each link works for one person, within 24 hours. New members also get the usual
         {biz.welcomeStamps > 0 ? ` ${plural(biz.welcomeStamps, 'welcome stamp')}` : ' welcome'}.
       </p>
-      {(inv.stamps > 0 || biz.blackCard) && (
+      {(showStamps || biz.blackCard) && (
         <div className="row wrap-row">
-          <button type="button" className={`btn small grow ${gift === 'voucher' ? '' : 'ghost'}`} onClick={() => { setGift('voucher'); setReady(''); }}>{inv.label}</button>
-          {inv.stamps > 0 && <button type="button" className={`btn small grow ${gift === 'stamps' ? '' : 'ghost'}`} onClick={() => { setGift('stamps'); setReady(''); }}>{plural(inv.stamps, 'stamp')} head start</button>}
+          <button type="button" className={`btn small grow ${gift === 'voucher' ? '' : 'ghost'}`} onClick={() => { setGift('voucher'); setReady(''); }}>{manager ? 'Free item' : inv.label}</button>
+          {showStamps && <button type="button" className={`btn small grow ${gift === 'stamps' ? '' : 'ghost'}`} onClick={() => { setGift('stamps'); setReady(''); }}>{manager ? 'Head-start stamps' : `${plural(inv.stamps, 'stamp')} head start`}</button>}
           {biz.blackCard && <button type="button" className={`btn small grow ${gift === 'black' ? 'dark' : 'ghost'}`} onClick={() => { setGift('black'); setReady(''); }}>👑 Black card</button>}
         </div>
       )}
       {gift === 'black' && <div className="banner small">Black card: free coffee for life. Only you can send these. You can take it back on their member screen.</div>}
+      {manager && gift === 'voucher' && (
+        <label>
+          Free item
+          <input value={freeItem} maxLength={40} onChange={(e) => { setFreeItem(e.target.value); setReady(''); }} placeholder={inv.label} />
+          <span className="tiny muted">Type anything from the menu, e.g. Free croissant. {label !== inv.label && <button type="button" className="linkbtn tiny" onClick={() => { setFreeItem(inv.label); setReady(''); }}>Back to {inv.label}</button>}</span>
+        </label>
+      )}
+      {manager && gift === 'stamps' && (
+        <div className="row">
+          <span className="small grow">Head-start stamps <span className="muted">(up to {inv.cap})</span></span>
+          <div className="qty">
+            <button type="button" onClick={() => { setCount((c) => Math.max(1, Math.min(c, inv.cap) - 1)); setReady(''); }} aria-label="Fewer">−</button>
+            <span>{stampsN}</span>
+            <button type="button" onClick={() => { setCount((c) => Math.min(inv.cap, c + 1)); setReady(''); }} aria-label="More">+</button>
+          </div>
+        </div>
+      )}
       <p className="small">They get: <strong>{giftText}</strong></p>
       <label>
         Their WhatsApp number (optional)
@@ -243,7 +266,7 @@ export default function ScanTab({ biz, toast, onSocialChange, manager }: { biz: 
         {busy && <p className="muted">Looking up…</p>}
         {err && <div className="banner bad">{err}</div>}
         {biz.counterCodes && <CounterCodes slug={biz.slug} />}
-        <InviteFriend biz={biz} toast={toast} />
+        <InviteFriend biz={biz} toast={toast} manager={manager} />
         {scanning ? (
           <div className="stack">
             <Scanner onScan={(t) => {

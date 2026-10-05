@@ -33,7 +33,7 @@ export const POST = bizRoute(async (req, biz) => {
     const [r] = await sql`select id from customers where business_id = ${biz.id} and ref_code = ${String(b.ref).toUpperCase()}`;
     referredBy = r?.id ?? null;
   }
-  const found = b.invite && biz.settings.staffInvite.enabled ? await findInviter(biz.id, b.invite) : null;
+  const found = b.invite && biz.settings.staffInvite.enabled ? await findInviter(biz.id, b.invite, b.inviteItem) : null;
   const inviter = found && found !== 'expired' ? found : null;
   const cust = await createCard(biz, {
     name, username, phone, passwordHash: hashPin(password), optIn: b.optIn === true, referredBy,

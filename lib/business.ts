@@ -35,7 +35,7 @@ export const DEFAULT_SETTINGS = {
   // this voucher, or head-start stamps (kept below the first reward so the friend still has to come back and buy)
   staffInvite: { enabled: true, label: 'Free coffee', days: 10, stamps: 5 },
   spin: {
-    enabled: true, voucherDays: 7, // one spin per card, at half the top reward
+    enabled: true, voucherDays: 10, // one spin per card, at half the top reward
     prizes: [
       { label: '5% off', kind: 'percent', value: 5, weight: 40 },
       { label: '10% off', kind: 'percent', value: 10, weight: 25 },
@@ -244,7 +244,7 @@ export function validateSettings(input: any): Settings {
     },
     spin: {
       enabled: spinEnabled,
-      voucherDays: int(input.spin?.voucherDays, 1, 60, 7), prizes: prizes.length >= 2 ? prizes : d.spin.prizes,
+      voucherDays: int(input.spin?.voucherDays, 1, 60, 10), prizes: prizes.length >= 2 ? prizes : d.spin.prizes,
     },
     birthday: { enabled: bool(input.birthday?.enabled), windowDays: int(input.birthday?.windowDays, 0, 14, 3), label: str(input.birthday?.label, 40, d.birthday.label) || d.birthday.label },
     nudges: { enabled: bool(input.nudges?.enabled), afterDays: int(input.nudges?.afterDays, 1, 30, 3) },

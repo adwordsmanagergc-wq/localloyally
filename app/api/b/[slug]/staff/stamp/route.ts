@@ -14,7 +14,7 @@ export const POST = staffRoute(async (req, biz, staff) => {
     walletChanged(biz, String(b.customerId), r.referrerId);
     const added = (r.events ?? []).reduce((a, e) => a + e.delta, 0);
     after(async () => {
-      await notifyStamps(biz, String(b.customerId), added, r.balance!).catch(() => {});
+      await notifyStamps(biz, String(b.customerId), added, r.fullBalance!).catch(() => {});
       if (r.referrerId) await sendPush(r.referrerId, { title: biz.name, body: `Your friend just made their first visit. +${biz.settings.referral.stamps} bonus stamp for you!`, url: `/${biz.slug}/card` }).catch(() => {});
     });
   }

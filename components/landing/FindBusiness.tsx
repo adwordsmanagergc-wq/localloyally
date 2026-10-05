@@ -80,16 +80,17 @@ export default function FindBusiness({ initial }: { initial: 'member' | 'busines
     <div>
       <div className="lp-tabs" role="tablist">
         <button role="tab" aria-selected={mode === 'member'} onClick={() => setMode('member')}>I&apos;m a customer</button>
-        <button role="tab" aria-selected={mode === 'business'} onClick={() => setMode('business')}>I&apos;m a business</button>
+        <button role="tab" aria-selected={mode === 'business'} onClick={() => setMode('business')}>I&apos;m a business or staff</button>
       </div>
       {mode === 'member' && step === 'login' ? <MemberLogin onForgot={() => setStep('forgot')} onSignup={() => setStep('signup')} /> : (
       <div className="lp-form">
+        {mode === 'business' && <h3 style={{ margin: 0 }}>Staff login</h3>}
         <p style={{ color: '#5f544b' }}>
           {mode === 'member'
             ? step === 'signup'
               ? 'Search for the business, tap it, then choose a username and password.'
               : 'Which business is your card for? Tap it and we\'ll send a reset code to your WhatsApp.'
-            : 'Find your business to open your staff and manager page. You\'ll log in with your PIN.'}
+            : 'Staff login: find your business, tap it, then log in with your name and password.'}
         </p>
         <label>
           Business name
@@ -98,14 +99,14 @@ export default function FindBusiness({ initial }: { initial: 'member' | 'busines
         <div className="lp-results">
           {items.map((b) => (
             <a key={b.slug} className="lp-result" href={target(b.slug)}>
-              <span>{b.name} <small>/{b.slug}</small></span><span aria-hidden="true">→</span>
+              <span>{b.name} <small>/{b.slug}</small></span><span>{mode === 'business' ? 'Staff login →' : <span aria-hidden="true">→</span>}</span>
             </a>
           ))}
           {searched && !items.length && <p style={{ color: '#5f544b' }}>No business found with that name.</p>}
         </div>
         {mode === 'business' && (
           <p style={{ fontSize: '0.85rem', color: '#5f544b' }}>
-            New here? <a href="/#setup" style={{ textDecoration: 'underline' }}>Get started</a>.
+            New business? <a href="/#setup" style={{ textDecoration: 'underline' }}>Get started</a>.
           </p>
         )}
         {mode === 'member' && (

@@ -377,6 +377,7 @@ export default function ScanTab({ biz, toast, onSocialChange, manager }: { biz: 
 
   function stampMsg(r: any) {
     const extra = (r.events as any[]).filter((e) => e.reason !== 'purchase').map((e) => `${LABEL[e.reason]} +${e.delta}`);
-    return `Stamped! Now ${r.balance}${extra.length ? ` (${extra.join(', ')})` : ''}`;
+    const got = (r.rewards as string[] | undefined)?.length ? ` 🎉 Full card: ${r.rewards.join(', ')} voucher added.` : '';
+    return `Stamped! Now ${r.balance}${extra.length ? ` (${extra.join(', ')})` : ''}.${got}`;
   }
 }

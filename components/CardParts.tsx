@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api, uiLock } from '@/lib/client';
+import WhatsAppLink from './WhatsAppLink';
 
 /** Keeps the card up to date: refreshes when they come back to the page and every 20 seconds, so new stamps appear. */
 export function CardRefresh({ slug }: { slug: string }) {
@@ -52,7 +53,7 @@ export function ShareReferral({ link, text }: { link: string; text: string }) {
   }
   return (
     <div className="row">
-      <a className="btn grow" href={wa} target="_blank" rel="noopener noreferrer">Send on WhatsApp</a>
+      <WhatsAppLink className="btn grow" href={wa}>Send on WhatsApp</WhatsAppLink>
       <button className="btn ghost" type="button" onClick={share}>{copied ? 'Copied' : 'Share'}</button>
     </div>
   );
@@ -138,10 +139,9 @@ export function GiftFriend({ bizName, waNumber, currency, me }: { bizName: strin
         ))}
         <input type="number" inputMode="numeric" min={1} value={amount || ''} onChange={(e) => setAmount(Number(e.target.value))} style={{ width: 130 }} aria-label="Other amount" />
       </div>
-      <a className={`btn block ${ready ? '' : 'disabled'}`} aria-disabled={!ready} target="_blank" rel="noopener noreferrer"
-        href={ready ? `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}` : undefined}>
+      <WhatsAppLink className={`btn block ${ready ? '' : 'disabled'}`} disabled={!ready} href={`https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`}>
         Ask {bizName} on WhatsApp →
-      </a>
+      </WhatsAppLink>
       <p className="tiny muted">You&apos;ll sort out payment with the team, then they send the gift to your friend.</p>
     </div>
   );

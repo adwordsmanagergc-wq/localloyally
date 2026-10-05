@@ -8,7 +8,7 @@ import { sql } from './db';
 /** Black card members earn this instead of referral stamps, once every BLACK_FOOD_EVERY friends who make a first visit. */
 export const BLACK_FOOD_EVERY = 5;
 export const BLACK_FOOD_LABEL = 'Free food of your choice';
-export const BLACK_FOOD_DAYS = 30;
+export const BLACK_FOOD_DAYS = 10;
 
 let ready: Promise<boolean> | null = null;
 export function blackCardReady(): Promise<boolean> {

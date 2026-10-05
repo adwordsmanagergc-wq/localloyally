@@ -22,7 +22,7 @@ export async function createCampaign(biz: Business, staffId: string, segment: Se
     voucher = {
       label: String(rawVoucher.label).trim().slice(0, 40), kind,
       value: kind === 'percent' ? Math.min(100, Math.max(1, Math.round(Number(rawVoucher.value)) || 10)) : 0,
-      days: Math.min(60, Math.max(1, Math.round(Number(rawVoucher.days)) || 7)),
+      days: Math.min(60, Math.max(1, Math.round(Number(rawVoucher.days)) || 10)),
     };
   }
   const tiers = biz.settings.rewards.map((r) => r.stamps);

@@ -88,7 +88,7 @@ export async function addPurchase(biz: Business, customerId: string, staffId: st
   });
 }
 
-const REWARD_VOUCHER_DAYS = 30;
+const REWARD_VOUCHER_DAYS = 10;
 
 /**
  * A full card (the top reward's stamps) becomes a voucher for that reward and the card starts again,

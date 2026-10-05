@@ -15,7 +15,7 @@ export default function OffersTab({ slug, toast }: { slug: string; toast: Toast 
   const [segment, setSegment] = useState<Segment>('all');
   const [message, setMessage] = useState('');
   const [gift, setGift] = useState(false);
-  const [v, setV] = useState({ label: 'Free pastry', kind: 'item', value: 10, days: 7 });
+  const [v, setV] = useState({ label: 'Free pastry', kind: 'item', value: 10, days: 10 });
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [err, setErr] = useState('');
   const load = () => api(`/api/b/${slug}/admin/campaigns`).then(setD).catch((e) => setErr(e.message));

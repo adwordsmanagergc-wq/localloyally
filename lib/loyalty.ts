@@ -1,5 +1,5 @@
 import { randomInt } from 'node:crypto';
-import { BLACK_FOOD_DAYS, BLACK_FOOD_EVERY, BLACK_FOOD_LABEL, blackCardReady } from './blackcard';
+import { BLACK_FOOD_DAYS, BLACK_FOOD_EVERY, BLACK_FOOD_LABEL, blackCardFriends, blackCardReady } from './blackcard';
 import { sql, type Tx } from './db';
 import { halfwayAt, isDoubleHour, localNow, maxTier, type Business, type Prize } from './business';
 
@@ -55,10 +55,11 @@ export async function addPurchase(biz: Business, customerId: string, staffId: st
         const [ref] = hasBlackCard ? await tx`select black_card_at from customers where id = ${c.referred_by}` : [];
         if (ref?.black_card_at) {
           // Black card members don't need stamps: every 5 friends who make a first visit earns free food
-          const [{ k }] = await tx`select count(*)::int k from customers where referred_by = ${c.referred_by} and referral_rewarded`;
+          // Only friends since they got the black card count
+          const k = await blackCardFriends(tx, c.referred_by);
           if (k % BLACK_FOOD_EVERY === 0) {
             await tx`insert into vouchers (business_id, customer_id, label, kind, value, source, period_key, expires_at)
-              values (${biz.id}, ${c.referred_by}, ${BLACK_FOOD_LABEL}, 'item', 0, 'campaign', ${'black-food-' + k},
+              values (${biz.id}, ${c.referred_by}, ${BLACK_FOOD_LABEL}, 'item', 0, 'campaign', ${`black-food-${new Date(ref.black_card_at).getTime()}-${k}`},
                       now() + make_interval(days => ${BLACK_FOOD_DAYS}::int))
               on conflict do nothing`;
             referrerNote = `🍽️ That's ${BLACK_FOOD_EVERY} friends! Free food of your choice from the menu is on your card.`;

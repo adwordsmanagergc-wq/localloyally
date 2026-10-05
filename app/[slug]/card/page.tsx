@@ -17,7 +17,7 @@ import PoweredBy from '@/components/PoweredBy';
 import WelcomePopup from '@/components/WelcomePopup';
 import BlackCard from '@/components/BlackCard';
 import BlackCardWelcome from '@/components/BlackCardWelcome';
-import { BLACK_FOOD_EVERY } from '@/lib/blackcard';
+import { BLACK_FOOD_EVERY, blackCardFriends } from '@/lib/blackcard';
 import { sql } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -52,7 +52,7 @@ export default async function CardPage({ params, searchParams }: { params: Promi
   const royal = !!sum.customer.black_card_at;
   // Black card: friends who joined with their link and made a first visit, towards free food every 5
   const friends = royal
-    ? (await safe(sql`select count(*)::int n from customers where referred_by = ${id} and referral_rewarded`, [{ n: 0 }] as any))[0].n as number
+    ? await safe(blackCardFriends(sql, id), 0)
     : 0;
   const username = sum.customer.username ?? sum.customer.name;
   const welcome = !royal && (await searchParams).welcome === '1' ? welcomeMessage(biz.name, sum) : null;

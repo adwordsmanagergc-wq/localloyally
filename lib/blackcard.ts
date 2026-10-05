@@ -1,4 +1,4 @@
-import { sql } from './db';
+import { sql, type Tx } from './db';
 
 /**
  * Black card: free coffee for life (or until the owners say otherwise). Only staff with can_black_card (Andy)
@@ -46,4 +46,12 @@ export async function canGiveBlackCard(staffId: string) {
   if (!(await blackCardReady())) return false;
   const [s] = await sql`select 1 from staff where id = ${staffId} and active and role = 'manager' and can_black_card`;
   return !!s;
+}
+
+/** Friends who joined with this member's link and made their first visit after the member got their black card. */
+export async function blackCardFriends(tx: Tx, customerId: string): Promise<number> {
+  const [{ n }] = await tx`select count(*)::int n from customers f, customers m
+    where m.id = ${customerId} and m.black_card_at is not null and f.referred_by = m.id and f.referral_rewarded
+      and (select min(created_at) from stamps where customer_id = f.id and reason = 'purchase') >= m.black_card_at`;
+  return n;
 }

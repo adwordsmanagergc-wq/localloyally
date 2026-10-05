@@ -74,10 +74,10 @@ export async function redeemCode(biz: Business, customerId: string, raw: string)
     try {
       if (kind === 'stamp') {
         const r = await addPurchase(biz, customerId, null, 1, true, 'Counter code');
-        return { kind, added: 'events' in r && r.events ? r.events.reduce((a, e) => a + e.delta, 0) : 1, referrerId: 'referrerId' in r ? r.referrerId : null };
+        return { kind, added: 'events' in r && r.events ? r.events.reduce((a, e) => a + e.delta, 0) : 1, referrerId: 'referrerId' in r ? r.referrerId : null, referrerNote: 'referrerNote' in r ? r.referrerNote : '' };
       }
       await sql`insert into stamps (business_id, customer_id, delta, reason, note) values (${biz.id}, ${customerId}, 1, 'bonus', 'Bonus code')`;
-      return { kind, added: 1, referrerId: null };
+      return { kind, added: 1, referrerId: null, referrerNote: '' };
     } catch (e) {
       await sql`delete from code_uses where customer_id = ${customerId} and kind = ${kind} and day = ${day}`;
       throw e;
@@ -95,7 +95,7 @@ export async function redeemCode(biz: Business, customerId: string, raw: string)
       return p.stamps as number;
     });
     if (added == null) throw new RuleError('That code is not right, already used or expired.');
-    return { kind: 'personal' as const, added, referrerId: null };
+    return { kind: 'personal' as const, added, referrerId: null, referrerNote: '' };
   }
   throw new RuleError('Codes are 6 numbers from staff, or 6 letters and numbers sent to you');
 }

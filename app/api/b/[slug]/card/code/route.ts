@@ -15,7 +15,7 @@ export const POST = customerRoute(async (req, biz, id) => {
   if (r.referrerId) {
     const [ref] = await sql`select phone, name, marketing_opt_in from customers where id = ${r.referrerId}`;
     if (ref?.marketing_opt_in)
-      sendWhatsApp(ref.phone, `Hi ${ref.name}, your friend just made their first visit to ${biz.name}. We've added ${biz.settings.referral.stamps} bonus stamp to your card. Thanks for spreading the word!`);
+      sendWhatsApp(ref.phone, `Hi ${ref.name}, ${biz.name}: ${r.referrerNote} Thanks for spreading the word!`);
   }
   return json({ kind: r.kind, added: r.added });
 });

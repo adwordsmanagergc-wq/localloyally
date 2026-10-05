@@ -1,5 +1,5 @@
 import { randomInt } from 'node:crypto';
-import { blackCardReady } from './blackcard';
+import { BLACK_FOOD_DAYS, BLACK_FOOD_EVERY, BLACK_FOOD_LABEL, blackCardReady } from './blackcard';
 import { sql, type Tx } from './db';
 import { halfwayAt, isDoubleHour, localNow, maxTier, type Business, type Prize } from './business';
 
@@ -22,6 +22,7 @@ type StampEvent = { reason: string; delta: number };
 export async function addPurchase(biz: Business, customerId: string, staffId: string | null, qty: number, force: boolean, note: string | null = null) {
   const s = biz.settings;
   qty = Math.min(s.maxPerVisit, Math.max(1, Math.round(qty) || 1));
+  const hasBlackCard = await blackCardReady();
   return sql.begin(async (tx) => {
     const [c] = await tx`select id, referred_by, referral_rewarded from customers
       where id = ${customerId} and business_id = ${biz.id} for update`;
@@ -44,13 +45,28 @@ export async function addPurchase(biz: Business, customerId: string, staffId: st
     if (isDoubleHour(s)) await add(customerId, qty, 'double_hour');
 
     let referrerId: string | null = null;
+    let referrerNote = '';
     if (s.referral.enabled && c.referred_by && !c.referral_rewarded) {
       const [{ n }] = await tx`select count(*)::int n from stamps where customer_id = ${customerId} and reason = 'purchase'`;
       if (n === 1) {
         // Only the referrer gets a bonus; the new member already got their welcome stamps.
-        await add(c.referred_by, s.referral.stamps, 'referral', 'Friend made first visit');
         await tx`update customers set referral_rewarded = true where id = ${customerId}`;
         referrerId = c.referred_by;
+        const [ref] = hasBlackCard ? await tx`select black_card_at from customers where id = ${c.referred_by}` : [];
+        if (ref?.black_card_at) {
+          // Black card members don't need stamps: every 5 friends who make a first visit earns free food
+          const [{ k }] = await tx`select count(*)::int k from customers where referred_by = ${c.referred_by} and referral_rewarded`;
+          if (k % BLACK_FOOD_EVERY === 0) {
+            await tx`insert into vouchers (business_id, customer_id, label, kind, value, source, period_key, expires_at)
+              values (${biz.id}, ${c.referred_by}, ${BLACK_FOOD_LABEL}, 'item', 0, 'campaign', ${'black-food-' + k},
+                      now() + make_interval(days => ${BLACK_FOOD_DAYS}::int))
+              on conflict do nothing`;
+            referrerNote = `🍽️ That's ${BLACK_FOOD_EVERY} friends! Free food of your choice from the menu is on your card.`;
+          } else referrerNote = `Your friend just made their first visit. ${k % BLACK_FOOD_EVERY} of ${BLACK_FOOD_EVERY} towards free food from the menu 🍽️`;
+        } else {
+          await add(c.referred_by, s.referral.stamps, 'referral', 'Friend made first visit');
+          referrerNote = `Your friend just made their first visit. +${s.referral.stamps} bonus stamp${s.referral.stamps === 1 ? '' : 's'} for you!`;
+        }
       }
     }
 
@@ -68,7 +84,7 @@ export async function addPurchase(biz: Business, customerId: string, staffId: st
     // Balance before a full card turns into a voucher, so notifications can say what was just earned
     const fullBalance = await getBalance(tx, customerId);
     const rewards = await convertFullCard(tx, biz, customerId);
-    return { events, balance: await getBalance(tx, customerId), fullBalance, rewards, referrerId };
+    return { events, balance: await getBalance(tx, customerId), fullBalance, rewards, referrerId, referrerNote };
   });
 }
 

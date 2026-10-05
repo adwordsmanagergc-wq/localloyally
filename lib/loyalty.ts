@@ -65,8 +65,35 @@ export async function addPurchase(biz: Business, customerId: string, staffId: st
       }
     }
 
-    return { events, balance: await getBalance(tx, customerId), referrerId };
+    // Balance before a full card turns into a voucher, so notifications can say what was just earned
+    const fullBalance = await getBalance(tx, customerId);
+    const rewards = await convertFullCard(tx, biz, customerId);
+    return { events, balance: await getBalance(tx, customerId), fullBalance, rewards, referrerId };
   });
+}
+
+const REWARD_VOUCHER_DAYS = 30;
+
+/**
+ * A full card (the top reward's stamps) becomes a voucher for that reward and the card starts again,
+ * keeping any extra stamps: 9 of 8 turns into a free coffee voucher and 1 stamp. Returns the rewards given.
+ */
+export async function convertFullCard(tx: Tx, biz: Business, customerId: string): Promise<string[]> {
+  const top = maxTier(biz.settings);
+  const reward = biz.settings.rewards.find((r) => r.stamps === top);
+  if (!reward || top < 1) return [];
+  const given: string[] = [];
+  for (let bal = await getBalance(tx, customerId); bal >= top; bal -= top) {
+    const [{ n }] = await tx`select count(*)::int n from stamps where customer_id = ${customerId} and reason = 'redeem'`;
+    await tx`insert into stamps (business_id, customer_id, delta, reason, note)
+             values (${biz.id}, ${customerId}, ${-top}, 'redeem', ${reward.label})`;
+    await tx`insert into vouchers (business_id, customer_id, label, kind, value, source, period_key, expires_at)
+      values (${biz.id}, ${customerId}, ${reward.label}, 'item', 0, 'campaign', ${'reward-' + n},
+              now() + make_interval(days => ${REWARD_VOUCHER_DAYS}::int))
+      on conflict do nothing`;
+    given.push(reward.label);
+  }
+  return given;
 }
 
 /** Swap stamps for one of the reward tiers. */
@@ -88,6 +115,11 @@ export async function redeemReward(biz: Business, customerId: string, staffId: s
 /** Rewards that appear on their own: the halfway spin and the birthday treat. */
 export async function grantPassive(biz: Business, customerId: string) {
   const s = biz.settings;
+  // Stamps from codes, posts or adjustments can fill a card too: turn it into the voucher
+  await sql.begin(async (tx) => {
+    const [c] = await tx`select id from customers where id = ${customerId} and business_id = ${biz.id} for update`;
+    if (c) await convertFullCard(tx, biz, customerId);
+  });
   if (s.spin.enabled) {
     // The only spin: one per card, when they're halfway to the top reward (4 of 8). the key counts rewards claimed so far, so a new card earns a new spin.
     await sql`

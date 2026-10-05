@@ -170,7 +170,7 @@ export default async function CardPage({ params, searchParams }: { params: Promi
                 <div className="v-label">{v.label}</div>
                 <div className="tiny muted">Use by {d(v.expires_at)} · tell staff your username to claim</div>
               </div>
-              <span className="pill">{v.source === 'birthday' ? 'Birthday' : v.period_key === 'staff-invite' ? 'Welcome gift' : v.source === 'campaign' ? 'Gift' : 'Won'}</span>
+              <span className="pill">{v.source === 'birthday' ? 'Birthday' : v.period_key === 'staff-invite' ? 'Welcome gift' : v.period_key?.startsWith('reward-') ? 'Full card' : v.source === 'campaign' ? 'Gift' : 'Won'}</span>
             </div>
           ))}
         </section>

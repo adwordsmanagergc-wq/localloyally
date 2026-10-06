@@ -77,7 +77,7 @@ export default async function CardPage({ params, searchParams }: { params: Promi
                 <div key={i} className={`slot ${s.stampImageUrl ? 'img' : ''} on`}><Stamp icon={s.stampIcon} image={s.stampImageUrl} size={22} /></div>
               ))}
             </div>
-            <p className="king gold" style={{ fontSize: '1.15rem', fontWeight: 700 }}>You don&apos;t need stamps, you king 👑</p>
+            <p className="king gold" style={{ fontSize: '1.15rem', fontWeight: 700 }}>You don&apos;t need stamps, you&apos;re royalty 👑</p>
             <p className="small muted">Free coffee for life. Show staff your card and it&apos;s on the house.</p>
           </div>
         </section>

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './roastedcustomer.css';
 
 const REVIEW_URL = 'https://g.page/r/CeN3XdxA-OZkEBM/review';
-const JOIN_URL = '/roasted?join=1';
+const JOIN_URL = '/roastedcustomer/join';
 
 export const metadata: Metadata = {
   title: 'Roasted Cafe Canggu | Loyal Locally',

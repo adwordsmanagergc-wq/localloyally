@@ -50,6 +50,7 @@ New businesses start from a template: cafe, matcha/tea bar, restaurant, barber/s
 5. **Domain:** add `loyallocally.com` in Vercel > Domains and set `APP_URL=https://loyallocally.com`.
 6. Go to `/platform`, log in, add **Roasted** (link name `roasted`, template Cafe), then log in at `/roasted/staff` with the manager name and password and open Settings.
 7. Put a "Rewards" button on the Roasted website linking to `https://your-domain/roasted`, and print a QR code of that link for the counter.
+8. For table cards, `/roastedcustomer` is a one-page landing with two buttons: review Roasted on Google, or join the digital card (1 free stamp).
 
 The daily reminder job is already set in `vercel.json` (10am Bali time).
 

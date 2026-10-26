@@ -21,14 +21,14 @@
   padding: max(28px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
 }
 
-.rc-brand { text-align: center; margin-top: 8px; }
+.rc-brand { text-align: center; }
 .rc-logo {
-  width: 118px; height: 118px; margin: 0 auto; border-radius: 50%; padding: 7px;
+  width: 92px; height: 92px; margin: 0 auto; border-radius: 50%; padding: 5px;
   background: conic-gradient(var(--orange), var(--pink), var(--lilac), var(--lime), var(--orange));
   box-shadow: 0 10px 40px rgba(255,106,61,.45);
 }
 .rc-logo img { display: block; width: 100%; height: 100%; border-radius: 50%; background: #150f1f; }
-.rc-brand h1 { font-family: var(--head); font-weight: 800; font-size: 38px; line-height: 1; letter-spacing: -.02em; margin: 16px 0 8px; }
+.rc-brand h1 { font-family: var(--head); font-weight: 800; font-size: 32px; line-height: 1; letter-spacing: -.02em; margin: 12px 0 6px; }
 .rc-brand h1 span {
   display: inline-block; margin-top: 8px; font-size: 15px; letter-spacing: .22em; text-transform: uppercase;
   background: var(--lime); color: var(--ink); padding: 5px 12px 4px; border-radius: 999px; transform: rotate(-2deg);
@@ -60,22 +60,26 @@
   box-shadow: 0 3px 10px rgba(0,0,0,.25);
 }
 
-/* Advert for Loyal Locally, sits near the bottom */
-.rc-ad {
-  margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding: 18px; border-radius: 22px; text-decoration: none;
-  color: var(--ink); background: linear-gradient(135deg, var(--lime), #a8f0c6 55%, var(--lilac));
-  box-shadow: 0 14px 30px rgba(0,0,0,.3);
+/* Example card in a phone frame */
+.rc-preview { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 8px; text-decoration: none; color: #fff; }
+.rc-preview-label { font-family: var(--head); font-weight: 800; font-size: 18px; }
+.rc-phone {
+  position: relative; margin: 0; width: 210px; height: 400px; padding: 9px; border-radius: 36px; overflow: hidden;
+  background: #0d0a12; box-shadow: 0 0 0 2px rgba(255,255,255,.18), 0 20px 50px rgba(0,0,0,.55), 0 0 60px rgba(143,107,255,.35);
+  transform: rotate(-3deg);
 }
-.rc-ad-tag { align-self: flex-start; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; background: var(--ink); color: var(--lime); padding: 4px 9px; border-radius: 999px; }
-.rc-ad strong { font-family: var(--head); font-weight: 800; font-size: 21px; line-height: 1.15; }
-.rc-ad-sub { font-size: 14px; color: #3a3029; }
-.rc-ad-btn { align-self: flex-start; margin-top: 6px; background: var(--ink); color: #fff; font-weight: 700; font-size: 14px; padding: 10px 14px; border-radius: 999px; }
-.rc-ad:active { transform: scale(.98); }
+.rc-phone img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 28px; }
+.rc-notch { position: absolute; top: 15px; left: 50%; width: 62px; height: 16px; margin-left: -31px; border-radius: 999px; background: #0d0a12; z-index: 1; }
 
-.rc-powered { text-align: center; font-size: 13px; }
-.rc-powered a { display: inline-flex; align-items: center; gap: 8px; color: #fff; text-decoration: none; font-weight: 600; }
-.rc-powered img { border-radius: 7px; }
-.rc-pill { background: var(--lime); color: var(--ink); border-radius: 999px; padding: 1px 7px 2px; }
-.rc-powered p { margin: 8px 0 0; opacity: .85; font-style: italic; }
+/* Small Loyal Locally advert at the very bottom */
+.rc-powered { margin-top: auto; padding-top: 8px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.rc-ad {
+  display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px 7px 8px; border-radius: 999px; font-size: 13px;
+  color: #fff; text-decoration: none; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+}
+.rc-ad img { border-radius: 6px; }
+.rc-ad strong { color: var(--lime); }
+.rc-powered p { margin: 0; font-size: 11px; opacity: .7; }
+.rc-powered p a { color: inherit; font-weight: 700; }
 
 @media (prefers-reduced-motion: reduce) { .rc-glow, .rc-join { animation: none; } }

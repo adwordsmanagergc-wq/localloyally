@@ -6,8 +6,8 @@ import { api, savePassword } from '@/lib/client';
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 type Mode = 'join' | 'login' | 'forgot' | 'reset';
 
-export default function AuthFlow({ slug, refCode, businessName, start, giftCode, invite }: {
-  slug: string; refCode?: string; businessName: string; start?: 'join' | 'forgot'; giftCode?: string;
+export default function AuthFlow({ slug, refCode, businessName, start, giftCode, invite, welcomeStamps }: {
+  slug: string; refCode?: string; businessName: string; start?: 'join' | 'forgot'; giftCode?: string; welcomeStamps?: number;
   invite?: { code: string; item?: string; from: string; gift: string; welcome: number };
 }) {
   const router = useRouter();
@@ -89,6 +89,11 @@ export default function AuthFlow({ slug, refCode, businessName, start, giftCode,
           </div>
         )}
         {mode === 'join' && refCode && !giftCode && !invite && <div className="banner small">A friend invited you. Welcome!</div>}
+        {mode === 'join' && welcomeStamps !== undefined && !refCode && !giftCode && !invite && (
+          <div className="banner good small">
+            🎉 Welcome! {welcomeStamps > 0 ? `Join free and get ${welcomeStamps} free stamp${welcomeStamps > 1 ? 's' : ''} on your card.` : 'Join free and start collecting stamps.'}
+          </div>
+        )}
         {info && <div className="banner good small">{info}</div>}
 
         {(mode === 'join' || mode === 'login') && (

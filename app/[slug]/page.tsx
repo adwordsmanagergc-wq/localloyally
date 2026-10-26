@@ -45,6 +45,7 @@ export default async function Join({ params, searchParams }: {
       </section>
       {found === 'expired' && <div className="banner small">This invite link has expired or was already used. You can still join below.</div>}
       <AuthFlow slug={biz.slug} refCode={ref} businessName={biz.name} start={join === '1' || gift || inviter ? 'join' : forgot === '1' ? 'forgot' : undefined} giftCode={gift}
+        welcomeStamps={join === '1' ? s.welcomeStamps : undefined}
         invite={inviter ? {
           code: cleanInviteCode(invite), item: inviter.item ?? undefined, from: inviter.name, welcome: s.welcomeStamps,
           gift: inviter.gift === 'black' ? 'a 👑 Black card: free coffee for life' : inviter.gift === 'stamps' && inviteStamps(s) > 0 ? `${Math.min(inviter.stamps ?? inviteStamps(s), inviteStampCap(s))} head-start stamps` : `a ${(inviter.item ?? s.staffInvite.label).toLowerCase()}`,

@@ -1,0 +1,81 @@
+.rc {
+  --orange: #ff6a3d; --lime: #d4f56b; --lilac: #c8b8ff; --pink: #ffb8cb; --ink: #1c1511;
+  --head: 'Bricolage Grotesque', system-ui, sans-serif;
+  position: relative; overflow: hidden; min-height: 100dvh; color: #fff;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: #150f1f;
+}
+/* Colourful blobs behind everything */
+.rc-glow {
+  position: absolute; inset: -20% -40%; pointer-events: none; filter: blur(50px); opacity: .75;
+  background:
+    radial-gradient(circle at 25% 12%, #ff6a3d 0, transparent 26%),
+    radial-gradient(circle at 80% 22%, #8f6bff 0, transparent 28%),
+    radial-gradient(circle at 15% 62%, #ff4f9a 0, transparent 24%),
+    radial-gradient(circle at 85% 80%, #3ec6ff 0, transparent 26%);
+  animation: rc-drift 14s ease-in-out infinite alternate;
+}
+@keyframes rc-drift { to { transform: translate(6%, 4%) rotate(8deg); } }
+
+.rc-wrap {
+  position: relative; max-width: 440px; margin: 0 auto; min-height: 100dvh; display: flex; flex-direction: column; gap: 22px;
+  padding: max(28px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+}
+
+.rc-brand { text-align: center; margin-top: 8px; }
+.rc-logo {
+  width: 118px; height: 118px; margin: 0 auto; border-radius: 50%; padding: 7px;
+  background: conic-gradient(var(--orange), var(--pink), var(--lilac), var(--lime), var(--orange));
+  box-shadow: 0 10px 40px rgba(255,106,61,.45);
+}
+.rc-logo img { display: block; width: 100%; height: 100%; border-radius: 50%; background: #150f1f; }
+.rc-brand h1 { font-family: var(--head); font-weight: 800; font-size: 38px; line-height: 1; letter-spacing: -.02em; margin: 16px 0 8px; }
+.rc-brand h1 span {
+  display: inline-block; margin-top: 8px; font-size: 15px; letter-spacing: .22em; text-transform: uppercase;
+  background: var(--lime); color: var(--ink); padding: 5px 12px 4px; border-radius: 999px; transform: rotate(-2deg);
+}
+.rc-brand p { margin: 0; font-size: 16px; opacity: .9; }
+
+.rc-links { display: flex; flex-direction: column; gap: 16px; }
+.rc-link {
+  position: relative; display: flex; align-items: center; gap: 14px; min-height: 84px; padding: 16px 18px; border-radius: 22px;
+  text-decoration: none; color: var(--ink); -webkit-tap-highlight-color: transparent; transition: transform .12s;
+}
+.rc-link:active { transform: scale(.97); }
+.rc-link:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.rc-review { background: #fff; box-shadow: 0 8px 0 #f5b700, 0 14px 30px rgba(0,0,0,.35); }
+.rc-join {
+  background: linear-gradient(120deg, var(--orange), #ff4f9a); color: #fff;
+  box-shadow: 0 8px 0 #b3264f, 0 14px 30px rgba(255,79,154,.4); animation: rc-pulse 2.4s ease-in-out infinite;
+}
+@keyframes rc-pulse { 50% { box-shadow: 0 8px 0 #b3264f, 0 14px 44px rgba(255,79,154,.75); } }
+.rc-stars { color: #f5b700; font-size: 18px; letter-spacing: 2px; line-height: 1; margin-bottom: 4px; }
+.rc-icon { flex: none; width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.95); }
+.rc-text { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.rc-text strong { font-family: var(--head); font-weight: 800; font-size: 19px; line-height: 1.15; }
+.rc-text small { font-size: 14px; opacity: .85; }
+.rc-arrow { flex: none; font-size: 24px; font-weight: 700; }
+.rc-badge {
+  position: absolute; top: -12px; right: 14px; background: var(--lime); color: var(--ink); font-size: 12px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .06em; padding: 5px 10px; border-radius: 999px; transform: rotate(3deg);
+  box-shadow: 0 3px 10px rgba(0,0,0,.25);
+}
+
+/* Advert for Loyal Locally, sits near the bottom */
+.rc-ad {
+  margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding: 18px; border-radius: 22px; text-decoration: none;
+  color: var(--ink); background: linear-gradient(135deg, var(--lime), #a8f0c6 55%, var(--lilac));
+  box-shadow: 0 14px 30px rgba(0,0,0,.3);
+}
+.rc-ad-tag { align-self: flex-start; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; background: var(--ink); color: var(--lime); padding: 4px 9px; border-radius: 999px; }
+.rc-ad strong { font-family: var(--head); font-weight: 800; font-size: 21px; line-height: 1.15; }
+.rc-ad-sub { font-size: 14px; color: #3a3029; }
+.rc-ad-btn { align-self: flex-start; margin-top: 6px; background: var(--ink); color: #fff; font-weight: 700; font-size: 14px; padding: 10px 14px; border-radius: 999px; }
+.rc-ad:active { transform: scale(.98); }
+
+.rc-powered { text-align: center; font-size: 13px; }
+.rc-powered a { display: inline-flex; align-items: center; gap: 8px; color: #fff; text-decoration: none; font-weight: 600; }
+.rc-powered img { border-radius: 7px; }
+.rc-pill { background: var(--lime); color: var(--ink); border-radius: 999px; padding: 1px 7px 2px; }
+.rc-powered p { margin: 8px 0 0; opacity: .85; font-style: italic; }
+
+@media (prefers-reduced-motion: reduce) { .rc-glow, .rc-join { animation: none; } }

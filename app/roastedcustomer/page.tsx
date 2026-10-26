@@ -23,7 +23,7 @@ export default function RoastedCustomer() {
         <header className="rc-brand">
           <div className="rc-logo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brands/roasted/logo.png" width={104} height={104} alt="Roasted Cafe Canggu logo" />
+            <img src="/brands/roasted/logo.png" width={82} height={82} alt="Roasted Cafe Canggu logo" />
           </div>
           <h1>Roasted Cafe <span>Canggu</span></h1>
           <p>Thanks for visiting! Tap one below 👇</p>
@@ -52,20 +52,23 @@ export default function RoastedCustomer() {
           </a>
         </nav>
 
-        <a className="rc-ad" href="/">
-          <span className="rc-ad-tag">For business owners</span>
-          <strong>Get a digital rewards scheme for your business</strong>
-          <span className="rc-ad-sub">Stamp cards on your customers&apos; phones, more Google reviews, more regulars. No app needed.</span>
-          <span className="rc-ad-btn">Find out more at Loyal Locally →</span>
+        <a className="rc-preview" href={JOIN_URL} aria-label="See the Roasted Cafe digital card and sign up">
+          <span className="rc-preview-label">Your card looks like this 👇</span>
+          <figure className="rc-phone">
+            <span className="rc-notch" aria-hidden="true" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/how-it-works/card-wheel-home.webp" width={720} height={1558} loading="lazy"
+              alt="Example Roasted Cafe digital stamp card: 4 stamps, 1 more to a free pastry" />
+          </figure>
         </a>
 
         <footer className="rc-powered">
-          <a href="/" aria-label="Loyal Locally home">
+          <a className="rc-ad" href="/">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/loyal-locally-icon.png" width={26} height={26} alt="" />
-            <span>Powered by Loyal <span className="rc-pill">Locally</span></span>
+            <img src="/brand/loyal-locally-icon.png" width={22} height={22} alt="" />
+            <span>Own a business? <strong>Get digital rewards →</strong></span>
           </a>
-          <p>Rewards for being loyal to your local small businesses</p>
+          <p>Powered by <a href="/">Loyal Locally</a> · Rewards for being loyal to your local small businesses</p>
         </footer>
       </div>
     </main>

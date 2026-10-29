@@ -1,6 +1,7 @@
 import '../landing.css';
 import type { Metadata } from 'next';
 import { pricesForVisitor } from '@/lib/pricing';
+import { company } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'How it works | Loyal Locally',
@@ -25,13 +26,14 @@ const STEPS = [
 const BENEFITS = [
   { e: '🔁', t: 'More repeat visits', p: 'A reward they can see filling up, a prize halfway, and reminders when they are close.' },
   { e: '📇', t: 'You own your customer list', p: 'Every member, their visits and who agreed to WhatsApp. Download it any time.' },
-  { e: '⭐', t: 'More Google reviews', p: 'Your happiest regulars get asked at the right moment, so you climb Google Maps.' },
+  { e: '⭐', t: 'More Google reviews', p: 'Every regular gets asked after a few visits, so you climb Google Maps.' },
   { e: '📣', t: 'Marketing that costs nothing', p: 'Message the right group from your own WhatsApp, and let members post and refer for you.' },
   { e: '🧾', t: 'No paper, no hardware', p: 'No cards to print or lose and no till to change. Any phone or tablet works.' },
   { e: '🛡️', t: 'Hard to cheat', p: 'Staff logins, a log of every stamp, codes that change every 2 minutes, and approvals for posts.' },
 ];
 
 export default async function HowItWorks() {
+  const co = company();
   const prices = await pricesForVisitor();
   return (
     <div className="lp">
@@ -181,10 +183,10 @@ export default async function HowItWorks() {
             </div>
             <div>
               <div className="lp-eyebrow">✺ Google reviews</div>
-              <h2 className="lp-title">More 5-star reviews, on autopilot.</h2>
+              <h2 className="lp-title">More Google reviews, on autopilot.</h2>
               <p className="lp-lead">Reviews are one of the biggest reasons a business shows up in the Google Maps top 3, and AI assistants like ChatGPT read them when they recommend places. After a regular&apos;s 3rd visit (you choose when), we ask them for a review on WhatsApp and on their card.</p>
               <ul className="lp-checks">
-                <li>Asks your happiest customers, at the right moment</li>
+                <li>Asks every regular the same way, after a few visits</li>
                 <li>Never rewarded with stamps, so you stay inside Google&apos;s rules</li>
                 <li>A steady stream of fresh reviews instead of a one-off push</li>
               </ul>
@@ -267,9 +269,9 @@ export default async function HowItWorks() {
         <div className="lp-container">
           <a href="/" className="lp-footer-logo" aria-label="Loyal Locally home"><img src="/brand/loyal-locally-logo.png" width={88} height={120} alt="Loyal Locally" /></a>
           <nav aria-label="Footer">
-            <a href="/">Home</a><a href="/login?as=member">Member login</a><a href="/login?as=business">Business login</a><a href="/#setup">Get started</a>
+            <a href="/">Home</a><a href="/login?as=member">Member login</a><a href="/login?as=business">Business login</a><a href="/#setup">Get started</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a>
           </nav>
-          <span>© {new Date().getFullYear()} Loyal Locally by Metatap Digital</span>
+          <span>© {new Date().getFullYear()} Loyal Locally by {co.name}{co.address ? ` · ${co.address}` : ''} · <a href={`mailto:${co.email}`}>{co.email}</a></span>
         </div>
       </footer>
     </div>

@@ -10,6 +10,7 @@ Digital stamp cards for any business: cafes, restaurants, barbers, salons, gyms,
 | `/login` | Customers | Log in with username + password from the main site; "Sign up" finds the business first |
 | `/me` | Customers | My cards: every card they have, plus search to join other businesses with one tap (same username and password) |
 | `/terms` | Everyone | Terms and conditions customers agree to at sign-up |
+| `/privacy` | Everyone | Privacy policy (UU PDP), in English and Bahasa Indonesia |
 | `/{slug}/card` | Customers | Stamp card with their username for staff, a box for counter or personal codes, spin to win, vouchers, social post stamps, refer-a-friend link, latest offer. Can be added to the home screen, or to Apple / Google Wallet |
 | `/{slug}/g/{code}` | Anyone with the link | A gift certificate with its QR code and balance |
 | `/{slug}/staff` | Staff (name + password) | Send their own WhatsApp invite link (friend gets a free item voucher plus welcome stamps), find customers by username (or part of it) or number, show counter codes, scan gift certificates; add stamps, redeem rewards and vouchers, approve social posts, sell and use gift certificates |
@@ -46,6 +47,7 @@ New businesses start from a template: cafe, matcha/tea bar, restaurant, barber/s
 3. **Vercel:** import the repo. Add the environment variables from `.env.example`:
    - `DATABASE_URL`, `SESSION_SECRET` (run `openssl rand -hex 32`), `PLATFORM_ADMIN_PASSWORD`, `APP_URL`, `CRON_SECRET`
    - `WHATSAPP_PROVIDER` (see below)
+   - `COMPANY_LEGAL_NAME`, `COMPANY_ADDRESS`, `CONTACT_EMAIL`: shown in the footer, terms and privacy policy
 4. **Create tables:** on your computer, put the same values in `.env.local`, then `npm install` and `npm run migrate`.
 5. **Domain:** add `loyallocally.com` in Vercel > Domains and set `APP_URL=https://loyallocally.com`.
 6. Go to `/platform`, log in, add **Roasted** (link name `roasted`, template Cafe), then log in at `/roasted/staff` with the manager name and password and open Settings.
@@ -87,7 +89,9 @@ Members get an "Add to Apple Wallet" or "Add to Google Wallet" button on their c
 Wallet cards carry a fixed QR code (wallets can't rotate it like the web card), so a screenshot of a wallet card can be scanned. Every stamp is still logged with the staff member, and the 3-minute repeat warning still applies.
 
 ## Good to know
-- Indonesia's data protection law (UU PDP) needs consent for marketing messages. Signup has an opt-in tickbox (on by default, can be unticked) and reminders only go to members who opted in.
+- Indonesia's data protection law (UU PDP) needs consent for marketing messages. Signup has an opt-in tickbox (unticked by default, as UU PDP needs an active choice) and reminders only go to members who opted in.
+- Members can delete their card and details from the bottom of their card, and managers can delete a member from the Members tab when asked (UU PDP gives people the right to erasure; reply to requests within 3 x 24 hours). The daily job also clears old login codes, IP-based rate-limit records (after 2 days) and free-week enquiries (after 2 years), as the privacy policy says.
+- If a business changes or ends its rewards, the terms promise members 14 days' notice on their card (send an offer) and that earned stamps and vouchers stay valid.
 - Offers only go by WhatsApp to members who opted in, and a business can send at most 3 a day.
 - Gift certificates are paid for at the till; the app records them but doesn't take card payments.
 - Spin to win is free to play and prizes are discounts only. Indonesia is strict on gambling and prize draws (undian), so check with a local adviser before promoting it heavily.

@@ -100,6 +100,11 @@ export function MembersTab({ slug, toast }: { slug: string; toast: Toast }) {
       if (window.confirm(`Code ${r.code} gives ${r.stamps} stamp${r.stamps > 1 ? 's' : ''} to ${c.name} only. Open WhatsApp to send it?`)) openWhatsApp(r.whatsapp);
     } catch (e: any) { toast(e.message); }
   }
+  async function remove(c: any) {
+    if (!window.confirm(`Delete ${c.name} (+${c.phone}) and all their stamps, rewards and history? Only do this when they ask. It can't be undone.`)) return;
+    try { await api(`/api/b/${slug}/admin/customers`, { customerId: c.id }, 'DELETE'); toast(`${c.name} deleted`); load(); }
+    catch (e: any) { toast(e.message); }
+  }
   return (
     <div className="stack">
       <div className="row wrap-row">
@@ -117,7 +122,7 @@ export function MembersTab({ slug, toast }: { slug: string; toast: Toast }) {
               <tr key={c.id}>
                 <td>{c.name}</td><td>{c.username ?? '-'}</td><td>+{c.phone}</td><td><strong>{c.balance}</strong></td><td>{c.visits}</td>
                 <td>{c.last_visit ? fmtDate(c.last_visit) : '-'}</td><td>{c.marketing_opt_in ? 'Yes' : 'No'}</td>
-                <td className="row" style={{ gap: 6 }}><button className="btn ghost small" onClick={() => sendCode(c)}>Send code</button><button className="btn ghost small" onClick={() => adjust(c)}>Adjust</button></td>
+                <td className="row" style={{ gap: 6 }}><button className="btn ghost small" onClick={() => sendCode(c)}>Send code</button><button className="btn ghost small" onClick={() => adjust(c)}>Adjust</button><button className="btn ghost small" onClick={() => remove(c)}>Delete</button></td>
               </tr>
             ))}
             {!items.length && <tr><td colSpan={8} className="muted">No members found</td></tr>}

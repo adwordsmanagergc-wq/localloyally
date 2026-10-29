@@ -7,7 +7,7 @@ import { getCustomerId } from '@/lib/auth';
 import { customerSummary, grantPassive, REASON_LABEL } from '@/lib/loyalty';
 import Brand from '@/components/Brand';
 import Stamp from '@/components/Stamp';
-import { CardRefresh, CodeForm, GiftFriend, PushToggle, LogoutButton, OptInToggle, ShareReferral, SocialForm } from '@/components/CardParts';
+import { CardRefresh, CodeForm, DeleteCardButton, GiftFriend, PushToggle, LogoutButton, OptInToggle, ShareReferral, SocialForm } from '@/components/CardParts';
 import SpinWheel from '@/components/SpinWheel';
 import { latestOffer } from '@/lib/campaigns';
 import { memberGifts } from '@/lib/gifts';
@@ -263,6 +263,10 @@ export default async function CardPage({ params, searchParams }: { params: Promi
       <section className="card flat stack small">
         {pushEnabled() && <PushToggle slug={biz.slug} publicKey={pushPublicKey()} business={biz.name} />}
         <OptInToggle slug={biz.slug} initial={!!sum.customer.marketing_opt_in} business={biz.name} />
+        <div className="row between">
+          <a className="small muted" href="/privacy" style={{ textDecoration: 'underline' }}>Privacy policy</a>
+          <DeleteCardButton slug={biz.slug} business={biz.name} />
+        </div>
       </section>
 
       <a className="card flat row between more-places" href="/me">

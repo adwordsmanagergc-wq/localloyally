@@ -8,3 +8,12 @@ export function siteUrl() {
   const env = (process.env.APP_URL || '').trim().replace(/\/$/, '');
   return env && !/\.vercel\.app$/i.test(new URL(env.startsWith('http') ? env : `https://${env}`).hostname) ? env : `https://${SITE_DOMAIN}`;
 }
+
+/** Who runs Loyal Locally, shown in the footer, terms and privacy policy (PP 80/2019 asks for clear business identity). */
+export function company() {
+  return {
+    name: process.env.COMPANY_LEGAL_NAME || 'Metatap Digital',
+    address: process.env.COMPANY_ADDRESS || '',
+    email: process.env.CONTACT_EMAIL || 'hello@loyallocally.com',
+  };
+}

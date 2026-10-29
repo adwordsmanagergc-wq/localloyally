@@ -6,12 +6,17 @@ import { siteUrl } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
-/** Runs daily. Sends "1 stamp away" nudges and voucher expiry reminders to opted-in members. */
+/** Runs daily. Clears old records, sends "1 stamp away" nudges and voucher expiry reminders to opted-in members. */
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret || req.headers.get('authorization') !== `Bearer ${secret}`) return json({ error: 'Unauthorized' }, 401);
   const base = siteUrl();
   let nudges = 0, reminders = 0, reviewAsks = 0;
+
+  // Retention promised in the privacy policy: old abuse-prevention records, expired login codes, 2-year-old enquiries.
+  await sql`delete from rate_limits where window_start < now() - interval '2 days'`;
+  await sql`delete from otp_codes where expires_at < now()`;
+  await sql`delete from trial_requests where created_at < now() - interval '2 years'`;
 
   const businesses = await sql`select id, slug, name, settings from businesses where active`;
   for (const b of businesses) {

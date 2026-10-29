@@ -311,7 +311,7 @@ export default function SettingsTab({ slug, toast }: { slug: string; toast: Toas
 
       <fieldset>
         <legend>Google reviews</legend>
-        <p className="small muted">More 5-star reviews help you rank higher on Google Maps and get recommended by AI search. We ask regulars for a review on WhatsApp and on their card. Reviews are never rewarded with stamps, because Google's rules ban paying for reviews.</p>
+        <p className="small muted">More Google reviews help you rank higher on Google Maps and get recommended by AI search. We ask regulars for a review on WhatsApp and on their card. Reviews are never rewarded with stamps, because Google's rules ban paying for reviews.</p>
         <Check path="reviews.enabled" label="Ask regulars for a Google review" />
         {s.reviews.enabled && (
           <div className="grid2">

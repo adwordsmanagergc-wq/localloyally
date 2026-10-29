@@ -16,7 +16,7 @@ export function FindPlaces({ mine }: { mine: string[] }) {
   const [items, setItems] = useState<Place[]>([]);
   const [searched, setSearched] = useState(false);
   const [joining, setJoining] = useState<Place | null>(null);
-  const [optIn, setOptIn] = useState(true);
+  const [optIn, setOptIn] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
 
@@ -64,7 +64,7 @@ export function FindPlaces({ mine }: { mine: string[] }) {
       {joining && (
         <div className="me-join">
           <strong>Join {joining.name}?</strong>
-          <p>You&apos;ll get a {joining.name} card with your username and password. The same terms and conditions apply.</p>
+          <p>You&apos;ll get a {joining.name} card with your username and password. The same <a href="/terms" style={{ textDecoration: 'underline' }}>terms</a> and <a href="/privacy" style={{ textDecoration: 'underline' }}>privacy policy</a> apply.</p>
           <label className="me-check">
             <input type="checkbox" checked={optIn} onChange={(e) => setOptIn(e.target.checked)} />
             <span>Send me WhatsApp messages about my rewards and offers from {joining.name}. You can stop anytime.</span>

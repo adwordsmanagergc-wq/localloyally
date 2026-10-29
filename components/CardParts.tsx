@@ -68,6 +68,17 @@ export function LogoutButton({ slug }: { slug: string }) {
   );
 }
 
+/** Lets a member delete their card and details at this business (UU PDP right to erasure). */
+export function DeleteCardButton({ slug, business }: { slug: string; business: string }) {
+  return (
+    <button className="linkbtn small" onClick={async () => {
+      if (!window.confirm(`Delete your card at ${business}? Your stamps, rewards and details there are removed for good.`)) return;
+      try { await api(`/api/b/${slug}/card/delete`, {}); window.location.href = '/'; }
+      catch (e: any) { window.alert(e.message); }
+    }}>Delete my card and details</button>
+  );
+}
+
 /** Type a code from staff (or one sent on WhatsApp) to get a stamp without being scanned. */
 export function CodeForm({ slug }: { slug: string }) {
   const router = useRouter();

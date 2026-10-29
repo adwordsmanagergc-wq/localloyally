@@ -1,6 +1,7 @@
 import { sql } from '@/lib/db';
 import { managerRoute, body } from '@/lib/route';
 import { json } from '@/lib/util';
+import { deleteCard } from '@/lib/members';
 import { walletChanged } from '@/lib/wallet';
 
 export const dynamic = 'force-dynamic';
@@ -28,5 +29,12 @@ export const POST = managerRoute(async (req, biz, staff) => {
   await sql`insert into stamps (business_id, customer_id, delta, reason, staff_id, note)
             values (${biz.id}, ${c.id}, ${delta}, 'adjust', ${staff.id}, ${String(b.note || '').slice(0, 100) || null})`;
   walletChanged(biz, c.id);
+  return json({ ok: true });
+});
+
+/** Deletes a member and their data when they ask (UU PDP). Can't be undone. */
+export const DELETE = managerRoute(async (req, biz) => {
+  const b = await body(req);
+  if (!(await deleteCard(biz.id, String(b.customerId || '')))) return json({ error: 'Member not found' }, 404);
   return json({ ok: true });
 });

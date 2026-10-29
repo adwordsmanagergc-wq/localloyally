@@ -47,7 +47,7 @@ export const DEFAULT_SETTINGS = {
   },
   birthday: { enabled: true, windowDays: 3, label: 'Birthday treat' },
   nudges: { enabled: true, afterDays: 3 },
-  // Asks happy regulars for a Google review. Never rewarded (Google bans incentivised reviews).
+  // Asks every opted-in regular for a Google review. Never rewarded (Google bans incentivised reviews).
   reviews: { enabled: true, googleUrl: '', afterVisits: 3 },
   currency: 'Rp',
   gifts: { enabled: true, validDays: 180 },

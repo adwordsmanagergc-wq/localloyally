@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { priceSentence, pricesForVisitor } from '@/lib/pricing';
 import TrialForm from '@/components/landing/TrialForm';
 import { walletEnabled } from '@/lib/wallet/config';
+import { company } from '@/lib/site';
 
 // Wallet cards are only advertised once the Apple or Google keys are set (redeploy after adding them).
 const WALLET = walletEnabled().apple || walletEnabled().google;
@@ -104,7 +105,7 @@ const COMPARE: [string, string, string, string][] = [
   ['Spin to win prizes', 'no', 'meh', 'yes'],
   ['WhatsApp reminders', 'no', 'no', 'yes'],
   ['Your logo, colours and fonts', 'meh', 'meh', 'yes'],
-  ['Asks happy customers for Google reviews', 'no', 'meh', 'yes'],
+  ['Asks regulars for Google reviews', 'no', 'meh', 'yes'],
   ['You own your customer list', 'no', 'meh', 'yes'],
 ];
 const mark = (v: string) => (v === 'yes' ? <span className="yes">✓</span> : v === 'no' ? <span className="no">✕</span> : <span className="meh">Sometimes</span>);
@@ -117,12 +118,13 @@ const FAQ = [
   ['How do referrals work?', 'Every member gets a share link on their card. When a friend joins with it and makes their first visit, the member who invited them gets a bonus stamp. The friend gets your normal welcome stamp.'],
   ['Can I message my customers?', 'Yes. Send an offer, with a voucher if you like, to groups such as regulars, people close to a reward or customers you have not seen in a while. You also get a list of everyone who agreed to WhatsApp messages to download any time, and customers can switch messages off from their card.'],
   ['Can I make it look like my brand?', 'Yes. Upload your logo, pick your colours, font, background photo or texture and stamp design, and change the wording to suit you, like "coffee", "cut" or "class".'],
-  ['How does it help with Google Maps and AI search?', 'Google ranks local businesses partly on how many reviews you have, how good they are and how recent they are. AI assistants like ChatGPT and Google AI Overviews also read reviews when they recommend places. Loyal Locally asks your regulars, the people most likely to leave 5 stars, for a review at the right moment, so a steady stream keeps coming in.'],
-  ['Do customers get stamps for reviews?', 'No, and that is on purpose. Google\'s rules ban rewarding customers for reviews, and businesses that do it can have reviews removed. We simply ask happy regulars, which keeps your profile safe.'],
+  ['How does it help with Google Maps and AI search?', 'Google ranks local businesses partly on how many reviews you have, how good they are and how recent they are. AI assistants like ChatGPT and Google AI Overviews also read reviews when they recommend places. Loyal Locally asks every regular who has opted in for an honest review after a few visits, whatever they thought, so a steady stream keeps coming in.'],
+  ['Do customers get stamps for reviews?', 'No, and that is on purpose. Google\'s rules ban rewarding customers for reviews, and businesses that do it can have reviews removed. We simply ask every regular the same way, with no reward and no filtering, which keeps your profile safe.'],
   ['Does it work outside Indonesia?', 'Yes. Customers join with any international WhatsApp number by starting with + and their country code, and you set your own country and timezone. It runs in Indonesia, Australia, the UK, Europe and the USA.'],
 ];
 
 export default async function Home() {
+  const co = company();
   const prices = await pricesForVisitor();
   const priceText = priceSentence(prices);
   const faq = [
@@ -448,8 +450,10 @@ export default async function Home() {
             <a href="/how-it-works">How it works</a>
             <a href="#setup">Get started</a>
             <a href="/platform">Admin</a>
+            <a href="/terms">Terms</a>
+            <a href="/privacy">Privacy</a>
           </nav>
-          <span>© {new Date().getFullYear()} Loyal Locally by Metatap Digital</span>
+          <span>© {new Date().getFullYear()} Loyal Locally by {co.name}{co.address ? ` · ${co.address}` : ''} · <a href={`mailto:${co.email}`}>{co.email}</a></span>
         </div>
       </footer>
     </div>

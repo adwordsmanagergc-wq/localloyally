@@ -31,3 +31,19 @@ export const memberCards = (phone: string) => sql`
     coalesce((select sum(delta) from stamps s where s.customer_id = c.id), 0)::int balance
   from customers c join businesses b on b.id = c.business_id
   where c.phone = ${phone} and b.active order by b.name`;
+
+/**
+ * Permanently deletes a member's card at one business (UU PDP right to erasure).
+ * Stamps, vouchers, spins and wallet/push links go with it (on delete cascade); gift certificates stay but lose the link.
+ */
+export async function deleteCard(bizId: string, customerId: string): Promise<boolean> {
+  if (!/^[0-9a-f-]{36}$/i.test(customerId)) return false;
+  return sql.begin(async (tx) => {
+    const [c] = await tx`select phone from customers where id = ${customerId} and business_id = ${bizId}`;
+    if (!c) return false;
+    await tx`update customers set referred_by = null where referred_by = ${customerId}`;
+    await tx`delete from otp_codes where business_id = ${bizId} and phone = ${c.phone}`;
+    await tx`delete from customers where id = ${customerId}`;
+    return true;
+  });
+}

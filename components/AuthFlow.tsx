@@ -19,7 +19,7 @@ export default function AuthFlow({ slug, refCode, businessName, start, giftCode,
   const [code, setCode] = useState('');
   const [bm, setBm] = useState('');
   const [bd, setBd] = useState('');
-  const [optIn, setOptIn] = useState(true);
+  const [optIn, setOptIn] = useState(false); // UU PDP: marketing consent must be an active choice, so never pre-ticked
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
@@ -145,7 +145,7 @@ export default function AuthFlow({ slug, refCode, businessName, start, giftCode,
             </label>
             <label className="check">
               <input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} required />
-              <span>I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>terms and conditions</a></span>
+              <span>I am 18 or older (or have a parent&apos;s OK) and agree to the <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>terms</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>privacy policy</a></span>
             </label>
           </>
         )}
